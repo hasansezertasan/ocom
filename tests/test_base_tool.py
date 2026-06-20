@@ -42,13 +42,17 @@ class TestBaseToolInitialization:
 class TestCheckAvailable:
     """Test check_available behavior."""
 
-    async def test_available_tool_sets_stopped_status(self, mock_tool: MockTool) -> None:
+    async def test_available_tool_sets_stopped_status(
+        self, mock_tool: MockTool
+    ) -> None:
         """Available tool should transition to STOPPED."""
         result = await mock_tool.check_available()
         assert result is True
         assert mock_tool.status == ToolStatus.STOPPED
 
-    async def test_unavailable_tool_stays_unavailable(self, unavailable_tool: MockTool) -> None:
+    async def test_unavailable_tool_stays_unavailable(
+        self, unavailable_tool: MockTool
+    ) -> None:
         """Unavailable tool should stay UNAVAILABLE."""
         result = await unavailable_tool.check_available()
         assert result is False
@@ -188,7 +192,9 @@ class TestGetStatusText:
 class TestGetConfigFiles:
     """Test get_config_files method."""
 
-    def test_default_returns_empty_list(self, mock_tool: MockTool, tool_config: ToolConfig) -> None:
+    def test_default_returns_empty_list(
+        self, mock_tool: MockTool, tool_config: ToolConfig
+    ) -> None:
         """Default implementation returns empty list."""
         result = mock_tool.get_config_files(tool_config)
         assert result == []

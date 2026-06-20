@@ -42,8 +42,12 @@ class ToolCard(Static):
         """Compose the card layout."""
         with Horizontal(classes="card-content"):
             with Vertical(classes="tool-info"):
-                yield Label(f"{self._status_icon} {self.tool.name}", classes="tool-name")
-                yield Label(self.tool.get_status_text(), classes="tool-status", id="status-text")
+                yield Label(
+                    f"{self._status_icon} {self.tool.name}", classes="tool-name"
+                )
+                yield Label(
+                    self.tool.get_status_text(), classes="tool-status", id="status-text"
+                )
             with Vertical(classes="buttons"):
                 yield Button("Start", id="toggle-btn", variant="primary")
 

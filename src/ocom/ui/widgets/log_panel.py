@@ -31,7 +31,9 @@ class LogPanel(Static):
         """Write a formatted log entry."""
         timestamp = datetime.now().strftime("%H:%M:%S")
         color = self.SOURCE_COLORS.get(source, "white")
-        self._log_widget.write(f"[dim]{timestamp}[/dim] [{color}]{source}[/{color}]: {message}")
+        self._log_widget.write(
+            f"[dim]{timestamp}[/dim] [{color}]{source}[/{color}]: {message}"
+        )
 
     def add_log(self, tool_name: str, message: str) -> None:
         """Add a log entry from a tool.

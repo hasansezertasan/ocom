@@ -76,13 +76,17 @@ class WarpTool(BaseTool):
             return True
         else:
             self._status = ToolStatus.ERROR
-            self._error_message = result.stderr or result.stdout or "Failed to disconnect"
+            self._error_message = (
+                result.stderr or result.stdout or "Failed to disconnect"
+            )
             self._emit_output(f"Error: {self._error_message}")
             return False
 
     async def refresh_status(self) -> ToolStatus:
         """Check WARP connection status."""
-        if self._status == ToolStatus.UNAVAILABLE and not ProcessManager.find_command(self.command):
+        if self._status == ToolStatus.UNAVAILABLE and not ProcessManager.find_command(
+            self.command
+        ):
             return self._status
 
         try:

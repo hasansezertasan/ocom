@@ -40,7 +40,9 @@ class GoodbyeDPITool(BaseTool):
             self._status = ToolStatus.ERROR
             self._error_message = "Administrator privileges required"
             self._emit_output("Error: GoodbyeDPI requires Administrator privileges")
-            self._emit_output("Run ocom as Administrator (right-click → Run as administrator)")
+            self._emit_output(
+                "Run ocom as Administrator (right-click → Run as administrator)"
+            )
             return False
 
         self._status = ToolStatus.STARTING
@@ -70,7 +72,9 @@ class GoodbyeDPITool(BaseTool):
 
             if not ProcessManager.is_process_running(self._process):
                 self._status = ToolStatus.ERROR
-                self._error_message = "Process exited unexpectedly (run as Administrator?)"
+                self._error_message = (
+                    "Process exited unexpectedly (run as Administrator?)"
+                )
                 self._emit_output(f"Error: {self._error_message}")
                 return False
 

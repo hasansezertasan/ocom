@@ -10,7 +10,14 @@ class TestToolStatusValues:
 
     def test_all_statuses_exist(self) -> None:
         """Verify all expected status values exist."""
-        expected = {"unavailable", "stopped", "starting", "running", "stopping", "error"}
+        expected = {
+            "unavailable",
+            "stopped",
+            "starting",
+            "running",
+            "stopping",
+            "error",
+        }
         actual = {status.value for status in ToolStatus}
         assert actual == expected
 

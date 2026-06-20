@@ -43,7 +43,9 @@ class ToolConfig:
     config_file: str | None = None  # Selected config file (e.g., .ovpn)
     config_dirs: list[str] = field(default_factory=list)  # Directories to scan
     extra_args: list[str] = field(default_factory=list)  # Additional CLI arguments
-    options: dict[str, str | bool | int] = field(default_factory=dict)  # Tool-specific options
+    options: dict[str, str | bool | int] = field(
+        default_factory=dict
+    )  # Tool-specific options
 
 
 class BaseTool(ABC):

@@ -59,7 +59,9 @@ class TailscaleTool(BaseTool):
             return True
 
         self._status = ToolStatus.ERROR
-        self._error_message = result.stderr or result.stdout or "Failed to bring Tailscale up"
+        self._error_message = (
+            result.stderr or result.stdout or "Failed to bring Tailscale up"
+        )
         # First-run authentication surfaces here as a login URL in stderr.
         self._emit_output(f"Error: {self._error_message}")
         return False
@@ -79,13 +81,17 @@ class TailscaleTool(BaseTool):
             return True
 
         self._status = ToolStatus.ERROR
-        self._error_message = result.stderr or result.stdout or "Failed to bring Tailscale down"
+        self._error_message = (
+            result.stderr or result.stdout or "Failed to bring Tailscale down"
+        )
         self._emit_output(f"Error: {self._error_message}")
         return False
 
     async def refresh_status(self) -> ToolStatus:
         """Check Tailscale connection status via `tailscale status --json`."""
-        if self._status == ToolStatus.UNAVAILABLE and not ProcessManager.find_command(self.command):
+        if self._status == ToolStatus.UNAVAILABLE and not ProcessManager.find_command(
+            self.command
+        ):
             return self._status
 
         try:
@@ -97,7 +103,9 @@ class TailscaleTool(BaseTool):
             if not result.success:
                 # Daemon not reachable (not installed/running as a service)
                 self._status = ToolStatus.ERROR
-                self._error_message = result.stderr.strip() or "tailscaled not reachable"
+                self._error_message = (
+                    result.stderr.strip() or "tailscaled not reachable"
+                )
                 return self._status
 
             backend_state = json.loads(result.stdout).get("BackendState", "")
@@ -128,7 +136,9 @@ class TailscaleTool(BaseTool):
             case "Stopped" | "NoState":
                 return ToolStatus.STOPPED
             case "NeedsLogin" | "NeedsMachineAuth":
-                self._error_message = "Tailscale needs authentication (run `tailscale up`)"
+                self._error_message = (
+                    "Tailscale needs authentication (run `tailscale up`)"
+                )
                 return ToolStatus.ERROR
             case _:
                 self._error_message = f"Unknown Tailscale state: {backend_state}"
