@@ -1,0 +1,49 @@
+[project]
+name = "ocom"
+version = "0.1.0"
+description = "A unified TUI for managing network/privacy tools: OpenVPN, SpoofDPI, Cloudflare WARP"
+readme = "README.md"
+requires-python = ">=3.14"
+license = { text = "MIT" }
+authors = [{ name = "Hasan Sezer Tasan", email = "hasansezertasan@gmail.com" }]
+keywords = [
+    "tui",
+    "vpn",
+    "openvpn",
+    "warp",
+    "spoofdpi",
+    "goodbyedpi",
+    "network",
+    "privacy",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet",
+    "Topic :: System :: Networking",
+]
+dependencies = [
+    "textual==8.2.7",
+    "rich==15.0.0",
+    "pydantic-settings[toml]==2.12.0",
+]
+
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[project.scripts]
+ocom = "ocom.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
