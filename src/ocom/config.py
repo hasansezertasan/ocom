@@ -22,8 +22,12 @@ def get_config_path() -> Path:
 class GeneralConfig(BaseModel):
     """General application configuration."""
 
-    refresh_interval: int = Field(default=2, ge=1, description="Status check interval in seconds")
-    auto_connect: bool = Field(default=False, description="Auto-connect to default OpenVPN config")
+    refresh_interval: int = Field(
+        default=2, ge=1, description="Status check interval in seconds"
+    )
+    auto_connect: bool = Field(
+        default=False, description="Auto-connect to default OpenVPN config"
+    )
 
 
 class OpenVPNConfig(BaseModel):
@@ -82,13 +86,26 @@ class AppConfig(BaseSettings):
 
     @classmethod
     def settings_customise_sources(
-        cls, settings_cls, init_settings, env_settings, dotenv_settings, file_secret_settings
+        cls,
+        settings_cls,
+        init_settings,
+        env_settings,
+        dotenv_settings,
+        file_secret_settings,
     ):
-        """Configure settings sources - TOML file only."""
+        """Configure settings sources.
+
+        Values passed explicitly (``init_settings``) take priority so that
+        ``load(path)`` can supply file contents directly; the default config at
+        ``get_config_path()`` is used as a fallback when it exists.
+        """
         toml_path = get_config_path()
         if toml_path.exists():
-            return (TomlConfigSettingsSource(settings_cls, toml_file=toml_path),)
-        return ()
+            return (
+                init_settings,
+                TomlConfigSettingsSource(settings_cls, toml_file=toml_path),
+            )
+        return (init_settings,)
 
     @classmethod
     def load(cls, path: Path | None = None) -> AppConfig:
@@ -101,7 +118,7 @@ class AppConfig(BaseSettings):
             Loaded AppConfig, or defaults if file doesn't exist.
         """
         if path and path.exists():
-            return cls.model_validate(TomlConfigSettingsSource(cls, toml_file=path)())
+            return cls(**TomlConfigSettingsSource(cls, toml_file=path)())
         return cls()
 
     def save(self, path: Path | None = None) -> None:

@@ -1,6 +1,16 @@
 """Tests for AppConfig and related configuration classes."""
 
-from ocom.config import AppConfig, GeneralConfig, GoodbyeDPIConfig, OpenVPNConfig
+from pathlib import Path
+
+from ocom.config import (
+    AppConfig,
+    GeneralConfig,
+    GoodbyeDPIConfig,
+    OpenVPNConfig,
+    SpoofDPIConfig,
+    TailscaleConfig,
+    WarpConfig,
+)
 
 
 class TestGeneralConfig:
@@ -51,6 +61,50 @@ class TestGoodbyeDPIConfig:
             assert config.mode == mode
 
 
+class TestSpoofDPIConfig:
+    """Test SpoofDPIConfig model."""
+
+    def test_default_values(self) -> None:
+        """SpoofDPIConfig should have sensible defaults."""
+        config = SpoofDPIConfig()
+        assert config.enabled is True
+        assert config.dns_addr == "8.8.8.8:53"
+        assert config.dns_mode == "https"
+        assert config.port == 8080
+        assert config.system_proxy is False
+
+    def test_all_dns_modes_accepted(self) -> None:
+        """All Literal dns_mode values should be valid."""
+        for mode in ("udp", "https", "system"):
+            config = SpoofDPIConfig(dns_mode=mode)
+            assert config.dns_mode == mode
+
+
+class TestWarpConfig:
+    """Test WarpConfig model."""
+
+    def test_default_values(self) -> None:
+        """WarpConfig should have sensible defaults."""
+        config = WarpConfig()
+        assert config.enabled is True
+        assert config.mode == "warp"
+
+    def test_all_modes_accepted(self) -> None:
+        """All Literal mode values should be valid."""
+        for mode in ("warp", "doh", "proxy"):
+            config = WarpConfig(mode=mode)
+            assert config.mode == mode
+
+
+class TestTailscaleConfig:
+    """Test TailscaleConfig model."""
+
+    def test_default_values(self) -> None:
+        """TailscaleConfig should have sensible defaults."""
+        config = TailscaleConfig()
+        assert config.enabled is True
+
+
 class TestAppConfig:
     """Test AppConfig settings."""
 
@@ -79,3 +133,33 @@ class TestAppConfig:
         assert "[goodbyedpi]" in toml_str
         assert "mode = 9" in toml_str
         assert "block_quic = true" in toml_str
+
+    def test_save_and_load_round_trip(self, tmp_path: Path) -> None:
+        """Saving to TOML and loading back should round-trip all sections."""
+        config = AppConfig()
+        config.general.refresh_interval = 5
+        config.general.auto_connect = True
+        config.spoofdpi.dns_mode = "udp"
+        config.spoofdpi.port = 9090
+        config.warp.mode = "proxy"
+        config.goodbyedpi.mode = 3
+        config.goodbyedpi.block_quic = False
+
+        config_path = tmp_path / "config.toml"
+        config.save(config_path)
+        assert config_path.exists()
+
+        loaded = AppConfig.load(config_path)
+        assert loaded.general.refresh_interval == 5
+        assert loaded.general.auto_connect is True
+        assert loaded.spoofdpi.dns_mode == "udp"
+        assert loaded.spoofdpi.port == 9090
+        assert loaded.warp.mode == "proxy"
+        assert loaded.goodbyedpi.mode == 3
+        assert loaded.goodbyedpi.block_quic is False
+
+    def test_load_missing_file_returns_defaults(self, tmp_path: Path) -> None:
+        """Loading from a missing TOML file should return an AppConfig without raising."""
+        missing_path = tmp_path / "nonexistent.toml"
+        config = AppConfig.load(missing_path)
+        assert isinstance(config, AppConfig)

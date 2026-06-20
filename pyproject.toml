@@ -38,6 +38,9 @@ dependencies = [
 [dependency-groups]
 dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0"]
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [project.scripts]
 ocom = "ocom.__main__:main"
 

@@ -60,7 +60,9 @@ class TestRunCommand:
 
     async def test_run_command_with_args(self) -> None:
         """Should pass arguments correctly."""
-        result = await ProcessManager.run_command([sys.executable, "-c", "print('test123')"])
+        result = await ProcessManager.run_command(
+            [sys.executable, "-c", "print('test123')"]
+        )
         assert result.success
         assert "test123" in result.stdout
 
@@ -72,11 +74,13 @@ class TestRunCommand:
 
     async def test_run_command_captures_stderr(self) -> None:
         """Should capture stderr output."""
-        result = await ProcessManager.run_command([
-            sys.executable,
-            "-c",
-            "import sys; sys.stderr.write('error\\n')",
-        ])
+        result = await ProcessManager.run_command(
+            [
+                sys.executable,
+                "-c",
+                "import sys; sys.stderr.write('error\\n')",
+            ]
+        )
         assert "error" in result.stderr
 
     async def test_run_command_timeout(self) -> None:
@@ -101,11 +105,13 @@ class TestStartProcess:
 
     async def test_start_process_returns_process(self) -> None:
         """Should return a running Process object."""
-        proc = await ProcessManager.start_process([
-            sys.executable,
-            "-c",
-            "import time; time.sleep(5)",
-        ])
+        proc = await ProcessManager.start_process(
+            [
+                sys.executable,
+                "-c",
+                "import time; time.sleep(5)",
+            ]
+        )
         try:
             assert ProcessManager.is_process_running(proc)
         finally:
@@ -154,11 +160,13 @@ class TestStopProcess:
 
     async def test_stop_running_process(self) -> None:
         """Should gracefully terminate a running process."""
-        proc = await ProcessManager.start_process([
-            sys.executable,
-            "-c",
-            "import time; time.sleep(30)",
-        ])
+        proc = await ProcessManager.start_process(
+            [
+                sys.executable,
+                "-c",
+                "import time; time.sleep(30)",
+            ]
+        )
 
         assert ProcessManager.is_process_running(proc)
         success = await ProcessManager.stop_process(proc)
@@ -175,6 +183,46 @@ class TestStopProcess:
         success = await ProcessManager.stop_process(proc)
         assert success
 
+    async def test_stop_process_timeout_triggers_kill(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Should fall back to kill() when terminate() doesn't stop in time."""
+        proc = await ProcessManager.start_process(
+            [
+                sys.executable,
+                "-c",
+                "import time; time.sleep(30)",
+            ]
+        )
+
+        killed = False
+        real_wait = proc.wait
+
+        def fake_kill() -> None:
+            # Record the kill request without re-signalling; terminate() already
+            # reaped this child, so a real kill() would raise ProcessLookupError.
+            nonlocal killed
+            killed = True
+
+        # Delay wait() past the timeout so the graceful path times out and the
+        # kill branch runs, then defer to the real wait so cleanup completes.
+        async def slow_wait() -> int:
+            await asyncio.sleep(0.2)
+            return await real_wait()
+
+        monkeypatch.setattr(proc, "kill", fake_kill)
+        monkeypatch.setattr(proc, "wait", slow_wait)
+
+        try:
+            success = await ProcessManager.stop_process(proc, timeout=0.05)
+            assert success is True
+            assert killed is True
+        finally:
+            monkeypatch.undo()
+            if ProcessManager.is_process_running(proc):
+                proc.kill()
+            await proc.wait()
+
 
 class TestIsProcessRunning:
     """Test ProcessManager.is_process_running()."""
@@ -185,11 +233,13 @@ class TestIsProcessRunning:
 
     async def test_active_process_is_running(self) -> None:
         """Active process should be considered running."""
-        proc = await ProcessManager.start_process([
-            sys.executable,
-            "-c",
-            "import time; time.sleep(10)",
-        ])
+        proc = await ProcessManager.start_process(
+            [
+                sys.executable,
+                "-c",
+                "import time; time.sleep(10)",
+            ]
+        )
         try:
             assert ProcessManager.is_process_running(proc) is True
         finally:
@@ -233,3 +283,17 @@ class TestCheckPortInUse:
         finally:
             server.close()
             await server.wait_closed()
+
+    @pytest.mark.parametrize("exc_type", [OSError, TimeoutError])
+    async def test_connection_errors_return_false(
+        self, monkeypatch: pytest.MonkeyPatch, exc_type: type[Exception]
+    ) -> None:
+        """Connection failures and timeouts should be treated as port not in use."""
+
+        async def raise_error(*_args: object, **_kwargs: object) -> None:
+            raise exc_type("boom")
+
+        monkeypatch.setattr(asyncio, "open_connection", raise_error)
+
+        result = await ProcessManager.check_port_in_use(65535)
+        assert result is False

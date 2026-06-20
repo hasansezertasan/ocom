@@ -7,6 +7,7 @@ from typing import Any
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
+from textual.css.query import NoMatches
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Button, Footer, Header, Input, Label, OptionList, Static
 from textual.widgets.option_list import Option
@@ -156,9 +157,9 @@ class MainScreen(Screen):
         """Handle output from a tool and display in log panel."""
         try:
             log_panel = self.query_one("#log-panel", LogPanel)
-            log_panel.add_log(tool_name, message)
-        except Exception:
-            pass  # Panel not mounted yet
+        except NoMatches:
+            return  # Panel not mounted yet; drop early output
+        log_panel.add_log(tool_name, message)
 
     def _get_tool_by_name(self, name: str) -> BaseTool | None:
         """Find a tool by name."""
@@ -215,10 +216,18 @@ class MainScreen(Screen):
             self.run_worker(self._start_tool(openvpn_tool, tool_config))
 
     async def _refresh_all_statuses(self) -> None:
-        """Refresh status for all tools."""
+        """Refresh status for all tools.
+
+        Each tool is refreshed independently so a single failing tool doesn't
+        cancel the whole periodic refresh loop and leave other statuses stale.
+        """
+        log_panel = self.query_one("#log-panel", LogPanel)
         for tool in self.tools:
-            new_status = await tool.refresh_status()
-            self._cards[tool.name].refresh_status(new_status)
+            try:
+                new_status = await tool.refresh_status()
+                self._cards[tool.name].refresh_status(new_status)
+            except Exception as exc:
+                log_panel.log_system(f"Error refreshing status for {tool.name}: {exc}")
 
     def on_tool_card_tool_action(self, event: ToolCard.ToolAction) -> None:
         """Handle tool actions from cards."""
@@ -309,7 +318,9 @@ class MainScreen(Screen):
         if success:
             self._update_status_bar(f"{tool.name} started")
         else:
-            self._update_status_bar(f"Failed to start {tool.name}: {tool.error_message}")
+            self._update_status_bar(
+                f"Failed to start {tool.name}: {tool.error_message}"
+            )
 
         self._cards[tool.name].refresh_status(tool.status)
 

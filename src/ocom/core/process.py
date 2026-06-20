@@ -92,7 +92,7 @@ class ProcessManager:
 
         Raises:
             asyncio.TimeoutError: If timeout exceeded.
-            subprocess.CalledProcessError: If check=True and command fails.
+            RuntimeError: If check=True and command fails.
         """
         proc = await asyncio.create_subprocess_exec(
             *args,
