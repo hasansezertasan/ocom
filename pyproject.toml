@@ -1,6 +1,6 @@
 [project]
 name = "ocom"
-version = "0.1.0" # x-release-please-version
+version = "0.2.0" # x-release-please-version
 description = "A unified TUI for managing network/privacy tools: OpenVPN, SpoofDPI, Cloudflare WARP"
 readme = "README.md"
 requires-python = ">=3.14"
