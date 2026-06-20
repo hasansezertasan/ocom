@@ -1,0 +1,172 @@
+/* ocom - Network Tools Manager styles */
+
+/* =============================================================================
+   Global & Layout
+   ============================================================================= */
+
+Screen {
+    background: $background;
+}
+
+Header {
+    background: $primary;
+}
+
+Footer {
+    background: $surface;
+}
+
+MainScreen {
+    layout: vertical;
+}
+
+#main-content {
+    height: 1fr;
+}
+
+#tool-grid {
+    width: 1fr;
+    height: auto;
+    padding: 1;
+    min-width: 30;
+}
+
+#status-bar {
+    dock: bottom;
+    height: 1;
+    background: $surface;
+    color: $text-muted;
+    padding: 0 1;
+}
+
+/* =============================================================================
+   Tool Cards
+   ============================================================================= */
+
+ToolCard {
+    width: 1fr;
+    height: auto;
+    border: solid $primary;
+    padding: 1;
+    margin: 0 1;
+}
+
+ToolCard:focus {
+    border: double $primary;
+}
+
+ToolCard.unavailable {
+    border: solid $surface;
+    opacity: 0.5;
+}
+
+ToolCard.stopped {
+    border: solid $primary;
+}
+
+ToolCard.running {
+    border: solid $success;
+}
+
+ToolCard.error {
+    border: solid $error;
+}
+
+ToolCard.starting,
+ToolCard.stopping {
+    border: solid $warning;
+}
+
+ToolCard .card-content {
+    width: 100%;
+    height: auto;
+}
+
+ToolCard .tool-info {
+    width: 1fr;
+    height: auto;
+}
+
+ToolCard .tool-name {
+    text-style: bold;
+}
+
+ToolCard .tool-status {
+    color: $text-muted;
+}
+
+ToolCard .buttons {
+    width: auto;
+    height: auto;
+    align: right middle;
+}
+
+ToolCard Button {
+    min-width: 12;
+}
+
+/* =============================================================================
+   Log Panel (right sidebar)
+   ============================================================================= */
+
+LogPanel {
+    width: 2fr;
+    height: 1fr;
+    border-left: solid $primary;
+}
+
+LogPanel RichLog {
+    height: 1fr;
+    scrollbar-size: 1 1;
+}
+
+/* =============================================================================
+   Modal Screens (shared styles)
+   ============================================================================= */
+
+ConfigSelectorScreen,
+PasswordPromptScreen {
+    align: center middle;
+}
+
+#modal-container {
+    width: 50%;
+    height: auto;
+    max-height: 80%;
+    border: thick $primary;
+    background: $surface;
+    padding: 2;
+}
+
+#modal-title {
+    text-style: bold;
+    width: 100%;
+    margin-bottom: 1;
+    text-align: center;
+}
+
+#modal-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+    margin-top: 1;
+}
+
+#modal-buttons Button {
+    margin: 0 1;
+}
+
+/* Config Selector specific */
+#config-options {
+    width: 100%;
+    height: auto;
+    min-height: 5;
+    max-height: 15;
+    margin-bottom: 1;
+}
+
+/* Password Prompt specific */
+#password-input {
+    width: 100%;
+    margin: 1 0;
+}
