@@ -346,7 +346,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="207">            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span><span data-line="208">            <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
 </span><span data-line="209">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="210">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="210">        <span class="k">except</span> <span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">):</span>
 </span><span data-line="211">            <span class="k">return</span> <span class="kc">False</span></div>
 </div>
 
