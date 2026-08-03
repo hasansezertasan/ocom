@@ -48,10 +48,7 @@ class TailscaleTool(BaseTool):
         """
         self._status = ToolStatus.STARTING
 
-        result = await ProcessManager.run_command(
-            ["tailscale", "up"],
-            timeout=30.0,
-        )
+        result = await ProcessManager.run_command(["tailscale", "up"], timeout=30.0)
 
         if result.success:
             self._status = ToolStatus.RUNNING
@@ -70,10 +67,7 @@ class TailscaleTool(BaseTool):
         """Bring the Tailscale node down."""
         self._status = ToolStatus.STOPPING
 
-        result = await ProcessManager.run_command(
-            ["tailscale", "down"],
-            timeout=10.0,
-        )
+        result = await ProcessManager.run_command(["tailscale", "down"], timeout=10.0)
 
         if result.success:
             self._status = ToolStatus.STOPPED
@@ -96,8 +90,7 @@ class TailscaleTool(BaseTool):
 
         try:
             result = await ProcessManager.run_command(
-                ["tailscale", "status", "--json"],
-                timeout=5.0,
+                ["tailscale", "status", "--json"], timeout=5.0
             )
 
             if not result.success:

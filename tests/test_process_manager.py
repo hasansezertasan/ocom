@@ -60,9 +60,11 @@ class TestRunCommand:
 
     async def test_run_command_with_args(self) -> None:
         """Should pass arguments correctly."""
-        result = await ProcessManager.run_command(
-            [sys.executable, "-c", "print('test123')"]
-        )
+        result = await ProcessManager.run_command([
+            sys.executable,
+            "-c",
+            "print('test123')",
+        ])
         assert result.success
         assert "test123" in result.stdout
 
@@ -74,21 +76,18 @@ class TestRunCommand:
 
     async def test_run_command_captures_stderr(self) -> None:
         """Should capture stderr output."""
-        result = await ProcessManager.run_command(
-            [
-                sys.executable,
-                "-c",
-                "import sys; sys.stderr.write('error\\n')",
-            ]
-        )
+        result = await ProcessManager.run_command([
+            sys.executable,
+            "-c",
+            "import sys; sys.stderr.write('error\\n')",
+        ])
         assert "error" in result.stderr
 
     async def test_run_command_timeout(self) -> None:
         """Should raise TimeoutError when command exceeds timeout."""
         with pytest.raises(TimeoutError):
             await ProcessManager.run_command(
-                [sys.executable, "-c", "import time; time.sleep(10)"],
-                timeout=0.1,
+                [sys.executable, "-c", "import time; time.sleep(10)"], timeout=0.1
             )
 
     async def test_run_command_check_raises(self) -> None:
@@ -105,13 +104,11 @@ class TestStartProcess:
 
     async def test_start_process_returns_process(self) -> None:
         """Should return a running Process object."""
-        proc = await ProcessManager.start_process(
-            [
-                sys.executable,
-                "-c",
-                "import time; time.sleep(5)",
-            ]
-        )
+        proc = await ProcessManager.start_process([
+            sys.executable,
+            "-c",
+            "import time; time.sleep(5)",
+        ])
         try:
             assert ProcessManager.is_process_running(proc)
         finally:
@@ -143,8 +140,7 @@ class TestStartProcess:
     async def test_start_process_with_stdin(self) -> None:
         """Should write stdin data to process."""
         proc = await ProcessManager.start_process(
-            [sys.executable, "-c", "print(input())"],
-            stdin_data="hello_stdin",
+            [sys.executable, "-c", "print(input())"], stdin_data="hello_stdin"
         )
 
         # Read output
@@ -160,13 +156,11 @@ class TestStopProcess:
 
     async def test_stop_running_process(self) -> None:
         """Should gracefully terminate a running process."""
-        proc = await ProcessManager.start_process(
-            [
-                sys.executable,
-                "-c",
-                "import time; time.sleep(30)",
-            ]
-        )
+        proc = await ProcessManager.start_process([
+            sys.executable,
+            "-c",
+            "import time; time.sleep(30)",
+        ])
 
         assert ProcessManager.is_process_running(proc)
         success = await ProcessManager.stop_process(proc)
@@ -187,13 +181,11 @@ class TestStopProcess:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Should fall back to kill() when terminate() doesn't stop in time."""
-        proc = await ProcessManager.start_process(
-            [
-                sys.executable,
-                "-c",
-                "import time; time.sleep(30)",
-            ]
-        )
+        proc = await ProcessManager.start_process([
+            sys.executable,
+            "-c",
+            "import time; time.sleep(30)",
+        ])
 
         killed = False
         real_wait = proc.wait
@@ -233,13 +225,11 @@ class TestIsProcessRunning:
 
     async def test_active_process_is_running(self) -> None:
         """Active process should be considered running."""
-        proc = await ProcessManager.start_process(
-            [
-                sys.executable,
-                "-c",
-                "import time; time.sleep(10)",
-            ]
-        )
+        proc = await ProcessManager.start_process([
+            sys.executable,
+            "-c",
+            "import time; time.sleep(10)",
+        ])
         try:
             assert ProcessManager.is_process_running(proc) is True
         finally:
@@ -269,9 +259,18 @@ class TestCheckPortInUse:
 
     async def test_used_port_returns_true(self) -> None:
         """Port with a listener should return True."""
-        # Start a simple TCP server
+
+        # Start a simple TCP server. The handler must close its writer;
+        # leaving it for the GC raises an unraisable StreamWriter.__del__
+        # warning, which the strict `filterwarnings = ["error"]` turns into
+        # a test error.
+        async def _handler(
+            _reader: asyncio.StreamReader, writer: asyncio.StreamWriter
+        ) -> None:
+            writer.close()
+
         server = await asyncio.start_server(
-            lambda r, w: None,  # Dummy handler
+            _handler,
             "127.0.0.1",
             0,  # Let OS pick a free port
         )

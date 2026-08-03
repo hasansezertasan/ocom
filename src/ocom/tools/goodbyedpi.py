@@ -63,8 +63,7 @@ class GoodbyeDPITool(BaseTool):
 
         try:
             self._process = await ProcessManager.start_process(
-                args,
-                on_output=self._handle_output,
+                args, on_output=self._handle_output
             )
 
             # Check if it started successfully

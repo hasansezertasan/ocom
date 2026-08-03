@@ -18,11 +18,7 @@ if IS_WINDOWS:
 
 def get_all_tools() -> list[BaseTool]:
     """Get instances of all available tools for the current platform."""
-    tools: list[BaseTool] = [
-        OpenVPNTool(),
-        WarpTool(),
-        TailscaleTool(),
-    ]
+    tools: list[BaseTool] = [OpenVPNTool(), WarpTool(), TailscaleTool()]
 
     # Add platform-specific DPI bypass tool
     if IS_WINDOWS:

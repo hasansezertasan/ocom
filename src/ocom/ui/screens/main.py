@@ -22,9 +22,7 @@ from ocom.ui.widgets.tool_card import ToolCard
 class ConfigSelectorScreen(ModalScreen[str | None]):
     """Modal screen for selecting a config file."""
 
-    BINDINGS = [
-        Binding("escape", "cancel", "Cancel"),
-    ]
+    BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
     def __init__(self, tool: BaseTool, configs: list[str], **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -60,9 +58,7 @@ class ConfigSelectorScreen(ModalScreen[str | None]):
 class PasswordPromptScreen(ModalScreen[str | None]):
     """Modal screen for entering sudo password."""
 
-    BINDINGS = [
-        Binding("escape", "cancel", "Cancel"),
-    ]
+    BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
     def __init__(self, tool: BaseTool, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -146,8 +142,7 @@ class MainScreen(Screen):
 
         # Start periodic status refresh
         self.set_interval(
-            self.config.general.refresh_interval,
-            self._refresh_all_statuses,
+            self.config.general.refresh_interval, self._refresh_all_statuses
         )
 
         # Try auto-connect if enabled
@@ -364,10 +359,7 @@ class MainScreen(Screen):
             else:
                 self.run_worker(self._start_tool(tool, config))
 
-        self.app.push_screen(
-            ConfigSelectorScreen(tool, configs),
-            on_config_selected,
-        )
+        self.app.push_screen(ConfigSelectorScreen(tool, configs), on_config_selected)
 
     def _show_password_prompt(self, tool: BaseTool, config: ToolConfig) -> None:
         """Show password prompt for sudo-requiring tools."""
@@ -381,10 +373,7 @@ class MainScreen(Screen):
             config.options["sudo_password"] = password
             self.run_worker(self._start_tool(tool, config))
 
-        self.app.push_screen(
-            PasswordPromptScreen(tool),
-            on_password_submitted,
-        )
+        self.app.push_screen(PasswordPromptScreen(tool), on_password_submitted)
 
     def _update_status_bar(self, message: str) -> None:
         """Update the status bar message."""

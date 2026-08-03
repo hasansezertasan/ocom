@@ -58,8 +58,7 @@ class SpoofDPITool(BaseTool):
 
         try:
             self._process = await ProcessManager.start_process(
-                args,
-                on_output=lambda msg: self._emit_output(msg),
+                args, on_output=lambda msg: self._emit_output(msg)
             )
 
             # Check if it started successfully by testing the port

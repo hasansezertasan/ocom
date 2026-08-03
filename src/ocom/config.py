@@ -72,10 +72,7 @@ class GoodbyeDPIConfig(BaseModel):
 class AppConfig(BaseSettings):
     """Main application configuration."""
 
-    model_config = SettingsConfigDict(
-        toml_file=get_config_path(),
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(toml_file=get_config_path(), extra="ignore")
 
     general: GeneralConfig = Field(default_factory=GeneralConfig)
     openvpn: OpenVPNConfig = Field(default_factory=OpenVPNConfig)
@@ -150,13 +147,8 @@ class AppConfig(BaseSettings):
                 "port": self.spoofdpi.port,
                 "system_proxy": self.spoofdpi.system_proxy,
             },
-            "warp": {
-                "enabled": self.warp.enabled,
-                "mode": self.warp.mode,
-            },
-            "tailscale": {
-                "enabled": self.tailscale.enabled,
-            },
+            "warp": {"enabled": self.warp.enabled, "mode": self.warp.mode},
+            "tailscale": {"enabled": self.tailscale.enabled},
             "goodbyedpi": {
                 "enabled": self.goodbyedpi.enabled,
                 "mode": self.goodbyedpi.mode,

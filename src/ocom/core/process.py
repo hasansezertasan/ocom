@@ -75,10 +75,7 @@ class ProcessManager:
 
     @staticmethod
     async def run_command(
-        args: list[str],
-        *,
-        timeout: float | None = 30.0,
-        check: bool = False,
+        args: list[str], *, timeout: float | None = 30.0, check: bool = False
     ) -> ProcessResult:
         """Run a command and wait for completion.
 
@@ -95,16 +92,11 @@ class ProcessManager:
             RuntimeError: If check=True and command fails.
         """
         proc = await asyncio.create_subprocess_exec(
-            *args,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
+            *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
 
         try:
-            stdout, stderr = await asyncio.wait_for(
-                proc.communicate(),
-                timeout=timeout,
-            )
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
         except TimeoutError:
             proc.kill()
             await proc.wait()
@@ -165,9 +157,7 @@ class ProcessManager:
 
     @staticmethod
     async def stop_process(
-        proc: asyncio.subprocess.Process,
-        *,
-        timeout: float = 5.0,
+        proc: asyncio.subprocess.Process, *, timeout: float = 5.0
     ) -> bool:
         """Gracefully stop a process.
 
@@ -212,8 +202,7 @@ class ProcessManager:
         """
         try:
             _, writer = await asyncio.wait_for(
-                asyncio.open_connection(host, port),
-                timeout=1.0,
+                asyncio.open_connection(host, port), timeout=1.0
             )
             writer.close()
             await writer.wait_closed()
@@ -223,8 +212,7 @@ class ProcessManager:
 
 
 async def _read_output(
-    stream: asyncio.StreamReader,
-    callback: Callable[[str], None],
+    stream: asyncio.StreamReader, callback: Callable[[str], None]
 ) -> None:
     """Read lines from a stream and call callback for each."""
     while True:

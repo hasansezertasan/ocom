@@ -52,11 +52,7 @@ class TestToolConfigCustomValues:
     def test_options_support_mixed_types(self) -> None:
         """Options dict should support str, bool, and int values."""
         config = ToolConfig(
-            options={
-                "string_opt": "value",
-                "bool_opt": True,
-                "int_opt": 42,
-            }
+            options={"string_opt": "value", "bool_opt": True, "int_opt": 42}
         )
 
         assert config.options["string_opt"] == "value"

@@ -67,9 +67,7 @@ class OpenVPNTool(BaseTool):
 
         try:
             self._process = await ProcessManager.start_process(
-                args,
-                on_output=self._handle_output,
-                stdin_data=password,
+                args, on_output=self._handle_output, stdin_data=password
             )
 
             # Wait briefly for initial connection attempt

@@ -46,10 +46,7 @@ class WarpTool(BaseTool):
             await ProcessManager.run_command(["warp-cli", "mode", mode], timeout=10.0)
 
         # Connect
-        result = await ProcessManager.run_command(
-            ["warp-cli", "connect"],
-            timeout=30.0,
-        )
+        result = await ProcessManager.run_command(["warp-cli", "connect"], timeout=30.0)
 
         if result.success:
             self._status = ToolStatus.RUNNING
@@ -66,8 +63,7 @@ class WarpTool(BaseTool):
         self._status = ToolStatus.STOPPING
 
         result = await ProcessManager.run_command(
-            ["warp-cli", "disconnect"],
-            timeout=10.0,
+            ["warp-cli", "disconnect"], timeout=10.0
         )
 
         if result.success:
@@ -91,8 +87,7 @@ class WarpTool(BaseTool):
 
         try:
             result = await ProcessManager.run_command(
-                ["warp-cli", "status"],
-                timeout=5.0,
+                ["warp-cli", "status"], timeout=5.0
             )
 
             if result.success:
