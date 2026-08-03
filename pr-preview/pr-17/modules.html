@@ -91,10 +91,19 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration-ocom-config">Configuration (<code class="docutils literal notranslate">config</span></code>)</a><ul>
-<li><a class="reference internal" href="#ocom.config.get_config_dir"><code class="docutils literal notranslate"><span class="pre">get_config_dir()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.config.get_config_path"><code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code></a></li>
+<li><a class="reference internal" href="#ocom.config.AppConfig"><code class="docutils literal notranslate"><span class="pre">AppConfig</span></code></a><ul>
+<li><a class="reference internal" href="#ocom.config.AppConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
+<li><a class="reference internal" href="#ocom.config.AppConfig.settings_customise_sources"><code class="docutils literal notranslate">settings_customise_sources()</span></code></a></li>
+<li><a class="reference internal" href="#ocom.config.AppConfig.load"><code class="docutils literal notranslate">load()</span></code></a></li>
+<li><a class="reference internal" href="#ocom.config.AppConfig.save"><code class="docutils literal notranslate">save()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#ocom.config.GeneralConfig"><code class="docutils literal notranslate"><span class="pre">GeneralConfig</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.config.GeneralConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ocom.config.GoodbyeDPIConfig"><code class="docutils literal notranslate"><span class="pre">GoodbyeDPIConfig</span></code></a><ul>
+<li><a class="reference internal" href="#ocom.config.GoodbyeDPIConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ocom.config.OpenVPNConfig"><code class="docutils literal notranslate"><span class="pre">OpenVPNConfig</span></code></a><ul>
@@ -105,37 +114,20 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.config.SpoofDPIConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.config.WarpConfig"><code class="docutils literal notranslate"><span class="pre">WarpConfig</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.config.WarpConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#ocom.config.TailscaleConfig"><code class="docutils literal notranslate"><span class="pre">TailscaleConfig</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.config.TailscaleConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.config.GoodbyeDPIConfig"><code class="docutils literal notranslate"><span class="pre">GoodbyeDPIConfig</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.config.GoodbyeDPIConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
+<li><a class="reference internal" href="#ocom.config.WarpConfig"><code class="docutils literal notranslate"><span class="pre">WarpConfig</span></code></a><ul>
+<li><a class="reference internal" href="#ocom.config.WarpConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.config.AppConfig"><code class="docutils literal notranslate"><span class="pre">AppConfig</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.config.AppConfig.model_config"><code class="docutils literal notranslate">model_config</span></code></a></li>
-<li><a class="reference internal" href="#ocom.config.AppConfig.settings_customise_sources"><code class="docutils literal notranslate">settings_customise_sources()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.config.AppConfig.load"><code class="docutils literal notranslate">load()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.config.AppConfig.save"><code class="docutils literal notranslate">save()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#ocom.config.get_config_dir"><code class="docutils literal notranslate"><span class="pre">get_config_dir()</span></code></a></li>
+<li><a class="reference internal" href="#ocom.config.get_config_path"><code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#core-ocom-core">Core (<code class="docutils literal notranslate">core</span></code>)</a><ul>
-<li><a class="reference internal" href="#ocom.core.tool.ToolStatus"><code class="docutils literal notranslate"><span class="pre">ToolStatus</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.core.tool.ToolStatus.is_transitioning"><code class="docutils literal notranslate">is_transitioning</span></code></a></li>
-<li><a class="reference internal" href="#ocom.core.tool.ToolStatus.can_start"><code class="docutils literal notranslate">can_start</span></code></a></li>
-<li><a class="reference internal" href="#ocom.core.tool.ToolStatus.can_stop"><code class="docutils literal notranslate">can_stop</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#ocom.core.tool.ToolConfig"><code class="docutils literal notranslate"><span class="pre">ToolConfig</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.tool.BaseTool"><code class="docutils literal notranslate"><span class="pre">BaseTool</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.core.tool.BaseTool.set_output_callback"><code class="docutils literal notranslate">set_output_callback()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.tool.BaseTool.status"><code class="docutils literal notranslate">status</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.tool.BaseTool.error_message"><code class="docutils literal notranslate">error_message</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.tool.BaseTool.current_config"><code class="docutils literal notranslate">current_config</span></code></a></li>
@@ -147,6 +139,13 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.core.tool.BaseTool.get_status_text"><code class="docutils literal notranslate">get_status_text()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#ocom.core.tool.ToolConfig"><code class="docutils literal notranslate"><span class="pre">ToolConfig</span></code></a></li>
+<li><a class="reference internal" href="#ocom.core.tool.ToolStatus"><code class="docutils literal notranslate"><span class="pre">ToolStatus</span></code></a><ul>
+<li><a class="reference internal" href="#ocom.core.tool.ToolStatus.is_transitioning"><code class="docutils literal notranslate">is_transitioning</span></code></a></li>
+<li><a class="reference internal" href="#ocom.core.tool.ToolStatus.can_start"><code class="docutils literal notranslate">can_start</span></code></a></li>
+<li><a class="reference internal" href="#ocom.core.tool.ToolStatus.can_stop"><code class="docutils literal notranslate">can_stop</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#ocom.core.process.is_admin"><code class="docutils literal notranslate"><span class="pre">is_admin()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.process.ProcessResult"><code class="docutils literal notranslate"><span class="pre">ProcessResult</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.core.process.ProcessResult.success"><code class="docutils literal notranslate">success</span></code></a></li>
@@ -155,7 +154,6 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.core.process.ProcessManager"><code class="docutils literal notranslate"><span class="pre">ProcessManager</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.core.process.ProcessManager.find_command"><code class="docutils literal notranslate">find_command()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.process.ProcessManager.run_command"><code class="docutils literal notranslate">run_command()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.core.process.ProcessManager.start_process"><code class="docutils literal notranslate">start_process()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.process.ProcessManager.stop_process"><code class="docutils literal notranslate">stop_process()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.process.ProcessManager.is_process_running"><code class="docutils literal notranslate">is_process_running()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.process.ProcessManager.check_port_in_use"><code class="docutils literal notranslate">check_port_in_use()</span></code></a></li>
@@ -192,13 +190,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.tools.WarpTool.refresh_status"><code class="docutils literal notranslate">refresh_status()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.tools.get_all_tools"><code class="docutils literal notranslate"><span class="pre">get_all_tools()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#user-interface-ocom-ui">User interface (<code class="docutils literal notranslate">ui</span></code>)</a><ul>
 <li><a class="reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen"><code class="docutils literal notranslate"><span class="pre">ConfigSelectorScreen</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.BINDINGS"><code class="docutils literal notranslate">BINDINGS</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.compose"><code class="docutils literal notranslate">compose()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.on_mount"><code class="docutils literal notranslate">on_mount()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.on_button_pressed"><code class="docutils literal notranslate">on_button_pressed()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.on_option_list_option_selected"><code class="docutils literal notranslate">on_option_list_option_selected()</span></code></a></li>
@@ -209,7 +205,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen"><code class="docutils literal notranslate"><span class="pre">PasswordPromptScreen</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.BINDINGS"><code class="docutils literal notranslate">BINDINGS</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.compose"><code class="docutils literal notranslate">compose()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.on_mount"><code class="docutils literal notranslate">on_mount()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.on_button_pressed"><code class="docutils literal notranslate">on_button_pressed()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.on_input_submitted"><code class="docutils literal notranslate">on_input_submitted()</span></code></a></li>
@@ -218,24 +213,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.can_focus_children"><code class="docutils literal notranslate">can_focus_children</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen"><code class="docutils literal notranslate"><span class="pre">MainScreen</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.BINDINGS"><code class="docutils literal notranslate">BINDINGS</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.compose"><code class="docutils literal notranslate">compose()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.on_mount"><code class="docutils literal notranslate">on_mount()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.on_tool_card_tool_action"><code class="docutils literal notranslate">on_tool_card_tool_action()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.action_refresh"><code class="docutils literal notranslate">action_refresh()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.action_clear_logs"><code class="docutils literal notranslate">action_clear_logs()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.action_quit"><code class="docutils literal notranslate">action_quit()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.can_focus"><code class="docutils literal notranslate">can_focus</span></code></a></li>
-<li><a class="reference internal" href="#ocom.ui.screens.main.MainScreen.can_focus_children"><code class="docutils literal notranslate">can_focus_children</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard"><code class="docutils literal notranslate"><span class="pre">ToolCard</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.ToolAction"><code class="docutils literal notranslate">ToolAction</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.ToolAction.handler_name"><code class="docutils literal notranslate">ToolAction.handler_name</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.compose"><code class="docutils literal notranslate">compose()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.on_mount"><code class="docutils literal notranslate">on_mount()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.watch_status"><code class="docutils literal notranslate">watch_status()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.on_button_pressed"><code class="docutils literal notranslate">on_button_pressed()</span></code></a></li>
@@ -245,7 +227,6 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li><a class="reference internal" href="#ocom.ui.widgets.log_panel.LogPanel"><code class="docutils literal notranslate"><span class="pre">LogPanel</span></code></a><ul>
-<li><a class="reference internal" href="#ocom.ui.widgets.log_panel.LogPanel.compose"><code class="docutils literal notranslate">compose()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.widgets.log_panel.LogPanel.add_log"><code class="docutils literal notranslate">add_log()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.widgets.log_panel.LogPanel.log_system"><code class="docutils literal notranslate">log_system()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.ui.widgets.log_panel.LogPanel.clear"><code class="docutils literal notranslate">clear()</span></code></a></li>
@@ -298,23 +279,10 @@ The API reference below is generated automatically from the source docstrings.</
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.app.</span></span><span class="sig-name descname"><span class="pre">OcomApp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/app.html#OcomApp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.app.OcomApp" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">App</span></code></p>
 <p>Network tools manager TUI application.</p>
-<p>Create an instance of an app.</p>
+<p>Create the app, loading config from disk when none is given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.app.OcomApp.params.driver_class"></span><strong>driver_class</strong><a class="paramlink headerlink reference internal" href="#ocom.app.OcomApp.params.driver_class">¶</a> – Driver class or <cite>None</cite> to auto-detect.
-This will be used by some Textual tools.</p></li>
-<li><p><span class="target" id="ocom.app.OcomApp.params.css_path"></span><strong>css_path</strong><a class="paramlink headerlink reference internal" href="#ocom.app.OcomApp.params.css_path">¶</a> – Path to CSS or <cite>None</cite> to use the <cite>CSS_PATH</cite> class variable.
-To load multiple CSS files, pass a list of strings or paths which
-will be loaded in order.</p></li>
-<li><p><span class="target" id="ocom.app.OcomApp.params.watch_css"></span><strong>watch_css</strong><a class="paramlink headerlink reference internal" href="#ocom.app.OcomApp.params.watch_css">¶</a> – Reload CSS if the files changed. This is set automatically if
-you are using <cite>textual run</cite> with the <cite>dev</cite> switch.</p></li>
-<li><p><span class="target" id="ocom.app.OcomApp.params.ansi_color"></span><strong>ansi_color</strong><a class="paramlink headerlink reference internal" href="#ocom.app.OcomApp.params.ansi_color">¶</a> – Allow ANSI colors if <cite>True</cite>, or convert ANSI colors to RGB if <cite>False</cite>, <cite>None</cite> to use “ansi” parameter from themes.</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#ocom.config.AppConfig" title="ocom.config.AppConfig"><em>AppConfig</em></a><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>CssPathError</strong> – When the supplied CSS path(s) are an unexpected type.</p>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="#ocom.config.AppConfig" title="ocom.config.AppConfig"><em>AppConfig</em></a><em> | </em><em>None</em>)</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -368,180 +336,6 @@ See also [the <cite>Screen.SUB_TITLE</cite> attribute][textual.screen.Screen.SUB
 <h2>Configuration (<code class="docutils literal notranslate"><span class="pre">ocom.config</span></code>)<a class="headerlink" href="#configuration-ocom-config" title="Link to this heading">¶</a></h2>
 <p>Pydantic-settings based configuration.</p>
 <p id="module-ocom.config">Configuration management for ocom.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="ocom.config.get_config_dir">
-<span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">get_config_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#get_config_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.get_config_dir" title="Link to this definition">¶</a></dt>
-<dd><p>Get the config directory (Linux-style ~/.config/ocom on all platforms).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ocom.config.get_config_path">
-<span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.get_config_path" title="Link to this definition">¶</a></dt>
-<dd><p>Get the path to the config file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.config.GeneralConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">GeneralConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_connect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#GeneralConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.GeneralConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>General application configuration.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
-validated to form a valid model.</p>
-<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>refresh_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>auto_connect</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.config.GeneralConfig.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.GeneralConfig.model_config" title="Link to this definition">¶</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.config.OpenVPNConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">OpenVPNConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dirs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['~/.openvpn',</span> <span class="pre">'~/vpn-configs']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#OpenVPNConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.OpenVPNConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>OpenVPN-specific configuration.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
-validated to form a valid model.</p>
-<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-<li><p><strong>config_dirs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
-<li><p><strong>default_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.config.OpenVPNConfig.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.OpenVPNConfig.model_config" title="Link to this definition">¶</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.config.SpoofDPIConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">SpoofDPIConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dns_addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'8.8.8.8:53'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dns_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#SpoofDPIConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.SpoofDPIConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>SpoofDPI-specific configuration.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
-validated to form a valid model.</p>
-<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-<li><p><strong>dns_addr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
-<li><p><strong>dns_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'udp'</em><em>, </em><em>'https'</em><em>, </em><em>'system'</em><em>]</em>)</p></li>
-<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>system_proxy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.config.SpoofDPIConfig.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.SpoofDPIConfig.model_config" title="Link to this definition">¶</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.config.WarpConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">WarpConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warp'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#WarpConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.WarpConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Cloudflare WARP-specific configuration.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
-validated to form a valid model.</p>
-<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'warp'</em><em>, </em><em>'doh'</em><em>, </em><em>'proxy'</em><em>]</em>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.config.WarpConfig.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.WarpConfig.model_config" title="Link to this definition">¶</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.config.TailscaleConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">TailscaleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#TailscaleConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.TailscaleConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Tailscale-specific configuration.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
-validated to form a valid model.</p>
-<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.config.TailscaleConfig.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.TailscaleConfig.model_config" title="Link to this definition">¶</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.config.GoodbyeDPIConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">GoodbyeDPIConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_quic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#GoodbyeDPIConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.GoodbyeDPIConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>GoodbyeDPI-specific configuration (Windows only).</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
-validated to form a valid model.</p>
-<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>block_quic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.config.GoodbyeDPIConfig.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.GoodbyeDPIConfig.model_config" title="Link to this definition">¶</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="ocom.config.AppConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">AppConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_case_sensitive=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_nested_model_default_partial_update=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_prefix_target=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_file=PosixPath('.')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_file_encoding=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_ignore_empty=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_nested_delimiter=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_nested_max_split=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_parse_none_str=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_parse_enums=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_prog_name=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_parse_args=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_settings_source=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_parse_none_str=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_hide_none_type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_avoid_json=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_enforce_required=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_use_class_docs_for_groups=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_exit_on_error=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_flag_prefix_char=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_implicit_flags=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_ignore_unknown_args=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_kebab_case=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_shortcuts=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_secrets_dir=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_build_sources=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">general=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openvpn=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spoofdpi=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warp=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tailscale=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">goodbyedpi=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#AppConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.AppConfig" title="Link to this definition">¶</a></dt>
@@ -604,6 +398,23 @@ validated to form a valid model.</p>
 <p>Values passed explicitly (<code class="docutils literal notranslate"><span class="pre">init_settings</span></code>) take priority so that
 <code class="docutils literal notranslate"><span class="pre">load(path)</span></code> can supply file contents directly; the default config at
 <code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code> is used as a fallback when it exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The ordered tuple of settings sources to read from.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>settings_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a><em>[</em><em>BaseSettings</em><em>]</em>)</p></li>
+<li><p><strong>init_settings</strong> (<em>PydanticBaseSettingsSource</em>)</p></li>
+<li><p><strong>env_settings</strong> (<em>PydanticBaseSettingsSource</em>)</p></li>
+<li><p><strong>dotenv_settings</strong> (<em>PydanticBaseSettingsSource</em>)</p></li>
+<li><p><strong>file_secret_settings</strong> (<em>PydanticBaseSettingsSource</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[<em>PydanticBaseSettingsSource</em>, …]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -645,6 +456,186 @@ validated to form a valid model.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.config.GeneralConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">GeneralConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_connect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#GeneralConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.GeneralConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>General application configuration.</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>refresh_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>auto_connect</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ocom.config.GeneralConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.GeneralConfig.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.config.GoodbyeDPIConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">GoodbyeDPIConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_quic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#GoodbyeDPIConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.GoodbyeDPIConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>GoodbyeDPI-specific configuration (Windows only).</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>block_quic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ocom.config.GoodbyeDPIConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.GoodbyeDPIConfig.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.config.OpenVPNConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">OpenVPNConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dirs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['~/.openvpn',</span> <span class="pre">'~/vpn-configs']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#OpenVPNConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.OpenVPNConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>OpenVPN-specific configuration.</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>config_dirs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
+<li><p><strong>default_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ocom.config.OpenVPNConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.OpenVPNConfig.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.config.SpoofDPIConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">SpoofDPIConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dns_addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'8.8.8.8:53'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dns_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#SpoofDPIConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.SpoofDPIConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>SpoofDPI-specific configuration.</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>dns_addr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>dns_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'udp'</em><em>, </em><em>'https'</em><em>, </em><em>'system'</em><em>]</em>)</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>system_proxy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ocom.config.SpoofDPIConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.SpoofDPIConfig.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.config.TailscaleConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">TailscaleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#TailscaleConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.TailscaleConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Tailscale-specific configuration.</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ocom.config.TailscaleConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.TailscaleConfig.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.config.WarpConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">WarpConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warp'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#WarpConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.WarpConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Cloudflare WARP-specific configuration.</p>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<cite>ValidationError</cite>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><cite>self</cite> is explicitly positional-only to allow <cite>self</cite> as a field name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'warp'</em><em>, </em><em>'doh'</em><em>, </em><em>'proxy'</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ocom.config.WarpConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ocom.config.WarpConfig.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ocom.config.get_config_dir">
+<span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">get_config_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#get_config_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.get_config_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Get the config directory (Linux-style ~/.config/ocom on all platforms).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The per-user config directory path.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ocom.config.get_config_path">
+<span class="sig-prename descclassname"><span class="pre">ocom.config.</span></span><span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/config.html#get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.config.get_config_path" title="Link to this definition">¶</a></dt>
+<dd><p>Get the path to the config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The path to the <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="core-ocom-core">
 <h2>Core (<code class="docutils literal notranslate"><span class="pre">ocom.core</span></code>)<a class="headerlink" href="#core-ocom-core" title="Link to this heading">¶</a></h2>
@@ -652,74 +643,15 @@ validated to form a valid model.</p>
 <code class="docutils literal notranslate"><span class="pre">ProcessManager</span></code>.</p>
 <p id="module-ocom.core.tool">Base tool abstraction for network/privacy tools.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">ToolStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#ToolStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.ToolStatus" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>Status of a network tool.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus.is_transitioning">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_transitioning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#ocom.core.tool.ToolStatus.is_transitioning" title="Link to this definition">¶</a></dt>
-<dd><p>Check if status is a transitional state.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus.can_start">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#ocom.core.tool.ToolStatus.can_start" title="Link to this definition">¶</a></dt>
-<dd><p>Check if tool can be started from this state.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus.can_stop">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_stop</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#ocom.core.tool.ToolStatus.can_stop" title="Link to this definition">¶</a></dt>
-<dd><p>Check if tool can be stopped from this state.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.core.tool.ToolConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">ToolConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dirs=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_args=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#ToolConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.ToolConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Configuration for a specific tool instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-<li><p><strong>config_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>config_dirs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
-<li><p><strong>extra_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
-<li><p><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="ocom.core.tool.BaseTool">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">BaseTool</span></span><a class="reference internal" href="_modules/ocom/core/tool.html#BaseTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.BaseTool" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Abstract base class for all network/privacy tools.</p>
 <p>Subclasses must implement all abstract methods to integrate
 a new tool into the ocom TUI.</p>
+<p>Initialize the tool in the UNAVAILABLE state.</p>
 <dl class="field-list simple">
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.core.tool.BaseTool.set_output_callback">
-<span class="sig-name descname"><span class="pre">set_output_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#BaseTool.set_output_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.BaseTool.set_output_callback" title="Link to this definition">¶</a></dt>
-<dd><p>Set callback for tool output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.core.tool.BaseTool.set_output_callback.params.callback"></span><strong>callback</strong><a class="paramlink headerlink reference internal" href="#ocom.core.tool.BaseTool.set_output_callback.params.callback">¶</a> – Function called with (tool_name, message) for each output line.</p></li>
-<li><p><strong>callback</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="ocom.core.tool.BaseTool.status">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><span class="pre">ToolStatus</span></a></em><a class="headerlink" href="#ocom.core.tool.BaseTool.status" title="Link to this definition">¶</a></dt>
@@ -804,14 +736,14 @@ a new tool into the ocom TUI.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ocom.core.tool.BaseTool.get_config_files">
-<span class="sig-name descname"><span class="pre">get_config_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#BaseTool.get_config_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.BaseTool.get_config_files" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_config_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#BaseTool.get_config_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.BaseTool.get_config_files" title="Link to this definition">¶</a></dt>
 <dd><p>Get list of available config files.</p>
 <p>Override this for tools that use config files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.core.tool.BaseTool.get_config_files.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#ocom.core.tool.BaseTool.get_config_files.params.config">¶</a> – Tool configuration with directories to scan.</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#ocom.core.tool.ToolConfig" title="ocom.core.tool.ToolConfig"><em>ToolConfig</em></a>)</p></li>
+<li><p><span class="target" id="ocom.core.tool.BaseTool.get_config_files.params._config"></span><strong>_config</strong><a class="paramlink headerlink reference internal" href="#ocom.core.tool.BaseTool.get_config_files.params._config">¶</a> – Tool configuration with directories to scan.</p></li>
+<li><p><strong>_config</strong> (<a class="reference internal" href="#ocom.core.tool.ToolConfig" title="ocom.core.tool.ToolConfig"><em>ToolConfig</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -829,10 +761,56 @@ a new tool into the ocom TUI.</p>
 <dd><p>Get human-readable status text for display.</p>
 <p>Can be overridden for tool-specific status details.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A human-readable string describing the current status.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.core.tool.ToolConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">ToolConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dirs=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_args=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#ToolConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.ToolConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Configuration for a specific tool instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>config_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>config_dirs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
+<li><p><strong>extra_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
+<li><p><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">ToolStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#ToolStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.ToolStatus" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Status of a network tool.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus.is_transitioning">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_transitioning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#ocom.core.tool.ToolStatus.is_transitioning" title="Link to this definition">¶</a></dt>
+<dd><p>Check if status is a transitional state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus.can_start">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#ocom.core.tool.ToolStatus.can_start" title="Link to this definition">¶</a></dt>
+<dd><p>Check if tool can be started from this state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ocom.core.tool.ToolStatus.can_stop">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_stop</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#ocom.core.tool.ToolStatus.can_stop" title="Link to this definition">¶</a></dt>
+<dd><p>Check if tool can be stopped from this state.</p>
 </dd></dl>
 
 </dd></dl>
@@ -926,38 +904,12 @@ On Unix: checks if running as root (uid 0).</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/asyncio-exceptions.html#asyncio.TimeoutError" title="(in Python v3.14)"><strong>asyncio.TimeoutError</strong></a> – If timeout exceeded.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TimeoutError" title="(in Python v3.14)"><strong>TimeoutError</strong></a> – If timeout exceeded.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If check=True and command fails.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#ocom.core.process.ProcessResult" title="ocom.core.process.ProcessResult"><em>ProcessResult</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.core.process.ProcessManager.start_process">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdin_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/process.html#ProcessManager.start_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.process.ProcessManager.start_process" title="Link to this definition">¶</a></dt>
-<dd><p>Start a long-running process.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.core.process.ProcessManager.start_process.params.args"></span><strong>args</strong><a class="paramlink headerlink reference internal" href="#ocom.core.process.ProcessManager.start_process.params.args">¶</a> – Command and arguments as a list.</p></li>
-<li><p><span class="target" id="ocom.core.process.ProcessManager.start_process.params.on_output"></span><strong>on_output</strong><a class="paramlink headerlink reference internal" href="#ocom.core.process.ProcessManager.start_process.params.on_output">¶</a> – Callback for stdout lines (optional).</p></li>
-<li><p><span class="target" id="ocom.core.process.ProcessManager.start_process.params.env"></span><strong>env</strong><a class="paramlink headerlink reference internal" href="#ocom.core.process.ProcessManager.start_process.params.env">¶</a> – Environment variables (merged with current env).</p></li>
-<li><p><span class="target" id="ocom.core.process.ProcessManager.start_process.params.stdin_data"></span><strong>stdin_data</strong><a class="paramlink headerlink reference internal" href="#ocom.core.process.ProcessManager.start_process.params.stdin_data">¶</a> – Data to write to stdin (e.g., password for sudo -S).</p></li>
-<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
-<li><p><strong>on_output</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>stdin_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The started Process object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process" title="(in Python v3.14)"><em>Process</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -990,11 +942,14 @@ On Unix: checks if running as root (uid 0).</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_process_running</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/process.html#ProcessManager.is_process_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.process.ProcessManager.is_process_running" title="Link to this definition">¶</a></dt>
 <dd><p>Check if a process is still running.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>proc</strong> (<a class="reference external" href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process" title="(in Python v3.14)"><em>Process</em></a><em> | </em><em>None</em>)</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the process exists and has not exited.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>proc</strong> (<a class="reference external" href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process" title="(in Python v3.14)"><em>Process</em></a><em> | </em><em>None</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1035,6 +990,7 @@ On Unix: checks if running as root (uid 0).</p>
 <p>OpenVPN connection manager.</p>
 <p>Manages OpenVPN connections using .ovpn configuration files.
 Requires sudo on Unix, Administrator on Windows.</p>
+<p>Initialize the OpenVPN tool with an empty output buffer.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py method">
@@ -1062,8 +1018,11 @@ Requires sudo on Unix, Administrator on Windows.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/openvpn.html#OpenVPNTool.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.OpenVPNTool.stop" title="Link to this definition">¶</a></dt>
 <dd><p>Stop the OpenVPN connection.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the connection was stopped.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1073,8 +1032,11 @@ Requires sudo on Unix, Administrator on Windows.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refresh_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/openvpn.html#OpenVPNTool.refresh_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.OpenVPNTool.refresh_status" title="Link to this definition">¶</a></dt>
 <dd><p>Refresh OpenVPN status.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current ToolStatus.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1085,10 +1047,16 @@ Requires sudo on Unix, Administrator on Windows.</p>
 <dd><p>Find all .ovpn files in configured directories.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="#ocom.core.tool.ToolConfig" title="ocom.core.tool.ToolConfig"><em>ToolConfig</em></a>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="ocom.tools.OpenVPNTool.get_config_files.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#ocom.tools.OpenVPNTool.get_config_files.params.config">¶</a> – Tool configuration listing directories to scan.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#ocom.core.tool.ToolConfig" title="ocom.core.tool.ToolConfig"><em>ToolConfig</em></a>)</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A sorted list of matching config file paths.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1102,6 +1070,7 @@ Requires sudo on Unix, Administrator on Windows.</p>
 <p>SpoofDPI anti-censorship proxy.</p>
 <p>SpoofDPI is a simple DPI bypass tool that runs as a local proxy.
 It modifies packets to evade Deep Packet Inspection.</p>
+<p>Initialize the SpoofDPI tool with its default proxy port.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py method">
@@ -1116,7 +1085,7 @@ It modifies packets to evade Deep Packet Inspection.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if started successfully.</p>
+<dd class="field-even"><p>True if the proxy started successfully.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
@@ -1129,8 +1098,11 @@ It modifies packets to evade Deep Packet Inspection.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/spoofdpi.html#SpoofDPITool.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.SpoofDPITool.stop" title="Link to this definition">¶</a></dt>
 <dd><p>Stop SpoofDPI proxy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the proxy was stopped.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1140,8 +1112,11 @@ It modifies packets to evade Deep Packet Inspection.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refresh_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/spoofdpi.html#SpoofDPITool.refresh_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.SpoofDPITool.refresh_status" title="Link to this definition">¶</a></dt>
 <dd><p>Refresh SpoofDPI status.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current ToolStatus.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1151,8 +1126,11 @@ It modifies packets to evade Deep Packet Inspection.</p>
 <span class="sig-name descname"><span class="pre">get_status_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/spoofdpi.html#SpoofDPITool.get_status_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.SpoofDPITool.get_status_text" title="Link to this definition">¶</a></dt>
 <dd><p>Get SpoofDPI-specific status text.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A short human-readable status string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1172,6 +1150,7 @@ does not configure an exit node. In mesh mode Tailscale only routes the
 100.64.0.0/10 CGNAT range and does not seize the default route, so it
 coexists with OpenVPN/WARP - hence <code class="docutils literal notranslate"><span class="pre">conflicts_with</span></code> is empty. If exit
 node support is added later (full-tunnel), revisit the conflict list.</p>
+<p>Initialize the tool in the UNAVAILABLE state.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py method">
@@ -1179,22 +1158,25 @@ node support is added later (full-tunnel), revisit the conflict list.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/tailscale.html#TailscaleTool.check_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.TailscaleTool.check_available" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the tailscale CLI is installed and read daemon status.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the CLI is available.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ocom.tools.TailscaleTool.start">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/tailscale.html#TailscaleTool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.TailscaleTool.start" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/tailscale.html#TailscaleTool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.TailscaleTool.start" title="Link to this definition">¶</a></dt>
 <dd><p>Bring the Tailscale node up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.tools.TailscaleTool.start.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#ocom.tools.TailscaleTool.start.params.config">¶</a> – Unused for mesh mode; reserved for future options
+<li><p><span class="target" id="ocom.tools.TailscaleTool.start.params._config"></span><strong>_config</strong><a class="paramlink headerlink reference internal" href="#ocom.tools.TailscaleTool.start.params._config">¶</a> – Unused for mesh mode; reserved for future options
 (e.g. exit node, accept-routes).</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#ocom.core.tool.ToolConfig" title="ocom.core.tool.ToolConfig"><em>ToolConfig</em></a>)</p></li>
+<li><p><strong>_config</strong> (<a class="reference internal" href="#ocom.core.tool.ToolConfig" title="ocom.core.tool.ToolConfig"><em>ToolConfig</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1211,8 +1193,11 @@ node support is added later (full-tunnel), revisit the conflict list.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/tailscale.html#TailscaleTool.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.TailscaleTool.stop" title="Link to this definition">¶</a></dt>
 <dd><p>Bring the Tailscale node down.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the node was brought down successfully.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1222,8 +1207,11 @@ node support is added later (full-tunnel), revisit the conflict list.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refresh_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/tailscale.html#TailscaleTool.refresh_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.TailscaleTool.refresh_status" title="Link to this definition">¶</a></dt>
 <dd><p>Check Tailscale connection status via <cite>tailscale status –json</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current ToolStatus.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1237,6 +1225,7 @@ node support is added later (full-tunnel), revisit the conflict list.</p>
 <p>Cloudflare WARP connection manager.</p>
 <p>Uses warp-cli to connect/disconnect from Cloudflare’s WARP service.
 WARP runs as a system daemon, so we just send commands to it.</p>
+<p>Initialize the tool in the UNAVAILABLE state.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py method">
@@ -1244,8 +1233,11 @@ WARP runs as a system daemon, so we just send commands to it.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/warp.html#WarpTool.check_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.WarpTool.check_available" title="Link to this definition">¶</a></dt>
 <dd><p>Check if warp-cli is installed and daemon is running.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the CLI is available.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1275,8 +1267,11 @@ WARP runs as a system daemon, so we just send commands to it.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/warp.html#WarpTool.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.WarpTool.stop" title="Link to this definition">¶</a></dt>
 <dd><p>Disconnect from WARP.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if disconnected successfully.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1286,23 +1281,15 @@ WARP runs as a system daemon, so we just send commands to it.</p>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refresh_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools/warp.html#WarpTool.refresh_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.WarpTool.refresh_status" title="Link to this definition">¶</a></dt>
 <dd><p>Check WARP connection status.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current ToolStatus.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ocom.tools.get_all_tools">
-<span class="sig-prename descclassname"><span class="pre">ocom.tools.</span></span><span class="sig-name descname"><span class="pre">get_all_tools</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tools.html#get_all_tools"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tools.get_all_tools" title="Link to this definition">¶</a></dt>
-<dd><p>Get instances of all available tools for the current platform.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference internal" href="#ocom.core.tool.BaseTool" title="ocom.core.tool.BaseTool"><em>BaseTool</em></a>]</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
@@ -1315,47 +1302,20 @@ WARP runs as a system daemon, so we just send commands to it.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.ui.screens.main.</span></span><span class="sig-name descname"><span class="pre">ConfigSelectorScreen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#ConfigSelectorScreen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.ConfigSelectorScreen" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModalScreen</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
 <p>Modal screen for selecting a config file.</p>
-<p>Initialize the screen.</p>
+<p>Store the tool and its available config files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.ui.screens.main.ConfigSelectorScreen.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.params.name">¶</a> – The name of the screen.</p></li>
-<li><p><span class="target" id="ocom.ui.screens.main.ConfigSelectorScreen.params.id"></span><strong>id</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.params.id">¶</a> – The ID of the screen in the DOM.</p></li>
-<li><p><span class="target" id="ocom.ui.screens.main.ConfigSelectorScreen.params.classes"></span><strong>classes</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.ConfigSelectorScreen.params.classes">¶</a> – The CSS classes for the screen.</p></li>
 <li><p><strong>tool</strong> (<a class="reference internal" href="#ocom.core.tool.BaseTool" title="ocom.core.tool.BaseTool"><em>BaseTool</em></a>)</p></li>
 <li><p><strong>configs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="ocom.ui.screens.main.ConfigSelectorScreen.BINDINGS">
-<span class="sig-name descname"><span class="pre">BINDINGS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BindingType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[Binding(key='escape',</span> <span class="pre">action='cancel',</span> <span class="pre">description='Cancel',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None)]</span></em><a class="headerlink" href="#ocom.ui.screens.main.ConfigSelectorScreen.BINDINGS" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">BINDINGS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Binding</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[Binding(key='escape',</span> <span class="pre">action='cancel',</span> <span class="pre">description='Cancel',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None)]</span></em><a class="headerlink" href="#ocom.ui.screens.main.ConfigSelectorScreen.BINDINGS" title="Link to this definition">¶</a></dt>
 <dd><p>A list of key bindings.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.ConfigSelectorScreen.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#ConfigSelectorScreen.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.ConfigSelectorScreen.compose" title="Link to this definition">¶</a></dt>
-<dd><p>Called by Textual to create child widgets.</p>
-<p>This method is called when a widget is mounted or by setting <cite>recompose=True</cite> when
-calling [<cite>refresh()</cite>][textual.widget.Widget.refresh].</p>
-<p>Note that you don’t typically need to explicitly call this method.</p>
-<p class="rubric">Example</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
-def compose(self) -&gt; ComposeResult:</p>
-<blockquote>
-<div><p>yield Header()
-yield Label(“Press the button below:”)
-yield Button()
-yield Footer()</p>
-</div></blockquote>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><em>Iterable</em></a>[<em>Widget</em>]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1427,46 +1387,19 @@ yield Footer()</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.ui.screens.main.</span></span><span class="sig-name descname"><span class="pre">PasswordPromptScreen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#PasswordPromptScreen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.PasswordPromptScreen" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModalScreen</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
 <p>Modal screen for entering sudo password.</p>
-<p>Initialize the screen.</p>
+<p>Store the tool that requires authentication.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.ui.screens.main.PasswordPromptScreen.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.params.name">¶</a> – The name of the screen.</p></li>
-<li><p><span class="target" id="ocom.ui.screens.main.PasswordPromptScreen.params.id"></span><strong>id</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.params.id">¶</a> – The ID of the screen in the DOM.</p></li>
-<li><p><span class="target" id="ocom.ui.screens.main.PasswordPromptScreen.params.classes"></span><strong>classes</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.PasswordPromptScreen.params.classes">¶</a> – The CSS classes for the screen.</p></li>
 <li><p><strong>tool</strong> (<a class="reference internal" href="#ocom.core.tool.BaseTool" title="ocom.core.tool.BaseTool"><em>BaseTool</em></a>)</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="ocom.ui.screens.main.PasswordPromptScreen.BINDINGS">
-<span class="sig-name descname"><span class="pre">BINDINGS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BindingType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[Binding(key='escape',</span> <span class="pre">action='cancel',</span> <span class="pre">description='Cancel',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None)]</span></em><a class="headerlink" href="#ocom.ui.screens.main.PasswordPromptScreen.BINDINGS" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">BINDINGS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Binding</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[Binding(key='escape',</span> <span class="pre">action='cancel',</span> <span class="pre">description='Cancel',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None)]</span></em><a class="headerlink" href="#ocom.ui.screens.main.PasswordPromptScreen.BINDINGS" title="Link to this definition">¶</a></dt>
 <dd><p>A list of key bindings.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.PasswordPromptScreen.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#PasswordPromptScreen.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.PasswordPromptScreen.compose" title="Link to this definition">¶</a></dt>
-<dd><p>Called by Textual to create child widgets.</p>
-<p>This method is called when a widget is mounted or by setting <cite>recompose=True</cite> when
-calling [<cite>refresh()</cite>][textual.widget.Widget.refresh].</p>
-<p>Note that you don’t typically need to explicitly call this method.</p>
-<p class="rubric">Example</p>
-<p><a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python
-def compose(self) -&gt; ComposeResult:</p>
-<blockquote>
-<div><p>yield Header()
-yield Label(“Press the button below:”)
-yield Button()
-yield Footer()</p>
-</div></blockquote>
-<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><em>Iterable</em></a>[<em>Widget</em>]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1496,11 +1429,11 @@ yield Footer()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ocom.ui.screens.main.PasswordPromptScreen.on_input_submitted">
-<span class="sig-name descname"><span class="pre">on_input_submitted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#PasswordPromptScreen.on_input_submitted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.PasswordPromptScreen.on_input_submitted" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_input_submitted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#PasswordPromptScreen.on_input_submitted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.PasswordPromptScreen.on_input_submitted" title="Link to this definition">¶</a></dt>
 <dd><p>Handle Enter key in password field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>event</strong> (<em>Submitted</em>)</p>
+<dd class="field-odd"><p><strong>_event</strong> (<em>Submitted</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1533,143 +1466,18 @@ yield Footer()</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.ui.screens.main.</span></span><span class="sig-name descname"><span class="pre">MainScreen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Screen</span></code></p>
-<p>Main dashboard showing all network tools.</p>
-<p>Initialize the screen.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.ui.screens.main.MainScreen.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.MainScreen.params.name">¶</a> – The name of the screen.</p></li>
-<li><p><span class="target" id="ocom.ui.screens.main.MainScreen.params.id"></span><strong>id</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.MainScreen.params.id">¶</a> – The ID of the screen in the DOM.</p></li>
-<li><p><span class="target" id="ocom.ui.screens.main.MainScreen.params.classes"></span><strong>classes</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.screens.main.MainScreen.params.classes">¶</a> – The CSS classes for the screen.</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#ocom.config.AppConfig" title="ocom.config.AppConfig"><em>AppConfig</em></a>)</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.BINDINGS">
-<span class="sig-name descname"><span class="pre">BINDINGS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BindingType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[Binding(key='q',</span> <span class="pre">action='quit',</span> <span class="pre">description='Quit',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None),</span> <span class="pre">Binding(key='r',</span> <span class="pre">action='refresh',</span> <span class="pre">description='Refresh',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None),</span> <span class="pre">Binding(key='c',</span> <span class="pre">action='clear_logs',</span> <span class="pre">description='Clear</span> <span class="pre">Logs',</span> <span class="pre">show=True,</span> <span class="pre">key_display=None,</span> <span class="pre">priority=False,</span> <span class="pre">tooltip='',</span> <span class="pre">id=None,</span> <span class="pre">system=False,</span> <span class="pre">group=None)]</span></em><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.BINDINGS" title="Link to this definition">¶</a></dt>
-<dd><p>A list of key bindings.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.compose" title="Link to this definition">¶</a></dt>
-<dd><p>Called by Textual to create child widgets.</p>
-<p>This method is called when a widget is mounted or by setting <cite>recompose=True</cite> when
-calling [<cite>refresh()</cite>][textual.widget.Widget.refresh].</p>
-<p>Note that you don’t typically need to explicitly call this method.</p>
-<p class="rubric">Example</p>
-<p><a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a>python
-def compose(self) -&gt; ComposeResult:</p>
-<blockquote>
-<div><p>yield Header()
-yield Label(“Press the button below:”)
-yield Button()
-yield Footer()</p>
-</div></blockquote>
-<p><a href="#id21"><span class="problematic" id="id22">``</span></a><a href="#id23"><span class="problematic" id="id24">`</span></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><em>Iterable</em></a>[<em>Widget</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.on_mount">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_mount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen.on_mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.on_mount" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize tools and start status refresh.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.on_tool_card_tool_action">
-<span class="sig-name descname"><span class="pre">on_tool_card_tool_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen.on_tool_card_tool_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.on_tool_card_tool_action" title="Link to this definition">¶</a></dt>
-<dd><p>Handle tool actions from cards.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>event</strong> (<a class="reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.ToolAction" title="ocom.ui.widgets.tool_card.ToolCard.ToolAction"><em>ToolAction</em></a>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.action_refresh">
-<span class="sig-name descname"><span class="pre">action_refresh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen.action_refresh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.action_refresh" title="Link to this definition">¶</a></dt>
-<dd><p>Manually refresh all tool statuses.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.action_clear_logs">
-<span class="sig-name descname"><span class="pre">action_clear_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen.action_clear_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.action_clear_logs" title="Link to this definition">¶</a></dt>
-<dd><p>Clear the log panel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.action_quit">
-<span class="sig-name descname"><span class="pre">action_quit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/screens/main.html#MainScreen.action_quit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.action_quit" title="Link to this definition">¶</a></dt>
-<dd><p>Quit the application.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.can_focus">
-<span class="sig-name descname"><span class="pre">can_focus</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.can_focus" title="Link to this definition">¶</a></dt>
-<dd><p>Widget may receive focus.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ocom.ui.screens.main.MainScreen.can_focus_children">
-<span class="sig-name descname"><span class="pre">can_focus_children</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ocom.ui.screens.main.MainScreen.can_focus_children" title="Link to this definition">¶</a></dt>
-<dd><p>Widget’s children may receive focus.</p>
-</dd></dl>
-
-</dd></dl>
-
 <p id="module-ocom.ui.widgets.tool_card">Tool card widget for displaying tool status.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ocom.ui.widgets.tool_card.ToolCard">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ocom.ui.widgets.tool_card.</span></span><span class="sig-name descname"><span class="pre">ToolCard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/tool_card.html#ToolCard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.tool_card.ToolCard" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Static</span></code></p>
 <p>A card widget displaying a single tool’s status and controls.</p>
-<p>Initialize a Widget.</p>
+<p>Create a card bound to <code class="docutils literal notranslate"><span class="pre">tool</span></code>, forwarding widget kwargs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="ocom.ui.widgets.tool_card.ToolCard.params.*children"></span><strong>*children</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.params.*children">¶</a> – Child widgets.</p></li>
-<li><p><span class="target" id="ocom.ui.widgets.tool_card.ToolCard.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.params.name">¶</a> – The name of the widget.</p></li>
-<li><p><span class="target" id="ocom.ui.widgets.tool_card.ToolCard.params.id"></span><strong>id</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.params.id">¶</a> – The ID of the widget in the DOM.</p></li>
-<li><p><span class="target" id="ocom.ui.widgets.tool_card.ToolCard.params.classes"></span><strong>classes</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.params.classes">¶</a> – The CSS classes for the widget.</p></li>
-<li><p><span class="target" id="ocom.ui.widgets.tool_card.ToolCard.params.disabled"></span><strong>disabled</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.params.disabled">¶</a> – Whether the widget is disabled or not.</p></li>
-<li><p><span class="target" id="ocom.ui.widgets.tool_card.ToolCard.params.markup"></span><strong>markup</strong><a class="paramlink headerlink reference internal" href="#ocom.ui.widgets.tool_card.ToolCard.params.markup">¶</a> – Enable content markup?</p></li>
 <li><p><strong>tool</strong> (<a class="reference internal" href="#ocom.core.tool.BaseTool" title="ocom.core.tool.BaseTool"><em>BaseTool</em></a>)</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1678,6 +1486,7 @@ yield Footer()</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ToolAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/tool_card.html#ToolCard.ToolAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.tool_card.ToolCard.ToolAction" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></p>
 <p>Message sent when a tool action is requested.</p>
+<p>Store the target tool and requested action.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1695,17 +1504,6 @@ yield Footer()</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.widgets.tool_card.ToolCard.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/tool_card.html#ToolCard.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.tool_card.ToolCard.compose" title="Link to this definition">¶</a></dt>
-<dd><p>Compose the card layout.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><em>Iterable</em></a>[<em>Widget</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="ocom.ui.widgets.tool_card.ToolCard.on_mount">
 <span class="sig-name descname"><span class="pre">on_mount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/tool_card.html#ToolCard.on_mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.tool_card.ToolCard.on_mount" title="Link to this definition">¶</a></dt>
 <dd><p>Update UI on mount.</p>
@@ -1718,11 +1516,11 @@ yield Footer()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ocom.ui.widgets.tool_card.ToolCard.watch_status">
-<span class="sig-name descname"><span class="pre">watch_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/tool_card.html#ToolCard.watch_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.tool_card.ToolCard.watch_status" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">watch_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_new_status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/tool_card.html#ToolCard.watch_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.tool_card.ToolCard.watch_status" title="Link to this definition">¶</a></dt>
 <dd><p>React to status changes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_status</strong> (<a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a>)</p>
+<dd class="field-odd"><p><strong>_new_status</strong> (<a class="reference internal" href="#ocom.core.tool.ToolStatus" title="ocom.core.tool.ToolStatus"><em>ToolStatus</em></a>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1799,30 +1597,6 @@ yield Footer()</p>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="ocom.ui.widgets.log_panel.LogPanel.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/log_panel.html#LogPanel.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.log_panel.LogPanel.compose" title="Link to this definition">¶</a></dt>
-<dd><p>Called by Textual to create child widgets.</p>
-<p>This method is called when a widget is mounted or by setting <cite>recompose=True</cite> when
-calling [<cite>refresh()</cite>][textual.widget.Widget.refresh].</p>
-<p>Note that you don’t typically need to explicitly call this method.</p>
-<p class="rubric">Example</p>
-<p><a href="#id25"><span class="problematic" id="id26">``</span></a><a href="#id27"><span class="problematic" id="id28">`</span></a>python
-def compose(self) -&gt; ComposeResult:</p>
-<blockquote>
-<div><p>yield Header()
-yield Label(“Press the button below:”)
-yield Button()
-yield Footer()</p>
-</div></blockquote>
-<p><a href="#id29"><span class="problematic" id="id30">``</span></a><a href="#id31"><span class="problematic" id="id32">`</span></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><em>Iterable</em></a>[<em>Widget</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="ocom.ui.widgets.log_panel.LogPanel.add_log">
 <span class="sig-name descname"><span class="pre">add_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/ui/widgets/log_panel.html#LogPanel.add_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.ui.widgets.log_panel.LogPanel.add_log" title="Link to this definition">¶</a></dt>

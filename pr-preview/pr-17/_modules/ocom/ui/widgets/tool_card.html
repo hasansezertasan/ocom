@@ -114,136 +114,144 @@ data-aria-dark="Switch to auto color mode">
           <h1>Source code for ocom.ui.widgets.tool_card</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Tool card widget for displaying tool status.&quot;&quot;&quot;</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComposeResult</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.containers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Horizontal</span><span class="p">,</span> <span class="n">Vertical</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.message</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.reactive</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactive</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Static</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">ToolStatus</span>
-</span><span data-line="12">
-</span><span data-line="13"><span class="c1"># Status icons mapping</span>
-</span><span data-line="14"><span class="n">STATUS_ICONS</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="15">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span> <span class="s2">&quot;●&quot;</span><span class="p">,</span>
-</span><span data-line="16">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">:</span> <span class="s2">&quot;○&quot;</span><span class="p">,</span>
-</span><span data-line="17">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span> <span class="s2">&quot;◌&quot;</span><span class="p">,</span>
-</span><span data-line="18">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span><span class="p">:</span> <span class="s2">&quot;⟳&quot;</span><span class="p">,</span>
-</span><span data-line="19">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">:</span> <span class="s2">&quot;⟳&quot;</span><span class="p">,</span>
-</span><span data-line="20">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="s2">&quot;✕&quot;</span><span class="p">,</span>
-</span><span data-line="21"><span class="p">}</span>
-</span><span data-line="22">
-</span><span data-line="23">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.containers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Horizontal</span><span class="p">,</span> <span class="n">Vertical</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.message</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.reactive</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactive</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Static</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">ToolStatus</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">textual.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComposeResult</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ToolCard&quot;</span><span class="p">]</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="c1"># Status icons mapping</span>
+</span><span data-line="19"><span class="n">STATUS_ICONS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ToolStatus</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="20">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span> <span class="s2">&quot;●&quot;</span><span class="p">,</span>
+</span><span data-line="21">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">:</span> <span class="s2">&quot;○&quot;</span><span class="p">,</span>
+</span><span data-line="22">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span> <span class="s2">&quot;◌&quot;</span><span class="p">,</span>
+</span><span data-line="23">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span><span class="p">:</span> <span class="s2">&quot;⟳&quot;</span><span class="p">,</span>
+</span><span data-line="24">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">:</span> <span class="s2">&quot;⟳&quot;</span><span class="p">,</span>
+</span><span data-line="25">    <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="s2">&quot;✕&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="p">}</span>
+</span><span data-line="27">
+</span><span data-line="28">
 <div class="viewcode-block" id="ToolCard">
 <a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard">[docs]</a>
-</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">ToolCard</span><span class="p">(</span><span class="n">Static</span><span class="p">):</span>
-</span><span data-line="25"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A card widget displaying a single tool&#39;s status and controls.&quot;&quot;&quot;</span>
-</span><span data-line="26">
-</span><span data-line="27">    <span class="n">status</span><span class="p">:</span> <span class="n">reactive</span><span class="p">[</span><span class="n">ToolStatus</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactive</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="28">
+</span><span data-line="29"><span class="k">class</span><span class="w"> </span><span class="nc">ToolCard</span><span class="p">(</span><span class="n">Static</span><span class="p">):</span>
+</span><span data-line="30"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A card widget displaying a single tool&#39;s status and controls.&quot;&quot;&quot;</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="n">status</span><span class="p">:</span> <span class="n">reactive</span><span class="p">[</span><span class="n">ToolStatus</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactive</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="33">
 <div class="viewcode-block" id="ToolCard.ToolAction">
 <a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard.ToolAction">[docs]</a>
-</span><span data-line="29">    <span class="k">class</span><span class="w"> </span><span class="nc">ToolAction</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
-</span><span data-line="30"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Message sent when a tool action is requested.&quot;&quot;&quot;</span>
-</span><span data-line="31">
-</span><span data-line="32">        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="33">            <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="n">tool</span>
-</span><span data-line="34">            <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
-</span><span data-line="35">            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
-
+</span><span data-line="34">    <span class="k">class</span><span class="w"> </span><span class="nc">ToolAction</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
+</span><span data-line="35"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Message sent when a tool action is requested.&quot;&quot;&quot;</span>
 </span><span data-line="36">
-</span><span data-line="37">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="38">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span data-line="39">        <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="n">tool</span>
-</span><span data-line="40">
-<div class="viewcode-block" id="ToolCard.compose">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard.compose">[docs]</a>
-</span><span data-line="41">    <span class="k">def</span><span class="w"> </span><span class="nf">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComposeResult</span><span class="p">:</span>
-</span><span data-line="42"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compose the card layout.&quot;&quot;&quot;</span>
-</span><span data-line="43">        <span class="k">with</span> <span class="n">Horizontal</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;card-content&quot;</span><span class="p">):</span>
-</span><span data-line="44">            <span class="k">with</span> <span class="n">Vertical</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;tool-info&quot;</span><span class="p">):</span>
-</span><span data-line="45">                <span class="k">yield</span> <span class="n">Label</span><span class="p">(</span>
-</span><span data-line="46">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_icon</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="s2">&quot;tool-name&quot;</span>
-</span><span data-line="47">                <span class="p">)</span>
-</span><span data-line="48">                <span class="k">yield</span> <span class="n">Label</span><span class="p">(</span>
-</span><span data-line="49">                    <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">get_status_text</span><span class="p">(),</span> <span class="n">classes</span><span class="o">=</span><span class="s2">&quot;tool-status&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;status-text&quot;</span>
-</span><span data-line="50">                <span class="p">)</span>
-</span><span data-line="51">            <span class="k">with</span> <span class="n">Vertical</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;buttons&quot;</span><span class="p">):</span>
-</span><span data-line="52">                <span class="k">yield</span> <span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Start&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;toggle-btn&quot;</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">)</span></div>
+</span><span data-line="37">        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="38"><span class="w">            </span><span class="sd">&quot;&quot;&quot;Store the target tool and requested action.&quot;&quot;&quot;</span>
+</span><span data-line="39">            <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="n">tool</span>
+</span><span data-line="40">            <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+</span><span data-line="41">            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
-</span><span data-line="53">
+</span><span data-line="42">
+</span><span data-line="43">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="44"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a card bound to ``tool``, forwarding widget kwargs.&quot;&quot;&quot;</span>
+</span><span data-line="45">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="46">        <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="n">tool</span>
+</span><span data-line="47">
+</span><span data-line="48">    <span class="k">def</span><span class="w"> </span><span class="nf">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComposeResult</span><span class="p">:</span>
+</span><span data-line="49"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compose the card layout.</span>
+</span><span data-line="50">
+</span><span data-line="51"><span class="sd">        Yields:</span>
+</span><span data-line="52"><span class="sd">            The labels and button that make up the card.</span>
+</span><span data-line="53"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="54">        <span class="k">with</span> <span class="n">Horizontal</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;card-content&quot;</span><span class="p">):</span>
+</span><span data-line="55">            <span class="k">with</span> <span class="n">Vertical</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;tool-info&quot;</span><span class="p">):</span>
+</span><span data-line="56">                <span class="k">yield</span> <span class="n">Label</span><span class="p">(</span>
+</span><span data-line="57">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_icon</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="s2">&quot;tool-name&quot;</span>
+</span><span data-line="58">                <span class="p">)</span>
+</span><span data-line="59">                <span class="k">yield</span> <span class="n">Label</span><span class="p">(</span>
+</span><span data-line="60">                    <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">get_status_text</span><span class="p">(),</span> <span class="n">classes</span><span class="o">=</span><span class="s2">&quot;tool-status&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;status-text&quot;</span>
+</span><span data-line="61">                <span class="p">)</span>
+</span><span data-line="62">            <span class="k">with</span> <span class="n">Vertical</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="s2">&quot;buttons&quot;</span><span class="p">):</span>
+</span><span data-line="63">                <span class="k">yield</span> <span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Start&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;toggle-btn&quot;</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">)</span>
+</span><span data-line="64">
 <div class="viewcode-block" id="ToolCard.on_mount">
 <a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard.on_mount">[docs]</a>
-</span><span data-line="54">    <span class="k">def</span><span class="w"> </span><span class="nf">on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="55"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update UI on mount.&quot;&quot;&quot;</span>
-</span><span data-line="56">        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">status</span>
-</span><span data-line="57">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_display</span><span class="p">()</span></div>
+</span><span data-line="65">    <span class="k">def</span><span class="w"> </span><span class="nf">on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="66"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update UI on mount.&quot;&quot;&quot;</span>
+</span><span data-line="67">        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">status</span>
+</span><span data-line="68">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_display</span><span class="p">()</span></div>
 
-</span><span data-line="58">
+</span><span data-line="69">
 <div class="viewcode-block" id="ToolCard.watch_status">
 <a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard.watch_status">[docs]</a>
-</span><span data-line="59">    <span class="k">def</span><span class="w"> </span><span class="nf">watch_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="n">ToolStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="60"><span class="w">        </span><span class="sd">&quot;&quot;&quot;React to status changes.&quot;&quot;&quot;</span>
-</span><span data-line="61">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mounted</span><span class="p">:</span>
-</span><span data-line="62">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_display</span><span class="p">()</span></div>
+</span><span data-line="70">    <span class="k">def</span><span class="w"> </span><span class="nf">watch_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_new_status</span><span class="p">:</span> <span class="n">ToolStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="71"><span class="w">        </span><span class="sd">&quot;&quot;&quot;React to status changes.&quot;&quot;&quot;</span>
+</span><span data-line="72">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mounted</span><span class="p">:</span>
+</span><span data-line="73">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_display</span><span class="p">()</span></div>
 
-</span><span data-line="63">
-</span><span data-line="64">    <span class="k">def</span><span class="w"> </span><span class="nf">_update_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="65"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the card display based on current status.&quot;&quot;&quot;</span>
-</span><span data-line="66">        <span class="c1"># Update CSS classes</span>
-</span><span data-line="67">        <span class="bp">self</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="s2">&quot;unavailable&quot;</span><span class="p">,</span> <span class="s2">&quot;running&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;stopped&quot;</span><span class="p">)</span>
-</span><span data-line="68">        <span class="bp">self</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="69">
-</span><span data-line="70">        <span class="c1"># Update status text</span>
-</span><span data-line="71">        <span class="n">status_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;#status-text&quot;</span><span class="p">,</span> <span class="n">Label</span><span class="p">)</span>
-</span><span data-line="72">        <span class="n">status_label</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">get_status_text</span><span class="p">())</span>
-</span><span data-line="73">
-</span><span data-line="74">        <span class="c1"># Update name with status icon</span>
-</span><span data-line="75">        <span class="n">name_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;.tool-name&quot;</span><span class="p">,</span> <span class="n">Label</span><span class="p">)</span>
-</span><span data-line="76">        <span class="n">name_label</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_icon</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="77">
-</span><span data-line="78">        <span class="c1"># Update toggle button</span>
-</span><span data-line="79">        <span class="n">toggle_btn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;#toggle-btn&quot;</span><span class="p">,</span> <span class="n">Button</span><span class="p">)</span>
-</span><span data-line="80">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
-</span><span data-line="81">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="82">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Install&quot;</span>
-</span><span data-line="83">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;warning&quot;</span>
-</span><span data-line="84">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_start</span><span class="p">:</span>
-</span><span data-line="85">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="86">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Start&quot;</span>
-</span><span data-line="87">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;primary&quot;</span>
-</span><span data-line="88">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_stop</span><span class="p">:</span>
-</span><span data-line="89">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="90">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Stop&quot;</span>
-</span><span data-line="91">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
-</span><span data-line="92">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">is_transitioning</span><span class="p">:</span>
-</span><span data-line="93">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="94">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
-</span><span data-line="95">
-</span><span data-line="96">    <span class="nd">@property</span>
-</span><span data-line="97">    <span class="k">def</span><span class="w"> </span><span class="nf">_status_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="98"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the status indicator icon for current status.&quot;&quot;&quot;</span>
-</span><span data-line="99">        <span class="k">return</span> <span class="n">STATUS_ICONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span>
-</span><span data-line="100">
+</span><span data-line="74">
+</span><span data-line="75">    <span class="k">def</span><span class="w"> </span><span class="nf">_update_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="76"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the card display based on current status.&quot;&quot;&quot;</span>
+</span><span data-line="77">        <span class="c1"># Update CSS classes</span>
+</span><span data-line="78">        <span class="bp">self</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="s2">&quot;unavailable&quot;</span><span class="p">,</span> <span class="s2">&quot;running&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;stopped&quot;</span><span class="p">)</span>
+</span><span data-line="79">        <span class="bp">self</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="80">
+</span><span data-line="81">        <span class="c1"># Update status text</span>
+</span><span data-line="82">        <span class="n">status_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;#status-text&quot;</span><span class="p">,</span> <span class="n">Label</span><span class="p">)</span>
+</span><span data-line="83">        <span class="n">status_label</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">get_status_text</span><span class="p">())</span>
+</span><span data-line="84">
+</span><span data-line="85">        <span class="c1"># Update name with status icon</span>
+</span><span data-line="86">        <span class="n">name_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;.tool-name&quot;</span><span class="p">,</span> <span class="n">Label</span><span class="p">)</span>
+</span><span data-line="87">        <span class="n">name_label</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_icon</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="88">
+</span><span data-line="89">        <span class="c1"># Update toggle button</span>
+</span><span data-line="90">        <span class="n">toggle_btn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;#toggle-btn&quot;</span><span class="p">,</span> <span class="n">Button</span><span class="p">)</span>
+</span><span data-line="91">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+</span><span data-line="92">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="93">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Install&quot;</span>
+</span><span data-line="94">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;warning&quot;</span>
+</span><span data-line="95">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_start</span><span class="p">:</span>
+</span><span data-line="96">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="97">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Start&quot;</span>
+</span><span data-line="98">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;primary&quot;</span>
+</span><span data-line="99">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_stop</span><span class="p">:</span>
+</span><span data-line="100">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="101">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Stop&quot;</span>
+</span><span data-line="102">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+</span><span data-line="103">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">is_transitioning</span><span class="p">:</span>
+</span><span data-line="104">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="105">            <span class="n">toggle_btn</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
+</span><span data-line="106">
+</span><span data-line="107">    <span class="nd">@property</span>
+</span><span data-line="108">    <span class="k">def</span><span class="w"> </span><span class="nf">_status_icon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="109"><span class="w">        </span><span class="sd">&quot;&quot;&quot;The status indicator icon for the current status.&quot;&quot;&quot;</span>
+</span><span data-line="110">        <span class="k">return</span> <span class="n">STATUS_ICONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span>
+</span><span data-line="111">
 <div class="viewcode-block" id="ToolCard.on_button_pressed">
 <a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard.on_button_pressed">[docs]</a>
-</span><span data-line="101">    <span class="k">def</span><span class="w"> </span><span class="nf">on_button_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Button</span><span class="o">.</span><span class="n">Pressed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="102"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle button presses.&quot;&quot;&quot;</span>
-</span><span data-line="103">        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;toggle-btn&quot;</span><span class="p">:</span>
-</span><span data-line="104">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
-</span><span data-line="105">                <span class="bp">self</span><span class="o">.</span><span class="n">post_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">))</span>
-</span><span data-line="106">            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_start</span><span class="p">:</span>
-</span><span data-line="107">                <span class="bp">self</span><span class="o">.</span><span class="n">post_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">))</span>
-</span><span data-line="108">            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_stop</span><span class="p">:</span>
-</span><span data-line="109">                <span class="bp">self</span><span class="o">.</span><span class="n">post_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">))</span></div>
+</span><span data-line="112">    <span class="k">def</span><span class="w"> </span><span class="nf">on_button_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Button</span><span class="o">.</span><span class="n">Pressed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="113"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle button presses.&quot;&quot;&quot;</span>
+</span><span data-line="114">        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;toggle-btn&quot;</span><span class="p">:</span>
+</span><span data-line="115">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+</span><span data-line="116">                <span class="bp">self</span><span class="o">.</span><span class="n">post_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;install&quot;</span><span class="p">))</span>
+</span><span data-line="117">            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_start</span><span class="p">:</span>
+</span><span data-line="118">                <span class="bp">self</span><span class="o">.</span><span class="n">post_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">))</span>
+</span><span data-line="119">            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">can_stop</span><span class="p">:</span>
+</span><span data-line="120">                <span class="bp">self</span><span class="o">.</span><span class="n">post_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">))</span></div>
 
-</span><span data-line="110">
+</span><span data-line="121">
 <div class="viewcode-block" id="ToolCard.refresh_status">
 <a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.tool_card.ToolCard.refresh_status">[docs]</a>
-</span><span data-line="111">    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="n">ToolStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="112"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the card with a new status.&quot;&quot;&quot;</span>
-</span><span data-line="113">        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">new_status</span></div>
+</span><span data-line="122">    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_status</span><span class="p">:</span> <span class="n">ToolStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="123"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the card with a new status.&quot;&quot;&quot;</span>
+</span><span data-line="124">        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">new_status</span></div>
 </div>
 
 </span></pre></div>
