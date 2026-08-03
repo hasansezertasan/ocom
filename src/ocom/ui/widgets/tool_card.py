@@ -1,6 +1,6 @@
 """Tool card widget for displaying tool status."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, final, override
 
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
@@ -26,11 +26,13 @@ STATUS_ICONS: dict[ToolStatus, str] = {
 }
 
 
+@final
 class ToolCard(Static):
     """A card widget displaying a single tool's status and controls."""
 
     status: reactive[ToolStatus] = reactive(ToolStatus.UNAVAILABLE, init=False)
 
+    @final
     class ToolAction(Message):
         """Message sent when a tool action is requested."""
 
@@ -40,11 +42,19 @@ class ToolCard(Static):
             self.action = action
             super().__init__()
 
-    def __init__(self, tool: BaseTool, **kwargs: object) -> None:
+    def __init__(
+        self,
+        tool: BaseTool,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        classes: str | None = None,
+    ) -> None:
         """Create a card bound to ``tool``, forwarding widget kwargs."""
-        super().__init__(**kwargs)
+        super().__init__(name=name, id=id, classes=classes)
         self.tool = tool
 
+    @override
     def compose(self) -> ComposeResult:
         """Compose the card layout.
 

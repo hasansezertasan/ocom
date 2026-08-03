@@ -249,7 +249,7 @@ class TestCheckPortInUse:
     async def test_unused_port_returns_false(self) -> None:
         """Unused port should return False."""
         # Bind to port 0 to get an OS-assigned free port, then release it
-        server = await asyncio.start_server(lambda r, w: None, "127.0.0.1", 0)
+        server = await asyncio.start_server(lambda *_: None, "127.0.0.1", 0)
         port = server.sockets[0].getsockname()[1]
         server.close()
         await server.wait_closed()

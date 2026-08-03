@@ -252,6 +252,18 @@ ignore_names = [
   "BINDINGS",
   "CSS",
   "DEFAULT_CSS",
+  # Textual App title/subtitle class vars and Button properties written on
+  # widgets (vulture cannot see the framework read them).
+  "TITLE",
+  "SUB_TITLE",
+  "disabled",
+  "label",
+  "variant",
+  # pydantic-settings calls this override by name with keyword-mandated params.
+  "settings_customise_sources",
+  "env_settings",
+  "dotenv_settings",
+  "file_secret_settings",
 ]
 min_confidence = 60
 paths = ["src", "tests"]
@@ -365,8 +377,9 @@ convention = "pep257"
 # Recursive so nested standalone example dirs (examples/simple, examples/advanced)
 # are covered — they are not importable packages.
 "examples/**/*.py" = ["INP001"]
-# The Sphinx config is a standalone module, not part of an importable package.
-"docs/conf.py" = ["INP001"]
+# The Sphinx config is a standalone module (INP001), and `copyright` is a
+# mandatory Sphinx conf variable name that shadows the builtin (A001).
+"docs/conf.py" = ["INP001", "A001"]
 # Package __init__ modules deliberately carry logic beyond re-exports: the top
 # package resolves the version from hatch-vcs, and tools/__init__ exposes the
 # `get_all_tools()` registry factory.
@@ -392,6 +405,11 @@ strict = true
 exclude = [".venv"]
 include = ["src/ocom"]
 pythonVersion = "3.14"
+# Textual exposes a fluent/builder API whose calls return values (mounted
+# widgets, AwaitMount, Worker, the bool from add_class/remove_class, etc.) that
+# are intentionally discarded. Assigning every one to `_` is noise, not quality,
+# in a framework UI app, so this one rule is relaxed here rather than in source.
+reportUnusedCallResult = false
 venv = ".venv"
 # venvPath is the directory *containing* the venv, not the venv itself; ".venv"
 # here would make basedpyright look for ".venv/.venv". Use "." so both the venv

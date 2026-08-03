@@ -1,7 +1,7 @@
 """GoodbyeDPI tool implementation (Windows only)."""
 
 import asyncio
-from typing import ClassVar
+from typing import ClassVar, final, override
 
 from ocom.core.process import ProcessManager, is_admin
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
@@ -9,6 +9,7 @@ from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 __all__ = ["GoodbyeDPITool"]
 
 
+@final
 class GoodbyeDPITool(BaseTool):
     """GoodbyeDPI anti-censorship tool for Windows.
 
@@ -30,6 +31,7 @@ class GoodbyeDPITool(BaseTool):
         super().__init__()
         self._mode: int = 9  # Default mode
 
+    @override
     async def start(self, config: ToolConfig) -> bool:
         """Start GoodbyeDPI.
 
@@ -69,7 +71,7 @@ class GoodbyeDPITool(BaseTool):
             self._process = await ProcessManager.start_process(
                 args, on_output=self._handle_output
             )
-        except Exception as e:  # noqa: BLE001  # external process launch can fail in many ways
+        except Exception as e:  # noqa: BLE001  # external CLI can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             self._emit_output(f"Error: {e}")
@@ -88,6 +90,7 @@ class GoodbyeDPITool(BaseTool):
         self._emit_output(f"DPI bypass started (mode {self._mode})")
         return True
 
+    @override
     async def stop(self) -> bool:
         """Stop GoodbyeDPI.
 
@@ -106,6 +109,7 @@ class GoodbyeDPITool(BaseTool):
         self._emit_output("DPI bypass stopped")
         return success
 
+    @override
     async def refresh_status(self) -> ToolStatus:
         """Refresh GoodbyeDPI status.
 
@@ -125,6 +129,7 @@ class GoodbyeDPITool(BaseTool):
 
         return self._status
 
+    @override
     def get_status_text(self) -> str:
         """Get GoodbyeDPI-specific status text.
 

@@ -2,9 +2,9 @@
 
 import webbrowser
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, cast, final, override
 
-from textual.binding import Binding
+from textual.binding import Binding, BindingType
 from textual.containers import Horizontal, Vertical
 from textual.css.query import NoMatches
 from textual.screen import ModalScreen, Screen
@@ -19,24 +19,34 @@ from ocom.ui.widgets.tool_card import ToolCard
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from textual.app import ComposeResult
+    from textual.app import App, ComposeResult
 
     from ocom.config import AppConfig
 
 __all__ = ["ConfigSelectorScreen", "MainScreen", "PasswordPromptScreen"]
 
 
+@final
 class ConfigSelectorScreen(ModalScreen[str | None]):
     """Modal screen for selecting a config file."""
 
-    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[BindingType]] = [Binding("escape", "cancel", "Cancel")]
 
-    def __init__(self, tool: BaseTool, configs: list[str], **kwargs: object) -> None:
+    def __init__(
+        self,
+        tool: BaseTool,
+        configs: list[str],
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        classes: str | None = None,
+    ) -> None:
         """Store the tool and its available config files."""
-        super().__init__(**kwargs)
+        super().__init__(name=name, id=id, classes=classes)
         self.tool = tool
         self.configs = configs
 
+    @override
     def compose(self) -> ComposeResult:
         """Compose the config selector layout.
 
@@ -68,16 +78,25 @@ class ConfigSelectorScreen(ModalScreen[str | None]):
         self.dismiss(None)
 
 
+@final
 class PasswordPromptScreen(ModalScreen[str | None]):
     """Modal screen for entering sudo password."""
 
-    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[BindingType]] = [Binding("escape", "cancel", "Cancel")]
 
-    def __init__(self, tool: BaseTool, **kwargs: object) -> None:
+    def __init__(
+        self,
+        tool: BaseTool,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        classes: str | None = None,
+    ) -> None:
         """Store the tool that requires authentication."""
-        super().__init__(**kwargs)
+        super().__init__(name=name, id=id, classes=classes)
         self.tool = tool
 
+    @override
     def compose(self) -> ComposeResult:
         """Compose the password prompt layout.
 
@@ -118,22 +137,31 @@ class PasswordPromptScreen(ModalScreen[str | None]):
         self.dismiss(None)
 
 
-class MainScreen(Screen):
+@final
+class MainScreen(Screen[None]):
     """Main dashboard showing all network tools."""
 
-    BINDINGS: ClassVar[list[Binding]] = [
+    BINDINGS: ClassVar[list[BindingType]] = [
         Binding("q", "quit", "Quit"),
         Binding("r", "refresh", "Refresh"),
         Binding("c", "clear_logs", "Clear Logs"),
     ]
 
-    def __init__(self, config: AppConfig, **kwargs: object) -> None:
+    def __init__(
+        self,
+        config: AppConfig,
+        *,
+        name: str | None = None,
+        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        classes: str | None = None,
+    ) -> None:
         """Store app config and build the tool set and card registry."""
-        super().__init__(**kwargs)
+        super().__init__(name=name, id=id, classes=classes)
         self.config = config
         self.tools = get_all_tools()
         self._cards: dict[str, ToolCard] = {}
 
+    @override
     def compose(self) -> ComposeResult:
         """Compose the dashboard layout.
 
@@ -354,9 +382,9 @@ class MainScreen(Screen):
             log_panel = self.query_one("#log-panel", LogPanel)
 
             if not stop_success:
+                name = conflicting_tool.name
                 log_panel.log_system(
-                    f"Warning: Failed to stop {conflicting_tool.name}, "
-                    "proceeding anyway"
+                    f"Warning: failed to stop {name}, proceeding anyway"
                 )
             else:
                 log_panel.log_system(
@@ -434,7 +462,8 @@ class MainScreen(Screen):
             return
 
         callback = self._make_config_selected_callback(tool)
-        self.app.push_screen(ConfigSelectorScreen(tool, configs), callback)
+        app = cast("App[None]", self.app)
+        app.push_screen(ConfigSelectorScreen(tool, configs), callback)
 
     def _show_password_prompt(self, tool: BaseTool, config: ToolConfig) -> None:
         """Show password prompt for sudo-requiring tools."""
@@ -448,7 +477,8 @@ class MainScreen(Screen):
             config.options["sudo_password"] = password
             self.run_worker(self._start_tool(tool, config))
 
-        self.app.push_screen(PasswordPromptScreen(tool), on_password_submitted)
+        app = cast("App[None]", self.app)
+        app.push_screen(PasswordPromptScreen(tool), on_password_submitted)
 
     def _update_status_bar(self, message: str) -> None:
         """Update the status bar message."""
@@ -468,4 +498,5 @@ class MainScreen(Screen):
 
     def action_quit(self) -> None:
         """Quit the application."""
-        self.app.exit()
+        app = cast("App[None]", self.app)
+        app.exit()

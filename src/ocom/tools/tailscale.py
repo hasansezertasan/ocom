@@ -1,7 +1,7 @@
 """Tailscale tool implementation."""
 
 import json
-from typing import ClassVar
+from typing import ClassVar, cast, final, override
 
 from ocom.core.process import ProcessManager, ProcessResult
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
@@ -9,6 +9,7 @@ from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 __all__ = ["TailscaleTool"]
 
 
+@final
 class TailscaleTool(BaseTool):
     """Tailscale mesh VPN connection manager.
 
@@ -32,6 +33,7 @@ class TailscaleTool(BaseTool):
     # Mesh mode coexists with full-tunnel VPNs (see docstring)
     conflicts_with: ClassVar[list[str]] = []
 
+    @override
     async def check_available(self) -> bool:
         """Check if the tailscale CLI is installed and read daemon status.
 
@@ -44,11 +46,12 @@ class TailscaleTool(BaseTool):
         await self.refresh_status()
         return True
 
-    async def start(self, _config: ToolConfig) -> bool:
+    @override
+    async def start(self, config: ToolConfig) -> bool:
         """Bring the Tailscale node up.
 
         Args:
-            _config: Unused for mesh mode; reserved for future options
+            config: Unused for mesh mode; reserved for future options
                 (e.g. exit node, accept-routes).
 
         Returns:
@@ -71,6 +74,7 @@ class TailscaleTool(BaseTool):
         self._emit_output(f"Error: {self._error_message}")
         return False
 
+    @override
     async def stop(self) -> bool:
         """Bring the Tailscale node down.
 
@@ -93,6 +97,7 @@ class TailscaleTool(BaseTool):
         self._emit_output(f"Error: {self._error_message}")
         return False
 
+    @override
     async def refresh_status(self) -> ToolStatus:
         """Check Tailscale connection status via `tailscale status --json`.
 
@@ -110,8 +115,9 @@ class TailscaleTool(BaseTool):
             )
             if not result.success:
                 return self._status_from_failure(result)
-            backend_state = json.loads(result.stdout).get("BackendState", "")
-        except Exception as e:  # noqa: BLE001  # tailscale CLI/JSON can fail in many ways
+            status = cast("dict[str, object]", json.loads(result.stdout))
+            backend_state = str(status.get("BackendState", ""))
+        except Exception as e:  # noqa: BLE001  # tailscale CLI/JSON can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             return self._status

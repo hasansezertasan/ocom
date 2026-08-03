@@ -2,7 +2,7 @@
 
 import asyncio
 from pathlib import Path
-from typing import ClassVar
+from typing import ClassVar, final, override
 
 from ocom.core.process import IS_WINDOWS, ProcessManager
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
@@ -10,6 +10,7 @@ from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 __all__ = ["OpenVPNTool"]
 
 
+@final
 class OpenVPNTool(BaseTool):
     """OpenVPN connection manager.
 
@@ -32,6 +33,7 @@ class OpenVPNTool(BaseTool):
         super().__init__()
         self._output_lines: list[str] = []
 
+    @override
     async def start(self, config: ToolConfig) -> bool:
         """Start OpenVPN with the specified config file.
 
@@ -55,7 +57,7 @@ class OpenVPNTool(BaseTool):
             self._process = await ProcessManager.start_process(
                 args, on_output=self._handle_output, stdin_data=password
             )
-        except Exception as e:  # noqa: BLE001  # external process launch can fail in many ways
+        except Exception as e:  # noqa: BLE001  # external CLI can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             return False
@@ -139,6 +141,7 @@ class OpenVPNTool(BaseTool):
         self._status = ToolStatus.RUNNING
         return True
 
+    @override
     async def stop(self) -> bool:
         """Stop the OpenVPN connection.
 
@@ -157,6 +160,7 @@ class OpenVPNTool(BaseTool):
         self._status = ToolStatus.STOPPED
         return success
 
+    @override
     async def refresh_status(self) -> ToolStatus:
         """Refresh OpenVPN status.
 
@@ -178,6 +182,7 @@ class OpenVPNTool(BaseTool):
 
         return self._status
 
+    @override
     def get_config_files(self, config: ToolConfig) -> list[str]:
         """Find all .ovpn files in configured directories.
 

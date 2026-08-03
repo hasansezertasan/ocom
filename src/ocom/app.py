@@ -1,6 +1,7 @@
 """Main Textual application for ocom."""
 
 from pathlib import Path
+from typing import final
 
 from textual.app import App
 
@@ -14,7 +15,8 @@ __all__ = ["OcomApp", "run"]
 CSS_PATH = Path(__file__).parent / "styles" / "app.tcss"
 
 
-class OcomApp(App):
+@final
+class OcomApp(App[None]):
     """Network tools manager TUI application."""
 
     TITLE = "ocom"

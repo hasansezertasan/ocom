@@ -72,7 +72,7 @@ class BaseTool(ABC):
 
     def __init__(self) -> None:
         """Initialize the tool in the UNAVAILABLE state."""
-        self._status = ToolStatus.UNAVAILABLE
+        self._status: ToolStatus = ToolStatus.UNAVAILABLE
         self._process: asyncio.subprocess.Process | None = None
         self._error_message: str | None = None
         self._current_config: str | None = None
@@ -153,17 +153,20 @@ class BaseTool(ABC):
             Current ToolStatus.
         """
 
-    def get_config_files(self, _config: ToolConfig) -> list[str]:  # noqa: PLR6301  # overridable hook; subclasses use self and the config
+    def get_config_files(self, config: ToolConfig) -> list[str]:  # noqa: PLR6301
         """Get list of available config files.
 
         Override this for tools that use config files.
 
         Args:
-            _config: Tool configuration with directories to scan.
+            config: Tool configuration with directories to scan.
 
         Returns:
             List of config file paths.
         """
+        # Base hook: the default implementation ignores config; subclasses that
+        # support config files override this and read it.
+        _ = config
         return []
 
     def get_status_text(self) -> str:

@@ -32,11 +32,11 @@ def is_admin() -> bool:
 
             # windll is Windows-only and absent from ctypes' type stubs on other
             # platforms. Reach it through an Any-typed alias so mypy doesn't flag
-            # the attribute. This avoids both a `# type: ignore` (which the ruff
-            # autofix keeps relocating onto its own line, breaking mypy) and a
-            # getattr-with-constant (which ruff's B009 would rewrite back).
-            ctypes_any: Any = ctypes
-            return bool(ctypes_any.windll.shell32.IsUserAnAdmin())
+            # the attribute. This avoids both a type-ignore comment (which the
+            # ruff autofix keeps relocating onto its own line, breaking mypy) and
+            # a getattr-with-constant (which ruff's B009 would rewrite back).
+            ctypes_any: Any = ctypes  # pyright: ignore[reportExplicitAny]  # windll is Windows-only, absent from cross-platform ctypes stubs
+            return bool(ctypes_any.windll.shell32.IsUserAnAdmin())  # pyright: ignore[reportAny]  # untyped Windows-only ctypes attribute chain
         except Exception:  # noqa: BLE001  # ctypes call may fail many ways; treat as not-admin
             return False
     else:
@@ -224,7 +224,10 @@ class ProcessManager:
             )
             writer.close()
             await writer.wait_closed()
-        except TimeoutError, OSError:
+        # TimeoutError is a subclass of OSError, so this catches both a
+        # connection failure and the wait_for timeout with a single (paren-free,
+        # format-stable) exception type.
+        except OSError:
             return False
         return True
 

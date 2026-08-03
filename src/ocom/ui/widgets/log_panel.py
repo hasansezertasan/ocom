@@ -1,7 +1,7 @@
 """Log panel widget for displaying tool output."""
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, final, override
 
 from textual.widgets import RichLog, Static
 
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 __all__ = ["LogPanel"]
 
 
+@final
 class LogPanel(Static):
     """A panel for displaying logs from running tools."""
 
@@ -24,7 +25,8 @@ class LogPanel(Static):
         "SYSTEM": "bold magenta",
     }
 
-    def compose(self) -> ComposeResult:  # noqa: PLR6301  # Textual framework callback
+    @override
+    def compose(self) -> ComposeResult:  # Textual framework callback
         """Compose the log panel layout.
 
         Yields:

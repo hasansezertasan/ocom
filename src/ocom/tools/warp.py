@@ -1,6 +1,6 @@
 """Cloudflare WARP tool implementation."""
 
-from typing import ClassVar
+from typing import ClassVar, final, override
 
 from ocom.core.process import ProcessManager, ProcessResult
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
@@ -8,6 +8,7 @@ from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 __all__ = ["WarpTool"]
 
 
+@final
 class WarpTool(BaseTool):
     """Cloudflare WARP connection manager.
 
@@ -23,6 +24,7 @@ class WarpTool(BaseTool):
     install_url = "https://developers.cloudflare.com/warp-client/get-started/linux/"
     conflicts_with: ClassVar[list[str]] = ["OpenVPN"]  # Both control routing and DNS
 
+    @override
     async def check_available(self) -> bool:
         """Check if warp-cli is installed and daemon is running.
 
@@ -37,6 +39,7 @@ class WarpTool(BaseTool):
             self._status = ToolStatus.STOPPED
         return True
 
+    @override
     async def start(self, config: ToolConfig) -> bool:
         """Connect to WARP.
 
@@ -65,6 +68,7 @@ class WarpTool(BaseTool):
         self._emit_output(f"Error: {self._error_message}")
         return False
 
+    @override
     async def stop(self) -> bool:
         """Disconnect from WARP.
 
@@ -86,6 +90,7 @@ class WarpTool(BaseTool):
         self._emit_output(f"Error: {self._error_message}")
         return False
 
+    @override
     async def refresh_status(self) -> ToolStatus:
         """Check WARP connection status.
 
@@ -101,7 +106,7 @@ class WarpTool(BaseTool):
             result = await ProcessManager.run_command(
                 ["warp-cli", "status"], timeout=5.0
             )
-        except Exception as e:  # noqa: BLE001  # warp-cli can fail in many ways
+        except Exception as e:  # noqa: BLE001  # warp-cli can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             return self._status

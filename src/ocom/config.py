@@ -1,7 +1,7 @@
 """Configuration management for ocom."""
 
 from pathlib import Path
-from typing import Literal
+from typing import ClassVar, Literal, cast, override
 
 from pydantic import BaseModel, Field
 from pydantic_settings import (
@@ -102,7 +102,7 @@ class AppConfig(BaseSettings):
     # an explicit ``toml_file=``, so declaring it in ``model_config`` would be an
     # unused key. pydantic-settings warns on unused config keys, which the strict
     # ``filterwarnings = ["error"]`` test config turns into a failure.
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
 
     general: GeneralConfig = Field(default_factory=GeneralConfig)
     openvpn: OpenVPNConfig = Field(default_factory=OpenVPNConfig)
@@ -112,13 +112,14 @@ class AppConfig(BaseSettings):
     goodbyedpi: GoodbyeDPIConfig = Field(default_factory=GoodbyeDPIConfig)
 
     @classmethod
+    @override
     def settings_customise_sources(
         cls,
         settings_cls: type[BaseSettings],
         init_settings: PydanticBaseSettingsSource,
-        env_settings: PydanticBaseSettingsSource,  # noqa: ARG003  # name fixed by pydantic-settings keyword call
-        dotenv_settings: PydanticBaseSettingsSource,  # noqa: ARG003  # name fixed by pydantic-settings keyword call
-        file_secret_settings: PydanticBaseSettingsSource,  # noqa: ARG003  # name fixed by pydantic-settings keyword call
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
         """Configure settings sources.
 
@@ -148,7 +149,8 @@ class AppConfig(BaseSettings):
             Loaded AppConfig, or defaults if file doesn't exist.
         """
         if path and path.exists():
-            return cls(**TomlConfigSettingsSource(cls, toml_file=path)())
+            data: dict[str, object] = TomlConfigSettingsSource(cls, toml_file=path)()
+            return cls.model_validate(data)
         return cls()
 
     def save(self, path: Path | None = None) -> None:
@@ -192,7 +194,7 @@ class AppConfig(BaseSettings):
                 "block_quic": self.goodbyedpi.block_quic,
             },
         }
-        lines = []
+        lines: list[str] = []
         for section, values in sections.items():
             lines.append(f"[{section}]")
             for key, value in values.items():
@@ -212,5 +214,6 @@ class AppConfig(BaseSettings):
         if isinstance(value, int):
             return str(value)
         if isinstance(value, list):
-            return repr(value)
+            items = cast("list[object]", value)
+            return repr(items)
         return f'"{value}"'

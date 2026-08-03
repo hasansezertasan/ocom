@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 # -- Project information -----------------------------------------------------
 project = "ocom"
 author = "Hasan Sezer Tasan"
-copyright = f"{datetime.now(tz=UTC):%Y}, Hasan Sezer Tasan"  # noqa: A001
+copyright = f"{datetime.now(tz=UTC):%Y}, Hasan Sezer Tasan"
 
 # -- General configuration ---------------------------------------------------
 extensions = [

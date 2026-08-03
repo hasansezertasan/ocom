@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 from ocom.core.process import IS_WINDOWS
+from ocom.tools.goodbyedpi import GoodbyeDPITool
 from ocom.tools.openvpn import OpenVPNTool
 from ocom.tools.spoofdpi import SpoofDPITool
 from ocom.tools.tailscale import TailscaleTool
@@ -11,13 +12,16 @@ from ocom.tools.warp import WarpTool
 if TYPE_CHECKING:
     from ocom.core.tool import BaseTool
 
-# Conditionally import platform-specific tools
-if IS_WINDOWS:
-    from ocom.tools.goodbyedpi import GoodbyeDPITool
-
-__all__ = ["OpenVPNTool", "SpoofDPITool", "TailscaleTool", "WarpTool", "get_all_tools"]
-if IS_WINDOWS:
-    __all__ += ["GoodbyeDPITool"]
+# GoodbyeDPITool is imported unconditionally — its module imports cleanly on
+# every platform — and only instantiated on Windows (see get_all_tools).
+__all__ = [
+    "GoodbyeDPITool",
+    "OpenVPNTool",
+    "SpoofDPITool",
+    "TailscaleTool",
+    "WarpTool",
+    "get_all_tools",
+]
 
 
 def get_all_tools() -> list[BaseTool]:
@@ -27,11 +31,7 @@ def get_all_tools() -> list[BaseTool]:
         A list of tool instances suitable for the current platform.
     """
     tools: list[BaseTool] = [OpenVPNTool(), WarpTool(), TailscaleTool()]
-
-    # Add platform-specific DPI bypass tool
-    if IS_WINDOWS:
-        tools.append(GoodbyeDPITool())
-    else:
-        tools.append(SpoofDPITool())
-
+    # GoodbyeDPI (Windows) and SpoofDPI (Unix) are the mutually exclusive DPI
+    # bypass tools; only one applies per platform.
+    tools.append(GoodbyeDPITool() if IS_WINDOWS else SpoofDPITool())
     return tools
