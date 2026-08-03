@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/hasansezertasan/ocom/compare/v0.1.0...v0.1.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **deps:** update python dependencies (non-major) ([#12](https://github.com/hasansezertasan/ocom/issues/12)) ([d76d7bd](https://github.com/hasansezertasan/ocom/commit/d76d7bde347e13961f72449eded117f2b0ed6dfa))
+
 ## 0.1.0 (2026-06-20)
 
 
