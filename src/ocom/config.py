@@ -72,7 +72,11 @@ class GoodbyeDPIConfig(BaseModel):
 class AppConfig(BaseSettings):
     """Main application configuration."""
 
-    model_config = SettingsConfigDict(toml_file=get_config_path(), extra="ignore")
+    # Note: no ``toml_file`` here — both TOML sources below are constructed with
+    # an explicit ``toml_file=``, so declaring it in ``model_config`` would be an
+    # unused key. pydantic-settings warns on unused config keys, which the strict
+    # ``filterwarnings = ["error"]`` test config turns into a failure.
+    model_config = SettingsConfigDict(extra="ignore")
 
     general: GeneralConfig = Field(default_factory=GeneralConfig)
     openvpn: OpenVPNConfig = Field(default_factory=OpenVPNConfig)

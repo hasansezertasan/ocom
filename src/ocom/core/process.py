@@ -207,7 +207,7 @@ class ProcessManager:
             writer.close()
             await writer.wait_closed()
             return True
-        except TimeoutError, OSError:
+        except (TimeoutError, OSError):
             return False
 
 
