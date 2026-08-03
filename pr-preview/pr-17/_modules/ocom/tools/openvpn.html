@@ -116,7 +116,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">final</span><span class="p">,</span> <span class="n">override</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.process</span><span class="w"> </span><span class="kn">import</span> <span class="n">IS_WINDOWS</span><span class="p">,</span> <span class="n">ProcessManager</span>
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">ToolConfig</span><span class="p">,</span> <span class="n">ToolStatus</span>
@@ -126,212 +126,217 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="12">
 <div class="viewcode-block" id="OpenVPNTool">
 <a class="viewcode-back" href="../../../modules.html#ocom.tools.OpenVPNTool">[docs]</a>
-</span><span data-line="13"><span class="k">class</span><span class="w"> </span><span class="nc">OpenVPNTool</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
-</span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;OpenVPN connection manager.</span>
-</span><span data-line="15">
-</span><span data-line="16"><span class="sd">    Manages OpenVPN connections using .ovpn configuration files.</span>
-</span><span data-line="17"><span class="sd">    Requires sudo on Unix, Administrator on Windows.</span>
-</span><span data-line="18"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="19">
-</span><span data-line="20">    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;OpenVPN&quot;</span>
-</span><span data-line="21">    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Secure VPN tunneling&quot;</span>
-</span><span data-line="22">    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;openvpn&quot;</span>
-</span><span data-line="23">    <span class="c1"># Unix needs sudo, Windows needs Admin (handled separately)</span>
-</span><span data-line="24">    <span class="n">requires_sudo</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">IS_WINDOWS</span>
-</span><span data-line="25">    <span class="n">supports_configs</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="26">    <span class="n">config_extensions</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.ovpn&quot;</span><span class="p">,</span> <span class="s2">&quot;.conf&quot;</span><span class="p">]</span>
-</span><span data-line="27">    <span class="n">install_url</span> <span class="o">=</span> <span class="s2">&quot;https://openvpn.net/community-resources/installing-openvpn/&quot;</span>
-</span><span data-line="28">    <span class="n">conflicts_with</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;WARP&quot;</span><span class="p">]</span>  <span class="c1"># Both control routing and DNS</span>
-</span><span data-line="29">
-</span><span data-line="30">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="31"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the OpenVPN tool with an empty output buffer.&quot;&quot;&quot;</span>
-</span><span data-line="32">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</span><span data-line="33">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="34">
+</span><span data-line="13"><span class="nd">@final</span>
+</span><span data-line="14"><span class="k">class</span><span class="w"> </span><span class="nc">OpenVPNTool</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+</span><span data-line="15"><span class="w">    </span><span class="sd">&quot;&quot;&quot;OpenVPN connection manager.</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="sd">    Manages OpenVPN connections using .ovpn configuration files.</span>
+</span><span data-line="18"><span class="sd">    Requires sudo on Unix, Administrator on Windows.</span>
+</span><span data-line="19"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;OpenVPN&quot;</span>
+</span><span data-line="22">    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Secure VPN tunneling&quot;</span>
+</span><span data-line="23">    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;openvpn&quot;</span>
+</span><span data-line="24">    <span class="c1"># Unix needs sudo, Windows needs Admin (handled separately)</span>
+</span><span data-line="25">    <span class="n">requires_sudo</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">IS_WINDOWS</span>
+</span><span data-line="26">    <span class="n">supports_configs</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="27">    <span class="n">config_extensions</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.ovpn&quot;</span><span class="p">,</span> <span class="s2">&quot;.conf&quot;</span><span class="p">]</span>
+</span><span data-line="28">    <span class="n">install_url</span> <span class="o">=</span> <span class="s2">&quot;https://openvpn.net/community-resources/installing-openvpn/&quot;</span>
+</span><span data-line="29">    <span class="n">conflicts_with</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;WARP&quot;</span><span class="p">]</span>  <span class="c1"># Both control routing and DNS</span>
+</span><span data-line="30">
+</span><span data-line="31">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="32"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the OpenVPN tool with an empty output buffer.&quot;&quot;&quot;</span>
+</span><span data-line="33">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span><span data-line="34">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="35">
 <div class="viewcode-block" id="OpenVPNTool.start">
 <a class="viewcode-back" href="../../../modules.html#ocom.tools.OpenVPNTool.start">[docs]</a>
-</span><span data-line="35">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="36"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Start OpenVPN with the specified config file.</span>
-</span><span data-line="37">
-</span><span data-line="38"><span class="sd">        Args:</span>
-</span><span data-line="39"><span class="sd">            config: Must have config_file set to an .ovpn path.</span>
-</span><span data-line="40">
-</span><span data-line="41"><span class="sd">        Returns:</span>
-</span><span data-line="42"><span class="sd">            True if connection initiated successfully.</span>
-</span><span data-line="43"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="44">        <span class="n">config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="45">        <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="46">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="47">
-</span><span data-line="48">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span>
-</span><span data-line="49">        <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span> <span class="o">=</span> <span class="n">config_path</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="50">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span data-line="51">
-</span><span data-line="52">        <span class="n">args</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_command</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span>
+</span><span data-line="36">    <span class="nd">@override</span>
+</span><span data-line="37">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="38"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Start OpenVPN with the specified config file.</span>
+</span><span data-line="39">
+</span><span data-line="40"><span class="sd">        Args:</span>
+</span><span data-line="41"><span class="sd">            config: Must have config_file set to an .ovpn path.</span>
+</span><span data-line="42">
+</span><span data-line="43"><span class="sd">        Returns:</span>
+</span><span data-line="44"><span class="sd">            True if connection initiated successfully.</span>
+</span><span data-line="45"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="46">        <span class="n">config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="47">        <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="48">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="49">
+</span><span data-line="50">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span>
+</span><span data-line="51">        <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span> <span class="o">=</span> <span class="n">config_path</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="52">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 </span><span data-line="53">
-</span><span data-line="54">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="55">            <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">start_process</span><span class="p">(</span>
-</span><span data-line="56">                <span class="n">args</span><span class="p">,</span> <span class="n">on_output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">,</span> <span class="n">stdin_data</span><span class="o">=</span><span class="n">password</span>
-</span><span data-line="57">            <span class="p">)</span>
-</span><span data-line="58">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001  # external process launch can fail in many ways</span>
-</span><span data-line="59">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
-</span><span data-line="60">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-</span><span data-line="61">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="62">
-</span><span data-line="63">        <span class="c1"># Wait briefly for initial connection attempt</span>
-</span><span data-line="64">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</span><span data-line="65">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_start</span><span class="p">()</span></div>
+</span><span data-line="54">        <span class="n">args</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_command</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span>
+</span><span data-line="55">
+</span><span data-line="56">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="57">            <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">start_process</span><span class="p">(</span>
+</span><span data-line="58">                <span class="n">args</span><span class="p">,</span> <span class="n">on_output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">,</span> <span class="n">stdin_data</span><span class="o">=</span><span class="n">password</span>
+</span><span data-line="59">            <span class="p">)</span>
+</span><span data-line="60">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001  # external CLI can fail many ways</span>
+</span><span data-line="61">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
+</span><span data-line="62">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span data-line="63">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="64">
+</span><span data-line="65">        <span class="c1"># Wait briefly for initial connection attempt</span>
+</span><span data-line="66">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span data-line="67">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_start</span><span class="p">()</span></div>
 
-</span><span data-line="66">
-</span><span data-line="67">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="68"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the selected config file and resolve its path.</span>
-</span><span data-line="69">
-</span><span data-line="70"><span class="sd">        Args:</span>
-</span><span data-line="71"><span class="sd">            config: Tool configuration to validate.</span>
-</span><span data-line="72">
-</span><span data-line="73"><span class="sd">        Returns:</span>
-</span><span data-line="74"><span class="sd">            The resolved config path, or None if it is missing or invalid.</span>
-</span><span data-line="75"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="76">        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">config_file</span><span class="p">:</span>
-</span><span data-line="77">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
-</span><span data-line="78">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="s2">&quot;No config file selected&quot;</span>
-</span><span data-line="79">            <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="80">
-</span><span data-line="81">        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-</span><span data-line="82">        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-</span><span data-line="83">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
-</span><span data-line="84">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Config file not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="85">            <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="86">
-</span><span data-line="87">        <span class="k">return</span> <span class="n">config_path</span>
+</span><span data-line="68">
+</span><span data-line="69">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="70"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the selected config file and resolve its path.</span>
+</span><span data-line="71">
+</span><span data-line="72"><span class="sd">        Args:</span>
+</span><span data-line="73"><span class="sd">            config: Tool configuration to validate.</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="sd">        Returns:</span>
+</span><span data-line="76"><span class="sd">            The resolved config path, or None if it is missing or invalid.</span>
+</span><span data-line="77"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="78">        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">config_file</span><span class="p">:</span>
+</span><span data-line="79">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
+</span><span data-line="80">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="s2">&quot;No config file selected&quot;</span>
+</span><span data-line="81">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="82">
+</span><span data-line="83">        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+</span><span data-line="84">        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="85">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
+</span><span data-line="86">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Config file not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="87">            <span class="k">return</span> <span class="kc">None</span>
 </span><span data-line="88">
-</span><span data-line="89">    <span class="nd">@staticmethod</span>
-</span><span data-line="90">    <span class="k">def</span><span class="w"> </span><span class="nf">_build_command</span><span class="p">(</span>
-</span><span data-line="91">        <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">,</span> <span class="n">config_path</span><span class="p">:</span> <span class="n">Path</span>
-</span><span data-line="92">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="93"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the OpenVPN command and optional sudo password.</span>
-</span><span data-line="94">
-</span><span data-line="95"><span class="sd">        Args:</span>
-</span><span data-line="96"><span class="sd">            config: Tool configuration providing extra args and options.</span>
-</span><span data-line="97"><span class="sd">            config_path: Resolved path to the .ovpn config file.</span>
-</span><span data-line="98">
-</span><span data-line="99"><span class="sd">        Returns:</span>
-</span><span data-line="100"><span class="sd">            A tuple of the command args and the sudo password (or None).</span>
-</span><span data-line="101"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="102">        <span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
-</span><span data-line="103">            <span class="c1"># Windows: run directly (requires running as Administrator)</span>
-</span><span data-line="104">            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;openvpn&quot;</span><span class="p">,</span> <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">)]</span>
-</span><span data-line="105">            <span class="n">password</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="106">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="107">            <span class="c1"># Unix: use sudo -S (read password from stdin)</span>
-</span><span data-line="108">            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sudo&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="s2">&quot;openvpn&quot;</span><span class="p">,</span> <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">)]</span>
-</span><span data-line="109">            <span class="n">sudo_password</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sudo_password&quot;</span><span class="p">)</span>
-</span><span data-line="110">            <span class="n">password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sudo_password</span><span class="p">)</span> <span class="k">if</span> <span class="n">sudo_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="111">
-</span><span data-line="112">        <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">extra_args</span><span class="p">)</span>
-</span><span data-line="113">        <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">password</span>
-</span><span data-line="114">
-</span><span data-line="115">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="116"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the process state after the initial connection attempt.</span>
-</span><span data-line="117">
-</span><span data-line="118"><span class="sd">        Returns:</span>
-</span><span data-line="119"><span class="sd">            True if the connection is up (or still initializing).</span>
-</span><span data-line="120"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="121">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">is_process_running</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">):</span>
-</span><span data-line="122">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
-</span><span data-line="123">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="s2">&quot;Process exited unexpectedly&quot;</span>
-</span><span data-line="124">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="125">
-</span><span data-line="126">        <span class="c1"># Check output for success/failure indicators. A completed</span>
-</span><span data-line="127">        <span class="c1"># initialization wins even if AUTH_FAILED also appears in the log.</span>
-</span><span data-line="128">        <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="p">)</span>
-</span><span data-line="129">        <span class="k">if</span> <span class="p">(</span>
-</span><span data-line="130">            <span class="s2">&quot;Initialization Sequence Completed&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span>
-</span><span data-line="131">            <span class="ow">and</span> <span class="s2">&quot;AUTH_FAILED&quot;</span> <span class="ow">in</span> <span class="n">output</span>
-</span><span data-line="132">        <span class="p">):</span>
-</span><span data-line="133">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
-</span><span data-line="134">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="s2">&quot;Authentication failed&quot;</span>
-</span><span data-line="135">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-</span><span data-line="136">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="137">
-</span><span data-line="138">        <span class="c1"># Initialized, or still connecting: assume success for now.</span>
-</span><span data-line="139">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
-</span><span data-line="140">        <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="141">
+</span><span data-line="89">        <span class="k">return</span> <span class="n">config_path</span>
+</span><span data-line="90">
+</span><span data-line="91">    <span class="nd">@staticmethod</span>
+</span><span data-line="92">    <span class="k">def</span><span class="w"> </span><span class="nf">_build_command</span><span class="p">(</span>
+</span><span data-line="93">        <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">,</span> <span class="n">config_path</span><span class="p">:</span> <span class="n">Path</span>
+</span><span data-line="94">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="95"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the OpenVPN command and optional sudo password.</span>
+</span><span data-line="96">
+</span><span data-line="97"><span class="sd">        Args:</span>
+</span><span data-line="98"><span class="sd">            config: Tool configuration providing extra args and options.</span>
+</span><span data-line="99"><span class="sd">            config_path: Resolved path to the .ovpn config file.</span>
+</span><span data-line="100">
+</span><span data-line="101"><span class="sd">        Returns:</span>
+</span><span data-line="102"><span class="sd">            A tuple of the command args and the sudo password (or None).</span>
+</span><span data-line="103"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="104">        <span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+</span><span data-line="105">            <span class="c1"># Windows: run directly (requires running as Administrator)</span>
+</span><span data-line="106">            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;openvpn&quot;</span><span class="p">,</span> <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">)]</span>
+</span><span data-line="107">            <span class="n">password</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="108">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="109">            <span class="c1"># Unix: use sudo -S (read password from stdin)</span>
+</span><span data-line="110">            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sudo&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="s2">&quot;openvpn&quot;</span><span class="p">,</span> <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">)]</span>
+</span><span data-line="111">            <span class="n">sudo_password</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sudo_password&quot;</span><span class="p">)</span>
+</span><span data-line="112">            <span class="n">password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sudo_password</span><span class="p">)</span> <span class="k">if</span> <span class="n">sudo_password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="113">
+</span><span data-line="114">        <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">extra_args</span><span class="p">)</span>
+</span><span data-line="115">        <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">password</span>
+</span><span data-line="116">
+</span><span data-line="117">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="118"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the process state after the initial connection attempt.</span>
+</span><span data-line="119">
+</span><span data-line="120"><span class="sd">        Returns:</span>
+</span><span data-line="121"><span class="sd">            True if the connection is up (or still initializing).</span>
+</span><span data-line="122"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="123">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">is_process_running</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">):</span>
+</span><span data-line="124">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
+</span><span data-line="125">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="s2">&quot;Process exited unexpectedly&quot;</span>
+</span><span data-line="126">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="127">
+</span><span data-line="128">        <span class="c1"># Check output for success/failure indicators. A completed</span>
+</span><span data-line="129">        <span class="c1"># initialization wins even if AUTH_FAILED also appears in the log.</span>
+</span><span data-line="130">        <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="p">)</span>
+</span><span data-line="131">        <span class="k">if</span> <span class="p">(</span>
+</span><span data-line="132">            <span class="s2">&quot;Initialization Sequence Completed&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span>
+</span><span data-line="133">            <span class="ow">and</span> <span class="s2">&quot;AUTH_FAILED&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+</span><span data-line="134">        <span class="p">):</span>
+</span><span data-line="135">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
+</span><span data-line="136">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="s2">&quot;Authentication failed&quot;</span>
+</span><span data-line="137">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span data-line="138">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="139">
+</span><span data-line="140">        <span class="c1"># Initialized, or still connecting: assume success for now.</span>
+</span><span data-line="141">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
+</span><span data-line="142">        <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="143">
 <div class="viewcode-block" id="OpenVPNTool.stop">
 <a class="viewcode-back" href="../../../modules.html#ocom.tools.OpenVPNTool.stop">[docs]</a>
-</span><span data-line="142">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="143"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the OpenVPN connection.</span>
-</span><span data-line="144">
-</span><span data-line="145"><span class="sd">        Returns:</span>
-</span><span data-line="146"><span class="sd">            True if the connection was stopped.</span>
-</span><span data-line="147"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="148">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="149">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
-</span><span data-line="150">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="151">
-</span><span data-line="152">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span>
-</span><span data-line="153">
-</span><span data-line="154">        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">)</span>
-</span><span data-line="155">        <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="156">        <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="157">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
-</span><span data-line="158">        <span class="k">return</span> <span class="n">success</span></div>
+</span><span data-line="144">    <span class="nd">@override</span>
+</span><span data-line="145">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="146"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the OpenVPN connection.</span>
+</span><span data-line="147">
+</span><span data-line="148"><span class="sd">        Returns:</span>
+</span><span data-line="149"><span class="sd">            True if the connection was stopped.</span>
+</span><span data-line="150"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="151">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="152">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+</span><span data-line="153">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="154">
+</span><span data-line="155">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span>
+</span><span data-line="156">
+</span><span data-line="157">        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">)</span>
+</span><span data-line="158">        <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="159">        <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="160">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+</span><span data-line="161">        <span class="k">return</span> <span class="n">success</span></div>
 
-</span><span data-line="159">
+</span><span data-line="162">
 <div class="viewcode-block" id="OpenVPNTool.refresh_status">
 <a class="viewcode-back" href="../../../modules.html#ocom.tools.OpenVPNTool.refresh_status">[docs]</a>
-</span><span data-line="160">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ToolStatus</span><span class="p">:</span>
-</span><span data-line="161"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh OpenVPN status.</span>
-</span><span data-line="162">
-</span><span data-line="163"><span class="sd">        Returns:</span>
-</span><span data-line="164"><span class="sd">            The current ToolStatus.</span>
-</span><span data-line="165"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="166">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
-</span><span data-line="167">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_available</span><span class="p">()</span>
-</span><span data-line="168">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span>
-</span><span data-line="169">
-</span><span data-line="170">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="171">            <span class="k">if</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">is_process_running</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">):</span>
-</span><span data-line="172">                <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
-</span><span data-line="173">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="174">                <span class="c1"># Process died</span>
-</span><span data-line="175">                <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
-</span><span data-line="176">                <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="177">                <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="178">
-</span><span data-line="179">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span></div>
+</span><span data-line="163">    <span class="nd">@override</span>
+</span><span data-line="164">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ToolStatus</span><span class="p">:</span>
+</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh OpenVPN status.</span>
+</span><span data-line="166">
+</span><span data-line="167"><span class="sd">        Returns:</span>
+</span><span data-line="168"><span class="sd">            The current ToolStatus.</span>
+</span><span data-line="169"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="170">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+</span><span data-line="171">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_available</span><span class="p">()</span>
+</span><span data-line="172">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span>
+</span><span data-line="173">
+</span><span data-line="174">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="175">            <span class="k">if</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">is_process_running</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">):</span>
+</span><span data-line="176">                <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
+</span><span data-line="177">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="178">                <span class="c1"># Process died</span>
+</span><span data-line="179">                <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+</span><span data-line="180">                <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="181">                <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="182">
+</span><span data-line="183">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span></div>
 
-</span><span data-line="180">
+</span><span data-line="184">
 <div class="viewcode-block" id="OpenVPNTool.get_config_files">
 <a class="viewcode-back" href="../../../modules.html#ocom.tools.OpenVPNTool.get_config_files">[docs]</a>
-</span><span data-line="181">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="182"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all .ovpn files in configured directories.</span>
-</span><span data-line="183">
-</span><span data-line="184"><span class="sd">        Args:</span>
-</span><span data-line="185"><span class="sd">            config: Tool configuration listing directories to scan.</span>
-</span><span data-line="186">
-</span><span data-line="187"><span class="sd">        Returns:</span>
-</span><span data-line="188"><span class="sd">            A sorted list of matching config file paths.</span>
-</span><span data-line="189"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="190">        <span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="185">    <span class="nd">@override</span>
+</span><span data-line="186">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="187"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all .ovpn files in configured directories.</span>
+</span><span data-line="188">
+</span><span data-line="189"><span class="sd">        Args:</span>
+</span><span data-line="190"><span class="sd">            config: Tool configuration listing directories to scan.</span>
 </span><span data-line="191">
-</span><span data-line="192">        <span class="k">for</span> <span class="n">dir_path</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">:</span>
-</span><span data-line="193">            <span class="n">expanded</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-</span><span data-line="194">            <span class="k">if</span> <span class="ow">not</span> <span class="n">expanded</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-</span><span data-line="195">                <span class="k">continue</span>
+</span><span data-line="192"><span class="sd">        Returns:</span>
+</span><span data-line="193"><span class="sd">            A sorted list of matching config file paths.</span>
+</span><span data-line="194"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="195">        <span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span data-line="196">
-</span><span data-line="197">            <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_extensions</span><span class="p">:</span>
-</span><span data-line="198">                <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">expanded</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
-</span><span data-line="199">
-</span><span data-line="200">        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span></div>
-
+</span><span data-line="197">        <span class="k">for</span> <span class="n">dir_path</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">:</span>
+</span><span data-line="198">            <span class="n">expanded</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+</span><span data-line="199">            <span class="k">if</span> <span class="ow">not</span> <span class="n">expanded</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="200">                <span class="k">continue</span>
 </span><span data-line="201">
-</span><span data-line="202">    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="203"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle output from OpenVPN process.&quot;&quot;&quot;</span>
-</span><span data-line="204">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-</span><span data-line="205">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">:]</span>  <span class="c1"># Keep only last 100 lines</span>
-</span><span data-line="206">        <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+</span><span data-line="202">            <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_extensions</span><span class="p">:</span>
+</span><span data-line="203">                <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">expanded</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+</span><span data-line="204">
+</span><span data-line="205">        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span></div>
+
+</span><span data-line="206">
+</span><span data-line="207">    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="208"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle output from OpenVPN process.&quot;&quot;&quot;</span>
+</span><span data-line="209">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span><span data-line="210">        <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_lines</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">:]</span>  <span class="c1"># Keep only last 100 lines</span>
+</span><span data-line="211">        <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

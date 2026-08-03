@@ -115,49 +115,51 @@ data-aria-dark="Switch to auto color mode">
 <span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Main Textual application for ocom.&quot;&quot;&quot;</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.ui.screens.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainScreen</span>
-</span><span data-line="9">
-</span><span data-line="10"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;OcomApp&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">]</span>
-</span><span data-line="11">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">final</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">textual.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.ui.screens.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainScreen</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;OcomApp&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">]</span>
 </span><span data-line="12">
-</span><span data-line="13"><span class="c1"># Path to the TCSS file</span>
-</span><span data-line="14"><span class="n">CSS_PATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;styles&quot;</span> <span class="o">/</span> <span class="s2">&quot;app.tcss&quot;</span>
-</span><span data-line="15">
+</span><span data-line="13">
+</span><span data-line="14"><span class="c1"># Path to the TCSS file</span>
+</span><span data-line="15"><span class="n">CSS_PATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;styles&quot;</span> <span class="o">/</span> <span class="s2">&quot;app.tcss&quot;</span>
 </span><span data-line="16">
+</span><span data-line="17">
 <div class="viewcode-block" id="OcomApp">
 <a class="viewcode-back" href="../../modules.html#ocom.app.OcomApp">[docs]</a>
-</span><span data-line="17"><span class="k">class</span><span class="w"> </span><span class="nc">OcomApp</span><span class="p">(</span><span class="n">App</span><span class="p">):</span>
-</span><span data-line="18"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Network tools manager TUI application.&quot;&quot;&quot;</span>
-</span><span data-line="19">
-</span><span data-line="20">    <span class="n">TITLE</span> <span class="o">=</span> <span class="s2">&quot;ocom&quot;</span>
-</span><span data-line="21">    <span class="n">SUB_TITLE</span> <span class="o">=</span> <span class="s2">&quot;Network Tools Manager&quot;</span>
-</span><span data-line="22">
-</span><span data-line="23">    <span class="n">CSS_PATH</span> <span class="o">=</span> <span class="n">CSS_PATH</span> <span class="k">if</span> <span class="n">CSS_PATH</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="18"><span class="nd">@final</span>
+</span><span data-line="19"><span class="k">class</span><span class="w"> </span><span class="nc">OcomApp</span><span class="p">(</span><span class="n">App</span><span class="p">[</span><span class="kc">None</span><span class="p">]):</span>
+</span><span data-line="20"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Network tools manager TUI application.&quot;&quot;&quot;</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="n">TITLE</span> <span class="o">=</span> <span class="s2">&quot;ocom&quot;</span>
+</span><span data-line="23">    <span class="n">SUB_TITLE</span> <span class="o">=</span> <span class="s2">&quot;Network Tools Manager&quot;</span>
 </span><span data-line="24">
-</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">AppConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="26"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the app, loading config from disk when none is given.&quot;&quot;&quot;</span>
-</span><span data-line="27">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</span><span data-line="28">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="n">AppConfig</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-</span><span data-line="29">
+</span><span data-line="25">    <span class="n">CSS_PATH</span> <span class="o">=</span> <span class="n">CSS_PATH</span> <span class="k">if</span> <span class="n">CSS_PATH</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="26">
+</span><span data-line="27">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">AppConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="28"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the app, loading config from disk when none is given.&quot;&quot;&quot;</span>
+</span><span data-line="29">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span><span data-line="30">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="n">AppConfig</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</span><span data-line="31">
 <div class="viewcode-block" id="OcomApp.on_mount">
 <a class="viewcode-back" href="../../modules.html#ocom.app.OcomApp.on_mount">[docs]</a>
-</span><span data-line="30">    <span class="k">def</span><span class="w"> </span><span class="nf">on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="31"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Push the main screen on startup.&quot;&quot;&quot;</span>
-</span><span data-line="32">        <span class="bp">self</span><span class="o">.</span><span class="n">push_screen</span><span class="p">(</span><span class="n">MainScreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span></div>
+</span><span data-line="32">    <span class="k">def</span><span class="w"> </span><span class="nf">on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="33"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Push the main screen on startup.&quot;&quot;&quot;</span>
+</span><span data-line="34">        <span class="bp">self</span><span class="o">.</span><span class="n">push_screen</span><span class="p">(</span><span class="n">MainScreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span></div>
 </div>
 
-</span><span data-line="33">
-</span><span data-line="34">
+</span><span data-line="35">
+</span><span data-line="36">
 <div class="viewcode-block" id="run">
 <a class="viewcode-back" href="../../modules.html#ocom.app.run">[docs]</a>
-</span><span data-line="35"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="36"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the ocom application.&quot;&quot;&quot;</span>
-</span><span data-line="37">    <span class="n">app</span> <span class="o">=</span> <span class="n">OcomApp</span><span class="p">()</span>
-</span><span data-line="38">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+</span><span data-line="37"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the ocom application.&quot;&quot;&quot;</span>
+</span><span data-line="39">    <span class="n">app</span> <span class="o">=</span> <span class="n">OcomApp</span><span class="p">()</span>
+</span><span data-line="40">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

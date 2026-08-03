@@ -148,11 +148,11 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="32">
 </span><span data-line="33">            <span class="c1"># windll is Windows-only and absent from ctypes&#39; type stubs on other</span>
 </span><span data-line="34">            <span class="c1"># platforms. Reach it through an Any-typed alias so mypy doesn&#39;t flag</span>
-</span><span data-line="35">            <span class="c1"># the attribute. This avoids both a `# type: ignore` (which the ruff</span>
-</span><span data-line="36">            <span class="c1"># autofix keeps relocating onto its own line, breaking mypy) and a</span>
-</span><span data-line="37">            <span class="c1"># getattr-with-constant (which ruff&#39;s B009 would rewrite back).</span>
-</span><span data-line="38">            <span class="n">ctypes_any</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">ctypes</span>
-</span><span data-line="39">            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ctypes_any</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">shell32</span><span class="o">.</span><span class="n">IsUserAnAdmin</span><span class="p">())</span>
+</span><span data-line="35">            <span class="c1"># the attribute. This avoids both a type-ignore comment (which the</span>
+</span><span data-line="36">            <span class="c1"># ruff autofix keeps relocating onto its own line, breaking mypy) and</span>
+</span><span data-line="37">            <span class="c1"># a getattr-with-constant (which ruff&#39;s B009 would rewrite back).</span>
+</span><span data-line="38">            <span class="n">ctypes_any</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">ctypes</span>  <span class="c1"># pyright: ignore[reportExplicitAny]  # windll is Windows-only, absent from cross-platform ctypes stubs</span>
+</span><span data-line="39">            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ctypes_any</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">shell32</span><span class="o">.</span><span class="n">IsUserAnAdmin</span><span class="p">())</span>  <span class="c1"># pyright: ignore[reportAny]  # untyped Windows-only ctypes attribute chain</span>
 </span><span data-line="40">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001  # ctypes call may fail many ways; treat as not-admin</span>
 </span><span data-line="41">            <span class="k">return</span> <span class="kc">False</span>
 </span><span data-line="42">    <span class="k">else</span><span class="p">:</span>
@@ -360,22 +360,25 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="224">            <span class="p">)</span>
 </span><span data-line="225">            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span><span data-line="226">            <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
-</span><span data-line="227">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="228">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="229">        <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="227">        <span class="c1"># TimeoutError is a subclass of OSError, so this catches both a</span>
+</span><span data-line="228">        <span class="c1"># connection failure and the wait_for timeout with a single (paren-free,</span>
+</span><span data-line="229">        <span class="c1"># format-stable) exception type.</span>
+</span><span data-line="230">        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="231">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="232">        <span class="k">return</span> <span class="kc">True</span></div>
 </div>
 
-</span><span data-line="230">
-</span><span data-line="231">
-</span><span data-line="232"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_output</span><span class="p">(</span>
-</span><span data-line="233">    <span class="n">stream</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
-</span><span data-line="234"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="235"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Read lines from a stream and call callback for each.&quot;&quot;&quot;</span>
-</span><span data-line="236">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="237">        <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span data-line="238">        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
-</span><span data-line="239">            <span class="k">break</span>
-</span><span data-line="240">        <span class="n">callback</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span data-line="233">
+</span><span data-line="234">
+</span><span data-line="235"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_output</span><span class="p">(</span>
+</span><span data-line="236">    <span class="n">stream</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+</span><span data-line="237"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="238"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Read lines from a stream and call callback for each.&quot;&quot;&quot;</span>
+</span><span data-line="239">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="240">        <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="241">        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+</span><span data-line="242">            <span class="k">break</span>
+</span><span data-line="243">        <span class="n">callback</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

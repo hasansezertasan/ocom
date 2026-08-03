@@ -115,7 +115,7 @@ data-aria-dark="Switch to auto color mode">
 <span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Configuration management for ocom.&quot;&quot;&quot;</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">override</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -242,7 +242,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="102">    <span class="c1"># an explicit ``toml_file=``, so declaring it in ``model_config`` would be an</span>
 </span><span data-line="103">    <span class="c1"># unused key. pydantic-settings warns on unused config keys, which the strict</span>
 </span><span data-line="104">    <span class="c1"># ``filterwarnings = [&quot;error&quot;]`` test config turns into a failure.</span>
-</span><span data-line="105">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+</span><span data-line="105">    <span class="n">model_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">SettingsConfigDict</span><span class="p">]</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </span><span data-line="106">
 </span><span data-line="107">    <span class="n">general</span><span class="p">:</span> <span class="n">GeneralConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">GeneralConfig</span><span class="p">)</span>
 </span><span data-line="108">    <span class="n">openvpn</span><span class="p">:</span> <span class="n">OpenVPNConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">OpenVPNConfig</span><span class="p">)</span>
@@ -254,115 +254,118 @@ data-aria-dark="Switch to auto color mode">
 <div class="viewcode-block" id="AppConfig.settings_customise_sources">
 <a class="viewcode-back" href="../../modules.html#ocom.config.AppConfig.settings_customise_sources">[docs]</a>
 </span><span data-line="114">    <span class="nd">@classmethod</span>
-</span><span data-line="115">    <span class="k">def</span><span class="w"> </span><span class="nf">settings_customise_sources</span><span class="p">(</span>
-</span><span data-line="116">        <span class="bp">cls</span><span class="p">,</span>
-</span><span data-line="117">        <span class="n">settings_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseSettings</span><span class="p">],</span>
-</span><span data-line="118">        <span class="n">init_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>
-</span><span data-line="119">        <span class="n">env_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>  <span class="c1"># noqa: ARG003  # name fixed by pydantic-settings keyword call</span>
-</span><span data-line="120">        <span class="n">dotenv_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>  <span class="c1"># noqa: ARG003  # name fixed by pydantic-settings keyword call</span>
-</span><span data-line="121">        <span class="n">file_secret_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>  <span class="c1"># noqa: ARG003  # name fixed by pydantic-settings keyword call</span>
-</span><span data-line="122">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PydanticBaseSettingsSource</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-</span><span data-line="123"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Configure settings sources.</span>
-</span><span data-line="124">
-</span><span data-line="125"><span class="sd">        Values passed explicitly (``init_settings``) take priority so that</span>
-</span><span data-line="126"><span class="sd">        ``load(path)`` can supply file contents directly; the default config at</span>
-</span><span data-line="127"><span class="sd">        ``get_config_path()`` is used as a fallback when it exists.</span>
-</span><span data-line="128">
-</span><span data-line="129"><span class="sd">        Returns:</span>
-</span><span data-line="130"><span class="sd">            The ordered tuple of settings sources to read from.</span>
-</span><span data-line="131"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="132">        <span class="n">toml_path</span> <span class="o">=</span> <span class="n">get_config_path</span><span class="p">()</span>
-</span><span data-line="133">        <span class="k">if</span> <span class="n">toml_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-</span><span data-line="134">            <span class="k">return</span> <span class="p">(</span>
-</span><span data-line="135">                <span class="n">init_settings</span><span class="p">,</span>
-</span><span data-line="136">                <span class="n">TomlConfigSettingsSource</span><span class="p">(</span><span class="n">settings_cls</span><span class="p">,</span> <span class="n">toml_file</span><span class="o">=</span><span class="n">toml_path</span><span class="p">),</span>
-</span><span data-line="137">            <span class="p">)</span>
-</span><span data-line="138">        <span class="k">return</span> <span class="p">(</span><span class="n">init_settings</span><span class="p">,)</span></div>
+</span><span data-line="115">    <span class="nd">@override</span>
+</span><span data-line="116">    <span class="k">def</span><span class="w"> </span><span class="nf">settings_customise_sources</span><span class="p">(</span>
+</span><span data-line="117">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="118">        <span class="n">settings_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseSettings</span><span class="p">],</span>
+</span><span data-line="119">        <span class="n">init_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>
+</span><span data-line="120">        <span class="n">env_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>
+</span><span data-line="121">        <span class="n">dotenv_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>
+</span><span data-line="122">        <span class="n">file_secret_settings</span><span class="p">:</span> <span class="n">PydanticBaseSettingsSource</span><span class="p">,</span>
+</span><span data-line="123">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PydanticBaseSettingsSource</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="124"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Configure settings sources.</span>
+</span><span data-line="125">
+</span><span data-line="126"><span class="sd">        Values passed explicitly (``init_settings``) take priority so that</span>
+</span><span data-line="127"><span class="sd">        ``load(path)`` can supply file contents directly; the default config at</span>
+</span><span data-line="128"><span class="sd">        ``get_config_path()`` is used as a fallback when it exists.</span>
+</span><span data-line="129">
+</span><span data-line="130"><span class="sd">        Returns:</span>
+</span><span data-line="131"><span class="sd">            The ordered tuple of settings sources to read from.</span>
+</span><span data-line="132"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="133">        <span class="n">toml_path</span> <span class="o">=</span> <span class="n">get_config_path</span><span class="p">()</span>
+</span><span data-line="134">        <span class="k">if</span> <span class="n">toml_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="135">            <span class="k">return</span> <span class="p">(</span>
+</span><span data-line="136">                <span class="n">init_settings</span><span class="p">,</span>
+</span><span data-line="137">                <span class="n">TomlConfigSettingsSource</span><span class="p">(</span><span class="n">settings_cls</span><span class="p">,</span> <span class="n">toml_file</span><span class="o">=</span><span class="n">toml_path</span><span class="p">),</span>
+</span><span data-line="138">            <span class="p">)</span>
+</span><span data-line="139">        <span class="k">return</span> <span class="p">(</span><span class="n">init_settings</span><span class="p">,)</span></div>
 
-</span><span data-line="139">
+</span><span data-line="140">
 <div class="viewcode-block" id="AppConfig.load">
 <a class="viewcode-back" href="../../modules.html#ocom.config.AppConfig.load">[docs]</a>
-</span><span data-line="140">    <span class="nd">@classmethod</span>
-</span><span data-line="141">    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-</span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from TOML file.</span>
-</span><span data-line="143">
-</span><span data-line="144"><span class="sd">        Args:</span>
-</span><span data-line="145"><span class="sd">            path: Path to config file. Uses default if None.</span>
-</span><span data-line="146">
-</span><span data-line="147"><span class="sd">        Returns:</span>
-</span><span data-line="148"><span class="sd">            Loaded AppConfig, or defaults if file doesn&#39;t exist.</span>
-</span><span data-line="149"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="150">        <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-</span><span data-line="151">            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">TomlConfigSettingsSource</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">toml_file</span><span class="o">=</span><span class="n">path</span><span class="p">)())</span>
-</span><span data-line="152">        <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span></div>
+</span><span data-line="141">    <span class="nd">@classmethod</span>
+</span><span data-line="142">    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+</span><span data-line="143"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from TOML file.</span>
+</span><span data-line="144">
+</span><span data-line="145"><span class="sd">        Args:</span>
+</span><span data-line="146"><span class="sd">            path: Path to config file. Uses default if None.</span>
+</span><span data-line="147">
+</span><span data-line="148"><span class="sd">        Returns:</span>
+</span><span data-line="149"><span class="sd">            Loaded AppConfig, or defaults if file doesn&#39;t exist.</span>
+</span><span data-line="150"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="151">        <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="152">            <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="n">TomlConfigSettingsSource</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">toml_file</span><span class="o">=</span><span class="n">path</span><span class="p">)()</span>
+</span><span data-line="153">            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="154">        <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span></div>
 
-</span><span data-line="153">
+</span><span data-line="155">
 <div class="viewcode-block" id="AppConfig.save">
 <a class="viewcode-back" href="../../modules.html#ocom.config.AppConfig.save">[docs]</a>
-</span><span data-line="154">    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="155"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Save configuration to TOML file.</span>
-</span><span data-line="156">
-</span><span data-line="157"><span class="sd">        Args:</span>
-</span><span data-line="158"><span class="sd">            path: Path to config file. Uses default if None.</span>
-</span><span data-line="159"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="160">        <span class="n">config_path</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">or</span> <span class="n">get_config_path</span><span class="p">()</span>
-</span><span data-line="161">        <span class="n">config_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="162">        <span class="n">config_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_toml</span><span class="p">())</span></div>
+</span><span data-line="156">    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="157"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Save configuration to TOML file.</span>
+</span><span data-line="158">
+</span><span data-line="159"><span class="sd">        Args:</span>
+</span><span data-line="160"><span class="sd">            path: Path to config file. Uses default if None.</span>
+</span><span data-line="161"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="162">        <span class="n">config_path</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">or</span> <span class="n">get_config_path</span><span class="p">()</span>
+</span><span data-line="163">        <span class="n">config_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="164">        <span class="n">config_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_toml</span><span class="p">())</span></div>
 
-</span><span data-line="163">
-</span><span data-line="164">    <span class="k">def</span><span class="w"> </span><span class="nf">_to_toml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert config to TOML string.</span>
-</span><span data-line="166">
-</span><span data-line="167"><span class="sd">        Returns:</span>
-</span><span data-line="168"><span class="sd">            The configuration serialized as TOML text.</span>
-</span><span data-line="169"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="170">        <span class="n">sections</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="171">            <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span data-line="172">                <span class="s2">&quot;refresh_interval&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">general</span><span class="o">.</span><span class="n">refresh_interval</span><span class="p">,</span>
-</span><span data-line="173">                <span class="s2">&quot;auto_connect&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">general</span><span class="o">.</span><span class="n">auto_connect</span><span class="p">,</span>
-</span><span data-line="174">            <span class="p">},</span>
-</span><span data-line="175">            <span class="s2">&quot;openvpn&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span data-line="176">                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">openvpn</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
-</span><span data-line="177">                <span class="s2">&quot;config_dirs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">openvpn</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">,</span>
-</span><span data-line="178">                <span class="s2">&quot;default_config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">openvpn</span><span class="o">.</span><span class="n">default_config</span><span class="p">,</span>
-</span><span data-line="179">            <span class="p">},</span>
-</span><span data-line="180">            <span class="s2">&quot;spoofdpi&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span data-line="181">                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
-</span><span data-line="182">                <span class="s2">&quot;dns_addr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">dns_addr</span><span class="p">,</span>
-</span><span data-line="183">                <span class="s2">&quot;dns_mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">dns_mode</span><span class="p">,</span>
-</span><span data-line="184">                <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-</span><span data-line="185">                <span class="s2">&quot;system_proxy&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">system_proxy</span><span class="p">,</span>
-</span><span data-line="186">            <span class="p">},</span>
-</span><span data-line="187">            <span class="s2">&quot;warp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">warp</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">warp</span><span class="o">.</span><span class="n">mode</span><span class="p">},</span>
-</span><span data-line="188">            <span class="s2">&quot;tailscale&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tailscale</span><span class="o">.</span><span class="n">enabled</span><span class="p">},</span>
-</span><span data-line="189">            <span class="s2">&quot;goodbyedpi&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span data-line="190">                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goodbyedpi</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
-</span><span data-line="191">                <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goodbyedpi</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
-</span><span data-line="192">                <span class="s2">&quot;block_quic&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goodbyedpi</span><span class="o">.</span><span class="n">block_quic</span><span class="p">,</span>
-</span><span data-line="193">            <span class="p">},</span>
-</span><span data-line="194">        <span class="p">}</span>
-</span><span data-line="195">        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="196">        <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="197">            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">section</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-</span><span data-line="198">            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="199">                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_toml_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="200">            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span><span data-line="201">        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-</span><span data-line="202">
-</span><span data-line="203">    <span class="nd">@staticmethod</span>
-</span><span data-line="204">    <span class="k">def</span><span class="w"> </span><span class="nf">_format_toml_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="205"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a value for TOML output.</span>
-</span><span data-line="206">
-</span><span data-line="207"><span class="sd">        Returns:</span>
-</span><span data-line="208"><span class="sd">            The value rendered as a TOML literal.</span>
-</span><span data-line="209"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="210">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-</span><span data-line="211">            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-</span><span data-line="212">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-</span><span data-line="213">            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="214">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-</span><span data-line="215">            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span><span data-line="216">        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span></div>
+</span><span data-line="165">
+</span><span data-line="166">    <span class="k">def</span><span class="w"> </span><span class="nf">_to_toml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="167"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert config to TOML string.</span>
+</span><span data-line="168">
+</span><span data-line="169"><span class="sd">        Returns:</span>
+</span><span data-line="170"><span class="sd">            The configuration serialized as TOML text.</span>
+</span><span data-line="171"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="172">        <span class="n">sections</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="173">            <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="174">                <span class="s2">&quot;refresh_interval&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">general</span><span class="o">.</span><span class="n">refresh_interval</span><span class="p">,</span>
+</span><span data-line="175">                <span class="s2">&quot;auto_connect&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">general</span><span class="o">.</span><span class="n">auto_connect</span><span class="p">,</span>
+</span><span data-line="176">            <span class="p">},</span>
+</span><span data-line="177">            <span class="s2">&quot;openvpn&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="178">                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">openvpn</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
+</span><span data-line="179">                <span class="s2">&quot;config_dirs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">openvpn</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">,</span>
+</span><span data-line="180">                <span class="s2">&quot;default_config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">openvpn</span><span class="o">.</span><span class="n">default_config</span><span class="p">,</span>
+</span><span data-line="181">            <span class="p">},</span>
+</span><span data-line="182">            <span class="s2">&quot;spoofdpi&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="183">                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
+</span><span data-line="184">                <span class="s2">&quot;dns_addr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">dns_addr</span><span class="p">,</span>
+</span><span data-line="185">                <span class="s2">&quot;dns_mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">dns_mode</span><span class="p">,</span>
+</span><span data-line="186">                <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+</span><span data-line="187">                <span class="s2">&quot;system_proxy&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spoofdpi</span><span class="o">.</span><span class="n">system_proxy</span><span class="p">,</span>
+</span><span data-line="188">            <span class="p">},</span>
+</span><span data-line="189">            <span class="s2">&quot;warp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">warp</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">warp</span><span class="o">.</span><span class="n">mode</span><span class="p">},</span>
+</span><span data-line="190">            <span class="s2">&quot;tailscale&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tailscale</span><span class="o">.</span><span class="n">enabled</span><span class="p">},</span>
+</span><span data-line="191">            <span class="s2">&quot;goodbyedpi&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="192">                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goodbyedpi</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
+</span><span data-line="193">                <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goodbyedpi</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+</span><span data-line="194">                <span class="s2">&quot;block_quic&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goodbyedpi</span><span class="o">.</span><span class="n">block_quic</span><span class="p">,</span>
+</span><span data-line="195">            <span class="p">},</span>
+</span><span data-line="196">        <span class="p">}</span>
+</span><span data-line="197">        <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="198">        <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="199">            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">section</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</span><span data-line="200">            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="201">                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_toml_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="202">            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span data-line="203">        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</span><span data-line="204">
+</span><span data-line="205">    <span class="nd">@staticmethod</span>
+</span><span data-line="206">    <span class="k">def</span><span class="w"> </span><span class="nf">_format_toml_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="207"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a value for TOML output.</span>
+</span><span data-line="208">
+</span><span data-line="209"><span class="sd">        Returns:</span>
+</span><span data-line="210"><span class="sd">            The value rendered as a TOML literal.</span>
+</span><span data-line="211"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="212">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+</span><span data-line="213">            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span><span data-line="214">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+</span><span data-line="215">            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span data-line="216">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+</span><span data-line="217">            <span class="n">items</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;list[object]&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</span><span data-line="218">            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</span><span data-line="219">        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

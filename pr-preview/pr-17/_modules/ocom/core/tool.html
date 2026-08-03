@@ -194,7 +194,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="72">
 </span><span data-line="73">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="74"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the tool in the UNAVAILABLE state.&quot;&quot;&quot;</span>
-</span><span data-line="75">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
+</span><span data-line="75">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span> <span class="n">ToolStatus</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
 </span><span data-line="76">        <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span data-line="77">        <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span data-line="78">        <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -289,35 +289,38 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="155">
 <div class="viewcode-block" id="BaseTool.get_config_files">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.tool.BaseTool.get_config_files">[docs]</a>
-</span><span data-line="156">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># noqa: PLR6301  # overridable hook; subclasses use self and the config</span>
+</span><span data-line="156">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># noqa: PLR6301</span>
 </span><span data-line="157"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of available config files.</span>
 </span><span data-line="158">
 </span><span data-line="159"><span class="sd">        Override this for tools that use config files.</span>
 </span><span data-line="160">
 </span><span data-line="161"><span class="sd">        Args:</span>
-</span><span data-line="162"><span class="sd">            _config: Tool configuration with directories to scan.</span>
+</span><span data-line="162"><span class="sd">            config: Tool configuration with directories to scan.</span>
 </span><span data-line="163">
 </span><span data-line="164"><span class="sd">        Returns:</span>
 </span><span data-line="165"><span class="sd">            List of config file paths.</span>
 </span><span data-line="166"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="167">        <span class="k">return</span> <span class="p">[]</span></div>
+</span><span data-line="167">        <span class="c1"># Base hook: the default implementation ignores config; subclasses that</span>
+</span><span data-line="168">        <span class="c1"># support config files override this and read it.</span>
+</span><span data-line="169">        <span class="n">_</span> <span class="o">=</span> <span class="n">config</span>
+</span><span data-line="170">        <span class="k">return</span> <span class="p">[]</span></div>
 
-</span><span data-line="168">
+</span><span data-line="171">
 <div class="viewcode-block" id="BaseTool.get_status_text">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.tool.BaseTool.get_status_text">[docs]</a>
-</span><span data-line="169">    <span class="k">def</span><span class="w"> </span><span class="nf">get_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="170"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get human-readable status text for display.</span>
-</span><span data-line="171">
-</span><span data-line="172"><span class="sd">        Can be overridden for tool-specific status details.</span>
-</span><span data-line="173">
-</span><span data-line="174"><span class="sd">        Returns:</span>
-</span><span data-line="175"><span class="sd">            A human-readable string describing the current status.</span>
-</span><span data-line="176"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="177">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="p">:</span>
-</span><span data-line="178">            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="179">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span><span class="p">:</span>
-</span><span data-line="180">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span>
-</span><span data-line="181">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span></div>
+</span><span data-line="172">    <span class="k">def</span><span class="w"> </span><span class="nf">get_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="173"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get human-readable status text for display.</span>
+</span><span data-line="174">
+</span><span data-line="175"><span class="sd">        Can be overridden for tool-specific status details.</span>
+</span><span data-line="176">
+</span><span data-line="177"><span class="sd">        Returns:</span>
+</span><span data-line="178"><span class="sd">            A human-readable string describing the current status.</span>
+</span><span data-line="179"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="180">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="p">:</span>
+</span><span data-line="181">            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="182">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span><span class="p">:</span>
+</span><span data-line="183">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span>
+</span><span data-line="184">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span></div>
 </div>
 
 </span></pre></div>
