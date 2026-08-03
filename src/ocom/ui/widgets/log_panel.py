@@ -1,16 +1,21 @@
 """Log panel widget for displaying tool output."""
 
-from datetime import datetime
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, ClassVar
 
-from textual.app import ComposeResult
 from textual.widgets import RichLog, Static
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+__all__ = ["LogPanel"]
 
 
 class LogPanel(Static):
     """A panel for displaying logs from running tools."""
 
     # Color mapping for log sources
-    SOURCE_COLORS = {
+    SOURCE_COLORS: ClassVar[dict[str, str]] = {
         "OpenVPN": "green",
         "WARP": "cyan",
         "Tailscale": "blue",
@@ -19,17 +24,22 @@ class LogPanel(Static):
         "SYSTEM": "bold magenta",
     }
 
-    def compose(self) -> ComposeResult:
+    def compose(self) -> ComposeResult:  # noqa: PLR6301  # Textual framework callback
+        """Compose the log panel layout.
+
+        Yields:
+            The ``RichLog`` widget used to render log output.
+        """
         yield RichLog(id="log-output", highlight=True, markup=True)
 
     @property
     def _log_widget(self) -> RichLog:
-        """Get the log output widget."""
+        """The log output widget."""
         return self.query_one("#log-output", RichLog)
 
     def _write_log(self, source: str, message: str) -> None:
         """Write a formatted log entry."""
-        timestamp = datetime.now().strftime("%H:%M:%S")
+        timestamp = datetime.now(tz=UTC).astimezone().strftime("%H:%M:%S")
         color = self.SOURCE_COLORS.get(source, "white")
         self._log_widget.write(
             f"[dim]{timestamp}[/dim] [{color}]{source}[/{color}]: {message}"

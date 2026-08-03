@@ -4,18 +4,44 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings, SettingsConfigDict, TomlConfigSettingsSource
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    TomlConfigSettingsSource,
+)
+
+__all__ = [
+    "AppConfig",
+    "GeneralConfig",
+    "GoodbyeDPIConfig",
+    "OpenVPNConfig",
+    "SpoofDPIConfig",
+    "TailscaleConfig",
+    "WarpConfig",
+    "get_config_dir",
+    "get_config_path",
+]
+
 
 APP_NAME = "ocom"
 
 
 def get_config_dir() -> Path:
-    """Get the config directory (Linux-style ~/.config/ocom on all platforms)."""
+    """Get the config directory (Linux-style ~/.config/ocom on all platforms).
+
+    Returns:
+        The per-user config directory path.
+    """
     return Path.home() / ".config" / APP_NAME
 
 
 def get_config_path() -> Path:
-    """Get the path to the config file."""
+    """Get the path to the config file.
+
+    Returns:
+        The path to the ``config.toml`` file.
+    """
     return get_config_dir() / "config.toml"
 
 
@@ -88,17 +114,20 @@ class AppConfig(BaseSettings):
     @classmethod
     def settings_customise_sources(
         cls,
-        settings_cls,
-        init_settings,
-        env_settings,
-        dotenv_settings,
-        file_secret_settings,
-    ):
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,  # noqa: ARG003  # name fixed by pydantic-settings keyword call
+        dotenv_settings: PydanticBaseSettingsSource,  # noqa: ARG003  # name fixed by pydantic-settings keyword call
+        file_secret_settings: PydanticBaseSettingsSource,  # noqa: ARG003  # name fixed by pydantic-settings keyword call
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
         """Configure settings sources.
 
         Values passed explicitly (``init_settings``) take priority so that
         ``load(path)`` can supply file contents directly; the default config at
         ``get_config_path()`` is used as a fallback when it exists.
+
+        Returns:
+            The ordered tuple of settings sources to read from.
         """
         toml_path = get_config_path()
         if toml_path.exists():
@@ -133,7 +162,11 @@ class AppConfig(BaseSettings):
         config_path.write_text(self._to_toml())
 
     def _to_toml(self) -> str:
-        """Convert config to TOML string."""
+        """Convert config to TOML string.
+
+        Returns:
+            The configuration serialized as TOML text.
+        """
         sections: dict[str, dict[str, object]] = {
             "general": {
                 "refresh_interval": self.general.refresh_interval,
@@ -169,7 +202,11 @@ class AppConfig(BaseSettings):
 
     @staticmethod
     def _format_toml_value(value: object) -> str:
-        """Format a value for TOML output."""
+        """Format a value for TOML output.
+
+        Returns:
+            The value rendered as a TOML literal.
+        """
         if isinstance(value, bool):
             return str(value).lower()
         if isinstance(value, int):

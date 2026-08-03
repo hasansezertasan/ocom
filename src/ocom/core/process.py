@@ -4,11 +4,17 @@ import asyncio
 import os
 import shutil
 import sys
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 IS_WINDOWS = sys.platform == "win32"
+
+# Keep strong references to background output-reader tasks so they are not
+# garbage-collected mid-run (asyncio only holds weak references to tasks).
+_background_tasks: set[asyncio.Task[None]] = set()
 
 
 def is_admin() -> bool:
@@ -22,7 +28,7 @@ def is_admin() -> bool:
     """
     if IS_WINDOWS:
         try:
-            import ctypes
+            import ctypes  # noqa: PLC0415  # Windows-only lazy import
 
             # windll is Windows-only and absent from ctypes' type stubs on other
             # platforms. Reach it through an Any-typed alias so mypy doesn't flag
@@ -31,7 +37,7 @@ def is_admin() -> bool:
             # getattr-with-constant (which ruff's B009 would rewrite back).
             ctypes_any: Any = ctypes
             return bool(ctypes_any.windll.shell32.IsUserAnAdmin())
-        except Exception:
+        except Exception:  # noqa: BLE001  # ctypes call may fail many ways; treat as not-admin
             return False
     else:
         return os.getuid() == 0
@@ -75,7 +81,10 @@ class ProcessManager:
 
     @staticmethod
     async def run_command(
-        args: list[str], *, timeout: float | None = 30.0, check: bool = False
+        args: list[str],
+        *,
+        timeout: float | None = 30.0,  # noqa: ASYNC109  # explicit timeout is part of the public API
+        check: bool = False,
     ) -> ProcessResult:
         """Run a command and wait for completion.
 
@@ -88,7 +97,7 @@ class ProcessManager:
             ProcessResult with output and return code.
 
         Raises:
-            asyncio.TimeoutError: If timeout exceeded.
+            TimeoutError: If timeout exceeded.
             RuntimeError: If check=True and command fails.
         """
         proc = await asyncio.create_subprocess_exec(
@@ -109,7 +118,8 @@ class ProcessManager:
         )
 
         if check and not result.success:
-            raise RuntimeError(f"Command failed: {result.stderr or result.stdout}")
+            msg = f"Command failed: {result.stderr or result.stdout}"
+            raise RuntimeError(msg)
 
         return result
 
@@ -151,13 +161,17 @@ class ProcessManager:
             # Don't close stdin - process may need it open
 
         if on_output and proc.stdout:
-            asyncio.create_task(_read_output(proc.stdout, on_output))
+            task = asyncio.create_task(_read_output(proc.stdout, on_output))
+            _background_tasks.add(task)
+            task.add_done_callback(_background_tasks.discard)
 
         return proc
 
     @staticmethod
     async def stop_process(
-        proc: asyncio.subprocess.Process, *, timeout: float = 5.0
+        proc: asyncio.subprocess.Process,
+        *,
+        timeout: float = 5.0,  # noqa: ASYNC109  # explicit timeout is part of the public API
     ) -> bool:
         """Gracefully stop a process.
 
@@ -174,19 +188,23 @@ class ProcessManager:
             return True
 
         try:
-            proc.terminate()  # Cross-platform: SIGTERM on Unix, TerminateProcess on Windows
+            # Cross-platform: SIGTERM on Unix, TerminateProcess on Windows.
+            proc.terminate()
             await asyncio.wait_for(proc.wait(), timeout=timeout)
-            return True
         except TimeoutError:
             proc.kill()
             await proc.wait()
-            return True
         except ProcessLookupError:
             return True
+        return True
 
     @staticmethod
     def is_process_running(proc: asyncio.subprocess.Process | None) -> bool:
-        """Check if a process is still running."""
+        """Check if a process is still running.
+
+        Returns:
+            True if the process exists and has not exited.
+        """
         return proc is not None and proc.returncode is None
 
     @staticmethod
@@ -206,9 +224,9 @@ class ProcessManager:
             )
             writer.close()
             await writer.wait_closed()
-            return True
-        except (TimeoutError, OSError):
+        except TimeoutError, OSError:
             return False
+        return True
 
 
 async def _read_output(

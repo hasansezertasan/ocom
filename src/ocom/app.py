@@ -7,6 +7,9 @@ from textual.app import App
 from ocom.config import AppConfig
 from ocom.ui.screens.main import MainScreen
 
+__all__ = ["OcomApp", "run"]
+
+
 # Path to the TCSS file
 CSS_PATH = Path(__file__).parent / "styles" / "app.tcss"
 
@@ -20,6 +23,7 @@ class OcomApp(App):
     CSS_PATH = CSS_PATH if CSS_PATH.exists() else None
 
     def __init__(self, config: AppConfig | None = None) -> None:
+        """Create the app, loading config from disk when none is given."""
         super().__init__()
         self.config = config or AppConfig.load()
 

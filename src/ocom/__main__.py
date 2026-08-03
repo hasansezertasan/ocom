@@ -7,6 +7,8 @@ import argparse
 from ocom import __version__
 from ocom.app import run
 
+__all__ = ["main"]
+
 
 def main() -> None:
     """Parse CLI arguments and launch the ocom TUI.

@@ -12,12 +12,12 @@ class TestProcessResult:
     """Test ProcessResult dataclass."""
 
     def test_success_when_returncode_zero(self) -> None:
-        """success property should be True when returncode is 0."""
+        """Success property should be True when returncode is 0."""
         result = ProcessResult(returncode=0, stdout="output", stderr="")
         assert result.success is True
 
     def test_failure_when_returncode_nonzero(self) -> None:
-        """success property should be False when returncode is non-zero."""
+        """Success property should be False when returncode is non-zero."""
         result = ProcessResult(returncode=1, stdout="", stderr="error")
         assert result.success is False
 
@@ -290,7 +290,8 @@ class TestCheckPortInUse:
         """Connection failures and timeouts should be treated as port not in use."""
 
         async def raise_error(*_args: object, **_kwargs: object) -> None:
-            raise exc_type("boom")
+            msg = "boom"
+            raise exc_type(msg)
 
         monkeypatch.setattr(asyncio, "open_connection", raise_error)
 

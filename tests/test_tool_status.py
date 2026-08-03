@@ -31,7 +31,7 @@ class TestIsTransitioning:
     """Test the is_transitioning property."""
 
     @pytest.mark.parametrize(
-        "status,expected",
+        ("status", "expected"),
         [
             (ToolStatus.STARTING, True),
             (ToolStatus.STOPPING, True),
@@ -50,7 +50,7 @@ class TestCanStart:
     """Test the can_start property."""
 
     @pytest.mark.parametrize(
-        "status,expected",
+        ("status", "expected"),
         [
             (ToolStatus.STOPPED, True),
             (ToolStatus.ERROR, True),
@@ -69,7 +69,7 @@ class TestCanStop:
     """Test the can_stop property."""
 
     @pytest.mark.parametrize(
-        "status,expected",
+        ("status", "expected"),
         [
             (ToolStatus.RUNNING, True),
             (ToolStatus.UNAVAILABLE, False),

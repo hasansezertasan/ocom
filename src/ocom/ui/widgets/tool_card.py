@@ -1,8 +1,7 @@
 """Tool card widget for displaying tool status."""
 
-from typing import Any
+from typing import TYPE_CHECKING
 
-from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
 from textual.reactive import reactive
@@ -10,8 +9,14 @@ from textual.widgets import Button, Label, Static
 
 from ocom.core.tool import BaseTool, ToolStatus
 
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+__all__ = ["ToolCard"]
+
+
 # Status icons mapping
-STATUS_ICONS = {
+STATUS_ICONS: dict[ToolStatus, str] = {
     ToolStatus.RUNNING: "●",
     ToolStatus.STOPPED: "○",
     ToolStatus.UNAVAILABLE: "◌",
@@ -30,16 +35,22 @@ class ToolCard(Static):
         """Message sent when a tool action is requested."""
 
         def __init__(self, tool: BaseTool, action: str) -> None:
+            """Store the target tool and requested action."""
             self.tool = tool
             self.action = action
             super().__init__()
 
-    def __init__(self, tool: BaseTool, **kwargs: Any) -> None:
+    def __init__(self, tool: BaseTool, **kwargs: object) -> None:
+        """Create a card bound to ``tool``, forwarding widget kwargs."""
         super().__init__(**kwargs)
         self.tool = tool
 
     def compose(self) -> ComposeResult:
-        """Compose the card layout."""
+        """Compose the card layout.
+
+        Yields:
+            The labels and button that make up the card.
+        """
         with Horizontal(classes="card-content"):
             with Vertical(classes="tool-info"):
                 yield Label(
@@ -56,7 +67,7 @@ class ToolCard(Static):
         self.status = self.tool.status
         self._update_display()
 
-    def watch_status(self, new_status: ToolStatus) -> None:
+    def watch_status(self, _new_status: ToolStatus) -> None:
         """React to status changes."""
         if self.is_mounted:
             self._update_display()
@@ -95,7 +106,7 @@ class ToolCard(Static):
 
     @property
     def _status_icon(self) -> str:
-        """Get the status indicator icon for current status."""
+        """The status indicator icon for the current status."""
         return STATUS_ICONS.get(self.status, "?")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

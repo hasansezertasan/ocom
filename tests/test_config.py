@@ -1,6 +1,6 @@
 """Tests for AppConfig and related configuration classes."""
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ocom.config import (
     AppConfig,
@@ -11,6 +11,9 @@ from ocom.config import (
     TailscaleConfig,
     WarpConfig,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestGeneralConfig:
@@ -159,7 +162,7 @@ class TestAppConfig:
         assert loaded.goodbyedpi.block_quic is False
 
     def test_load_missing_file_returns_defaults(self, tmp_path: Path) -> None:
-        """Loading from a missing TOML file should return an AppConfig without raising."""
+        """Loading from a missing TOML file returns defaults without raising."""
         missing_path = tmp_path / "nonexistent.toml"
         config = AppConfig.load(missing_path)
         assert isinstance(config, AppConfig)

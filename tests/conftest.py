@@ -1,10 +1,13 @@
 """Shared test fixtures for ocom tests."""
 
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 import pytest
 
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class MockTool(BaseTool):

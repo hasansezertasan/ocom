@@ -1,10 +1,12 @@
 """Tests for BaseTool abstract base class."""
 
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from ocom.core.tool import ToolConfig, ToolStatus
+from tests.conftest import MockTool
 
-from .conftest import MockTool
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class TestBaseToolClassAttributes:
@@ -118,7 +120,7 @@ class TestOutputCallback:
         output_collector: tuple[list[tuple[str, str]], Callable[[str, str], None]],
     ) -> None:
         """Output callback should be settable."""
-        messages, callback = output_collector
+        _messages, callback = output_collector
         mock_tool.set_output_callback(callback)
         # Callback is now registered
         assert mock_tool._output_callback is callback

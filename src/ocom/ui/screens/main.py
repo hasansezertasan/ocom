@@ -2,9 +2,8 @@
 
 import webbrowser
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, ClassVar
 
-from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.css.query import NoMatches
@@ -12,24 +11,38 @@ from textual.screen import ModalScreen, Screen
 from textual.widgets import Button, Footer, Header, Input, Label, OptionList, Static
 from textual.widgets.option_list import Option
 
-from ocom.config import AppConfig
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 from ocom.tools import get_all_tools
 from ocom.ui.widgets.log_panel import LogPanel
 from ocom.ui.widgets.tool_card import ToolCard
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from textual.app import ComposeResult
+
+    from ocom.config import AppConfig
+
+__all__ = ["ConfigSelectorScreen", "MainScreen", "PasswordPromptScreen"]
+
 
 class ConfigSelectorScreen(ModalScreen[str | None]):
     """Modal screen for selecting a config file."""
 
-    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
 
-    def __init__(self, tool: BaseTool, configs: list[str], **kwargs: Any) -> None:
+    def __init__(self, tool: BaseTool, configs: list[str], **kwargs: object) -> None:
+        """Store the tool and its available config files."""
         super().__init__(**kwargs)
         self.tool = tool
         self.configs = configs
 
     def compose(self) -> ComposeResult:
+        """Compose the config selector layout.
+
+        Yields:
+            The title, option list, and cancel button.
+        """
         with Vertical(id="modal-container"):
             yield Label(f"Select config for {self.tool.name}", id="modal-title")
             options = [Option(Path(c).name, id=c) for c in self.configs]
@@ -58,13 +71,19 @@ class ConfigSelectorScreen(ModalScreen[str | None]):
 class PasswordPromptScreen(ModalScreen[str | None]):
     """Modal screen for entering sudo password."""
 
-    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
 
-    def __init__(self, tool: BaseTool, **kwargs: Any) -> None:
+    def __init__(self, tool: BaseTool, **kwargs: object) -> None:
+        """Store the tool that requires authentication."""
         super().__init__(**kwargs)
         self.tool = tool
 
     def compose(self) -> ComposeResult:
+        """Compose the password prompt layout.
+
+        Yields:
+            The labels, password input, and action buttons.
+        """
         with Vertical(id="modal-container"):
             yield Label(f"{self.tool.name} - Authentication", id="modal-title")
             yield Label("This tool requires sudo privileges.")
@@ -85,7 +104,7 @@ class PasswordPromptScreen(ModalScreen[str | None]):
         elif event.button.id == "btn-cancel":
             self.dismiss(None)
 
-    def on_input_submitted(self, event: Input.Submitted) -> None:
+    def on_input_submitted(self, _event: Input.Submitted) -> None:
         """Handle Enter key in password field."""
         self._submit_password()
 
@@ -102,19 +121,25 @@ class PasswordPromptScreen(ModalScreen[str | None]):
 class MainScreen(Screen):
     """Main dashboard showing all network tools."""
 
-    BINDINGS = [
+    BINDINGS: ClassVar[list[Binding]] = [
         Binding("q", "quit", "Quit"),
         Binding("r", "refresh", "Refresh"),
         Binding("c", "clear_logs", "Clear Logs"),
     ]
 
-    def __init__(self, config: AppConfig, **kwargs: Any) -> None:
+    def __init__(self, config: AppConfig, **kwargs: object) -> None:
+        """Store app config and build the tool set and card registry."""
         super().__init__(**kwargs)
         self.config = config
         self.tools = get_all_tools()
         self._cards: dict[str, ToolCard] = {}
 
     def compose(self) -> ComposeResult:
+        """Compose the dashboard layout.
+
+        Yields:
+            The header, tool cards, log panel, status bar, and footer.
+        """
         yield Header()
         with Horizontal(id="main-content"):
             with Vertical(id="tool-grid"):
@@ -157,43 +182,67 @@ class MainScreen(Screen):
         log_panel.add_log(tool_name, message)
 
     def _get_tool_by_name(self, name: str) -> BaseTool | None:
-        """Find a tool by name."""
+        """Find a tool by name.
+
+        Returns:
+            The matching tool, or ``None`` if no tool has that name.
+        """
         for tool in self.tools:
             if tool.name == name:
                 return tool
         return None
 
-    def _try_auto_connect(self) -> None:
-        """Attempt auto-connect if enabled and configured.
+    def _resolve_auto_connect_config(self) -> Path | None:
+        """Resolve the OpenVPN config file for auto-connect.
 
-        Checks if:
-        - auto_connect is enabled in config
-        - default_config is set for OpenVPN
-        - The config file exists
-        - OpenVPN tool is available
-
-        If all conditions are met, initiates the connection flow.
+        Returns:
+            The existing config file path, or ``None`` when auto-connect is
+            disabled, unconfigured, or the config file does not exist.
         """
         if not self.config.general.auto_connect:
-            return
+            return None
 
         default_config = self.config.openvpn.default_config
         if not default_config:
-            return
+            return None
 
         config_path = Path(default_config).expanduser()
         if not config_path.is_file():
             log_panel = self.query_one("#log-panel", LogPanel)
             log_panel.log_system(f"Auto-connect: config file not found: {config_path}")
-            return
+            return None
 
+        return config_path
+
+    def _resolve_auto_connect_tool(self) -> BaseTool | None:
+        """Resolve the OpenVPN tool for auto-connect.
+
+        Returns:
+            The OpenVPN tool when it exists and is available, else ``None``.
+        """
         openvpn_tool = self._get_tool_by_name("OpenVPN")
         if openvpn_tool is None:
-            return
+            return None
 
         if openvpn_tool.status == ToolStatus.UNAVAILABLE:
             log_panel = self.query_one("#log-panel", LogPanel)
             log_panel.log_system("Auto-connect: OpenVPN not installed")
+            return None
+
+        return openvpn_tool
+
+    def _try_auto_connect(self) -> None:
+        """Attempt auto-connect if enabled and configured.
+
+        When auto-connect is enabled, a default OpenVPN config exists, and the
+        OpenVPN tool is available, this initiates the connection flow.
+        """
+        config_path = self._resolve_auto_connect_config()
+        if config_path is None:
+            return
+
+        openvpn_tool = self._resolve_auto_connect_tool()
+        if openvpn_tool is None:
             return
 
         # Build config for OpenVPN
@@ -221,7 +270,7 @@ class MainScreen(Screen):
             try:
                 new_status = await tool.refresh_status()
                 self._cards[tool.name].refresh_status(new_status)
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001  # isolate per-tool refresh failures
                 log_panel.log_system(f"Error refreshing status for {tool.name}: {exc}")
 
     def on_tool_card_tool_action(self, event: ToolCard.ToolAction) -> None:
@@ -244,7 +293,11 @@ class MainScreen(Screen):
             self.run_worker(self._start_tool(tool, config))
 
     def _get_tool_config(self, tool: BaseTool) -> ToolConfig:
-        """Build a ToolConfig with tool-specific options."""
+        """Build a ToolConfig with tool-specific options.
+
+        Returns:
+            A ``ToolConfig`` populated with options for the given tool.
+        """
         config = ToolConfig()
         if tool.name == "SpoofDPI":
             config.options = {
@@ -277,12 +330,16 @@ class MainScreen(Screen):
             self._update_status_bar(f"No install URL configured for {tool.name}")
 
     def _get_running_conflicts(self, tool: BaseTool) -> list[BaseTool]:
-        """Find running tools that conflict with the given tool."""
-        conflicts = []
-        for other in self.tools:
-            if other.name in tool.conflicts_with and other.status == ToolStatus.RUNNING:
-                conflicts.append(other)
-        return conflicts
+        """Find running tools that conflict with the given tool.
+
+        Returns:
+            The running tools whose names appear in ``tool.conflicts_with``.
+        """
+        return [
+            other
+            for other in self.tools
+            if other.name in tool.conflicts_with and other.status == ToolStatus.RUNNING
+        ]
 
     async def _start_tool(self, tool: BaseTool, config: ToolConfig) -> None:
         """Start a tool with the given config."""
@@ -298,7 +355,8 @@ class MainScreen(Screen):
 
             if not stop_success:
                 log_panel.log_system(
-                    f"Warning: Failed to stop {conflicting_tool.name}, proceeding anyway"
+                    f"Warning: Failed to stop {conflicting_tool.name}, "
+                    "proceeding anyway"
                 )
             else:
                 log_panel.log_system(
@@ -333,18 +391,23 @@ class MainScreen(Screen):
 
         self._cards[tool.name].refresh_status(tool.status)
 
-    def _show_config_selector(self, tool: BaseTool) -> None:
-        """Show config file selector for a tool."""
-        tool_config = self._get_tool_config(tool)
-        configs = tool.get_config_files(tool_config)
+    def _report_no_configs(self, tool_config: ToolConfig) -> None:
+        """Report that no config files were found for a tool."""
+        if tool_config.config_dirs:
+            dirs = ", ".join(tool_config.config_dirs)
+        else:
+            dirs = "none configured"
+        self._update_status_bar(f"No config files found. Check dirs: {dirs}")
 
-        if not configs:
-            if tool_config.config_dirs:
-                dirs = ", ".join(tool_config.config_dirs)
-            else:
-                dirs = "none configured"
-            self._update_status_bar(f"No config files found. Check dirs: {dirs}")
-            return
+    def _make_config_selected_callback(
+        self, tool: BaseTool
+    ) -> Callable[[str | None], None]:
+        """Build the callback invoked when a config file is selected.
+
+        Returns:
+            A callback that starts ``tool`` with the chosen config, prompting
+            for a password first when the tool requires sudo.
+        """
 
         def on_config_selected(config_path: str | None) -> None:
             if config_path is None:
@@ -359,7 +422,19 @@ class MainScreen(Screen):
             else:
                 self.run_worker(self._start_tool(tool, config))
 
-        self.app.push_screen(ConfigSelectorScreen(tool, configs), on_config_selected)
+        return on_config_selected
+
+    def _show_config_selector(self, tool: BaseTool) -> None:
+        """Show config file selector for a tool."""
+        tool_config = self._get_tool_config(tool)
+        configs = tool.get_config_files(tool_config)
+
+        if not configs:
+            self._report_no_configs(tool_config)
+            return
+
+        callback = self._make_config_selected_callback(tool)
+        self.app.push_screen(ConfigSelectorScreen(tool, configs), callback)
 
     def _show_password_prompt(self, tool: BaseTool, config: ToolConfig) -> None:
         """Show password prompt for sudo-requiring tools."""

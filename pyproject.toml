@@ -237,10 +237,30 @@ ignore_decorators = [
 # pydantic-settings, ``logger`` is imported only by optional components, the MCP
 # ``arguments`` parameter is mandated by the call_tool signature, the Textual
 # names (CSS/compose/on_mount/title/BINDINGS) are invoked by the TUI framework,
-# and ``pytestmark`` is consumed by pytest at collection time.
-ignore_names = ["CONFIG_FILE_PATH", "logger", "main", "model_config"]
+# and ``pytestmark`` is consumed by pytest at collection time. The glob entries
+# cover Textual's dynamically-dispatched callbacks (``on_*`` message handlers,
+# ``watch_*`` reactives, ``action_*`` bindings).
+ignore_names = [
+  "CONFIG_FILE_PATH",
+  "logger",
+  "main",
+  "model_config",
+  "compose",
+  "on_*",
+  "watch_*",
+  "action_*",
+  "BINDINGS",
+  "CSS",
+  "DEFAULT_CSS",
+]
 min_confidence = 60
 paths = ["src", "tests"]
+
+
+[tool.typos.default]
+# Git commit SHAs — e.g. in the release-please-owned CHANGELOG.md links — are
+# identifiers, not prose, and must not be spell-checked.
+extend-ignore-re = ['\b[0-9a-f]{7,40}\b']
 
 
 [tool.slotscheck]
@@ -319,13 +339,38 @@ convention = "pep257"
 [tool.ruff.lint.per-file-ignores]
 # Recursive glob so nested test packages (tests/cli, tests/gui, ...) are covered.
 # Tests legitimately use asserts/magic values, reach into package internals, and
-# don't need return-value documentation on their fixtures and helpers.
-"tests/**/*.py" = ["S101", "PLR2004", "PLC2701", "DOC201"]
+# don't need return-value documentation on their fixtures and helpers. The extra
+# codes below are test-idiomatic: pytest groups tests as methods that don't use
+# `self` (PLR6301), tests inspect private state (SLF001), pass positional bools
+# (FBT001/FBT002), leave fixture/lambda args unused (ARG002/ARG005), stub async
+# helpers without awaits (RUF029), define class-level fixtures data (RUF012),
+# compare against "" (PLC1901), and don't need full docstrings (D102/D107).
+"tests/**/*.py" = [
+  "S101",
+  "PLR2004",
+  "PLC2701",
+  "DOC201",
+  "PLR6301",
+  "SLF001",
+  "FBT001",
+  "FBT002",
+  "ARG002",
+  "ARG005",
+  "RUF029",
+  "RUF012",
+  "PLC1901",
+  "D102",
+  "D107",
+]
 # Recursive so nested standalone example dirs (examples/simple, examples/advanced)
 # are covered — they are not importable packages.
 "examples/**/*.py" = ["INP001"]
 # The Sphinx config is a standalone module, not part of an importable package.
 "docs/conf.py" = ["INP001"]
+# Package __init__ modules deliberately carry logic beyond re-exports: the top
+# package resolves the version from hatch-vcs, and tools/__init__ exposes the
+# `get_all_tools()` registry factory.
+"**/__init__.py" = ["RUF067"]
 
 
 [tool.ruff.lint.pyupgrade]
