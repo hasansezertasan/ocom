@@ -45,4 +45,4 @@ Once you have a copy of the source, you can install it with:
 .. code-block:: sh
 
    cd ocom
-   uv pip install .
+   uv sync
