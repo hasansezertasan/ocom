@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="../../../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ocom.ui.screens.main - ocom</title><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ocom.tui.screens.main - ocom</title><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=e1a1ceaf" />
@@ -22,7 +22,7 @@
 }
 </style>
     
-  <meta property="og:type" content="website"/><meta property="og:title" content="ocom.ui.screens.main"/>
+  <meta property="og:type" content="website"/><meta property="og:title" content="ocom.tui.screens.main"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -98,7 +98,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">ocom.ui.screens.main</strong>
+        <strong itemprop="name">ocom.tui.screens.main</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -111,7 +111,7 @@ data-aria-dark="Switch to auto color mode">
 </div><div class="flex flex-col break-words justify-between">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
-          <h1>Source code for ocom.ui.screens.main</h1><div class="highlight"><pre>
+          <h1>Source code for ocom.tui.screens.main</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Main dashboard screen.&quot;&quot;&quot;</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">webbrowser</span>
@@ -127,21 +127,21 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="13">
 </span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.tool</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">ToolConfig</span><span class="p">,</span> <span class="n">ToolStatus</span>
 </span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_all_tools</span>
-</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.ui.widgets.log_panel</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogPanel</span>
-</span><span data-line="17"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.ui.widgets.tool_card</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolCard</span>
+</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.tui.widgets.log_panel</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogPanel</span>
+</span><span data-line="17"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.tui.widgets.tool_card</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolCard</span>
 </span><span data-line="18">
 </span><span data-line="19"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 </span><span data-line="21">
 </span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">textual.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">ComposeResult</span>
 </span><span data-line="23">
-</span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">ocom.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
 </span><span data-line="25">
 </span><span data-line="26"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ConfigSelectorScreen&quot;</span><span class="p">,</span> <span class="s2">&quot;MainScreen&quot;</span><span class="p">,</span> <span class="s2">&quot;PasswordPromptScreen&quot;</span><span class="p">]</span>
 </span><span data-line="27">
 </span><span data-line="28">
 <div class="viewcode-block" id="ConfigSelectorScreen">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.ConfigSelectorScreen">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.ConfigSelectorScreen">[docs]</a>
 </span><span data-line="29"><span class="nd">@final</span>
 </span><span data-line="30"><span class="k">class</span><span class="w"> </span><span class="nc">ConfigSelectorScreen</span><span class="p">(</span><span class="n">ModalScreen</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]):</span>
 </span><span data-line="31"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Modal screen for selecting a config file.&quot;&quot;&quot;</span>
@@ -177,14 +177,14 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="61">                <span class="k">yield</span> <span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Cancel&quot;</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;btn-cancel&quot;</span><span class="p">)</span>
 </span><span data-line="62">
 <div class="viewcode-block" id="ConfigSelectorScreen.on_mount">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.ConfigSelectorScreen.on_mount">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.ConfigSelectorScreen.on_mount">[docs]</a>
 </span><span data-line="63">    <span class="k">def</span><span class="w"> </span><span class="nf">on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="64"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Focus the option list when mounted.&quot;&quot;&quot;</span>
 </span><span data-line="65">        <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;#config-options&quot;</span><span class="p">,</span> <span class="n">OptionList</span><span class="p">)</span><span class="o">.</span><span class="n">focus</span><span class="p">()</span></div>
 
 </span><span data-line="66">
 <div class="viewcode-block" id="ConfigSelectorScreen.on_button_pressed">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.ConfigSelectorScreen.on_button_pressed">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.ConfigSelectorScreen.on_button_pressed">[docs]</a>
 </span><span data-line="67">    <span class="k">def</span><span class="w"> </span><span class="nf">on_button_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Button</span><span class="o">.</span><span class="n">Pressed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="68"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle button press.&quot;&quot;&quot;</span>
 </span><span data-line="69">        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;btn-cancel&quot;</span><span class="p">:</span>
@@ -192,14 +192,14 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="71">
 <div class="viewcode-block" id="ConfigSelectorScreen.on_option_list_option_selected">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.ConfigSelectorScreen.on_option_list_option_selected">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.ConfigSelectorScreen.on_option_list_option_selected">[docs]</a>
 </span><span data-line="72">    <span class="k">def</span><span class="w"> </span><span class="nf">on_option_list_option_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">OptionList</span><span class="o">.</span><span class="n">OptionSelected</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="73"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle config selection.&quot;&quot;&quot;</span>
 </span><span data-line="74">        <span class="bp">self</span><span class="o">.</span><span class="n">dismiss</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">id</span><span class="p">))</span></div>
 
 </span><span data-line="75">
 <div class="viewcode-block" id="ConfigSelectorScreen.action_cancel">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.ConfigSelectorScreen.action_cancel">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.ConfigSelectorScreen.action_cancel">[docs]</a>
 </span><span data-line="76">    <span class="k">def</span><span class="w"> </span><span class="nf">action_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="77"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel and close modal.&quot;&quot;&quot;</span>
 </span><span data-line="78">        <span class="bp">self</span><span class="o">.</span><span class="n">dismiss</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
@@ -208,7 +208,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="79">
 </span><span data-line="80">
 <div class="viewcode-block" id="PasswordPromptScreen">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.PasswordPromptScreen">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.PasswordPromptScreen">[docs]</a>
 </span><span data-line="81"><span class="nd">@final</span>
 </span><span data-line="82"><span class="k">class</span><span class="w"> </span><span class="nc">PasswordPromptScreen</span><span class="p">(</span><span class="n">ModalScreen</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]):</span>
 </span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Modal screen for entering sudo password.&quot;&quot;&quot;</span>
@@ -244,14 +244,14 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="113">                <span class="k">yield</span> <span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Connect&quot;</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;btn-connect&quot;</span><span class="p">)</span>
 </span><span data-line="114">
 <div class="viewcode-block" id="PasswordPromptScreen.on_mount">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.PasswordPromptScreen.on_mount">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.PasswordPromptScreen.on_mount">[docs]</a>
 </span><span data-line="115">    <span class="k">def</span><span class="w"> </span><span class="nf">on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="116"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Focus the password input.&quot;&quot;&quot;</span>
 </span><span data-line="117">        <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">&quot;#password-input&quot;</span><span class="p">,</span> <span class="n">Input</span><span class="p">)</span><span class="o">.</span><span class="n">focus</span><span class="p">()</span></div>
 
 </span><span data-line="118">
 <div class="viewcode-block" id="PasswordPromptScreen.on_button_pressed">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.PasswordPromptScreen.on_button_pressed">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.PasswordPromptScreen.on_button_pressed">[docs]</a>
 </span><span data-line="119">    <span class="k">def</span><span class="w"> </span><span class="nf">on_button_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Button</span><span class="o">.</span><span class="n">Pressed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="120"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle button press.&quot;&quot;&quot;</span>
 </span><span data-line="121">        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;btn-connect&quot;</span><span class="p">:</span>
@@ -261,7 +261,7 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="125">
 <div class="viewcode-block" id="PasswordPromptScreen.on_input_submitted">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.PasswordPromptScreen.on_input_submitted">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.PasswordPromptScreen.on_input_submitted">[docs]</a>
 </span><span data-line="126">    <span class="k">def</span><span class="w"> </span><span class="nf">on_input_submitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_event</span><span class="p">:</span> <span class="n">Input</span><span class="o">.</span><span class="n">Submitted</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="127"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle Enter key in password field.&quot;&quot;&quot;</span>
 </span><span data-line="128">        <span class="bp">self</span><span class="o">.</span><span class="n">_submit_password</span><span class="p">()</span></div>
@@ -273,7 +273,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="133">        <span class="bp">self</span><span class="o">.</span><span class="n">dismiss</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
 </span><span data-line="134">
 <div class="viewcode-block" id="PasswordPromptScreen.action_cancel">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.screens.main.PasswordPromptScreen.action_cancel">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.PasswordPromptScreen.action_cancel">[docs]</a>
 </span><span data-line="135">    <span class="k">def</span><span class="w"> </span><span class="nf">action_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="136"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Cancel and close modal.&quot;&quot;&quot;</span>
 </span><span data-line="137">        <span class="bp">self</span><span class="o">.</span><span class="n">dismiss</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>

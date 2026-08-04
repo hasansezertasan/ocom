@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="../../../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ocom.ui.widgets.log_panel - ocom</title><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ocom.tui.widgets.log_panel - ocom</title><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=e1a1ceaf" />
@@ -22,7 +22,7 @@
 }
 </style>
     
-  <meta property="og:type" content="website"/><meta property="og:title" content="ocom.ui.widgets.log_panel"/>
+  <meta property="og:type" content="website"/><meta property="og:title" content="ocom.tui.widgets.log_panel"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -98,7 +98,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">ocom.ui.widgets.log_panel</strong>
+        <strong itemprop="name">ocom.tui.widgets.log_panel</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -111,7 +111,7 @@ data-aria-dark="Switch to auto color mode">
 </div><div class="flex flex-col break-words justify-between">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
-          <h1>Source code for ocom.ui.widgets.log_panel</h1><div class="highlight"><pre>
+          <h1>Source code for ocom.tui.widgets.log_panel</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Log panel widget for displaying tool output.&quot;&quot;&quot;</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
@@ -126,7 +126,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="12">
 </span><span data-line="13">
 <div class="viewcode-block" id="LogPanel">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.log_panel.LogPanel">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.widgets.log_panel.LogPanel">[docs]</a>
 </span><span data-line="14"><span class="nd">@final</span>
 </span><span data-line="15"><span class="k">class</span><span class="w"> </span><span class="nc">LogPanel</span><span class="p">(</span><span class="n">Static</span><span class="p">):</span>
 </span><span data-line="16"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A panel for displaying logs from running tools.&quot;&quot;&quot;</span>
@@ -164,7 +164,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="48">        <span class="p">)</span>
 </span><span data-line="49">
 <div class="viewcode-block" id="LogPanel.add_log">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.log_panel.LogPanel.add_log">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.widgets.log_panel.LogPanel.add_log">[docs]</a>
 </span><span data-line="50">    <span class="k">def</span><span class="w"> </span><span class="nf">add_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="51"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a log entry from a tool.</span>
 </span><span data-line="52">
@@ -175,14 +175,14 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="57">
 <div class="viewcode-block" id="LogPanel.log_system">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.log_panel.LogPanel.log_system">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.widgets.log_panel.LogPanel.log_system">[docs]</a>
 </span><span data-line="58">    <span class="k">def</span><span class="w"> </span><span class="nf">log_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="59"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a system log entry.&quot;&quot;&quot;</span>
 </span><span data-line="60">        <span class="bp">self</span><span class="o">.</span><span class="n">_write_log</span><span class="p">(</span><span class="s2">&quot;SYSTEM&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 
 </span><span data-line="61">
 <div class="viewcode-block" id="LogPanel.clear">
-<a class="viewcode-back" href="../../../../modules.html#ocom.ui.widgets.log_panel.LogPanel.clear">[docs]</a>
+<a class="viewcode-back" href="../../../../modules.html#ocom.tui.widgets.log_panel.LogPanel.clear">[docs]</a>
 </span><span data-line="62">    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="63"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all log entries.&quot;&quot;&quot;</span>
 </span><span data-line="64">        <span class="bp">self</span><span class="o">.</span><span class="n">_log_widget</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
