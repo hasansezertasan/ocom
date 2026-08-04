@@ -295,6 +295,21 @@ gh api -X PUT repos/hasansezertasan/ocom/branches/main/protection \
 JSON
 ```
 
+The full `PUT` above is for initial setup. To later change only the required
+checks on an already-protected branch without disturbing the other rules, PATCH
+the sub-endpoint instead:
+
+```sh
+gh api -X PATCH \
+  repos/hasansezertasan/ocom/branches/main/protection/required_status_checks \
+  --input - <<'JSON'
+{
+  "strict": true,
+  "contexts": ["Validate PR title", "Validate branch name", "Verify linked issue", "Task Completed Checker"]
+}
+JSON
+```
+
 (UI: **Settings → Branches → Add branch ruleset** (or **Add rule** for `main`) —
 enable **Require status checks to pass before merging**, then search for and add
 the four contexts above. The contexts only appear in the picker after each check

@@ -212,6 +212,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy Docs
     timeout-minutes: 15
+    # Serialize gh-pages pushes with the manual gh-pages.yml deploy so concurrent
+    # runs cannot race each other on the same branch.
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
     # Deploy docs inline after the release is published. The `release: published`
     # event that finalize-release emits cannot trigger a separate workflow,
     # because events fired by the GITHUB_TOKEN do not start new workflow runs

@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: Deploy Docs
+    # Shares the gh-pages-deploy serialization group with release.yml's
+    # deploy-docs job so a manual redeploy waits for an in-flight release deploy.
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
     permissions:
       contents: write  # IMPORTANT: Mandatory for GitHub Pages
     steps:

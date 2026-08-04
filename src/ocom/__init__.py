@@ -11,6 +11,8 @@ except ImportError:  # pragma: no cover
     try:
         __version__ = version("ocom")
     except PackageNotFoundError:
-        __version__ = "0.0.0"
+        # Not a real release: a clearly-synthetic sentinel for an uninstalled
+        # source checkout where neither _version.py nor package metadata exists.
+        __version__ = "0.0.0+unknown"
 
 __all__ = ["__version__"]
