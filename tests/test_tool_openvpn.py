@@ -151,8 +151,9 @@ class TestEvaluateStart:
         )
         result = await tool._evaluate_start()
         assert result is False
-        assert tool.status == ToolStatus.STOPPED  # stop() ran
+        assert tool.status == ToolStatus.ERROR  # ERROR preserved, not reset
         assert tool.error_message == "Authentication failed"
+        assert tool._process is None  # process torn down
         stop.assert_awaited_once()
 
     async def test_init_completed_wins_over_auth_failed(

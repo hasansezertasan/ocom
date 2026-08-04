@@ -44,7 +44,7 @@ If you then still feel the need to ask a question and need clarification, we rec
 
 - Open an [Issue](https://github.com/hasansezertasan/ocom/issues/new).
 - Provide as much context as you can about what you're running into.
-- Provide project and platform versions (nodejs, npm, etc), depending on what seems relevant.
+- Provide project and platform versions (Python, uv, mise, etc), depending on what seems relevant.
 
 We will then take care of the issue as soon as possible.
 
@@ -166,8 +166,7 @@ hook gate is `uv run --locked tox run -e prek`.
 No extra services are required to develop ocom — `uv sync` gives you everything.
 The network CLIs ocom manages (`openvpn`, `spoofdpi`, `goodbyedpi`, `warp-cli`,
 `tailscale`) are only needed to exercise a tool live, not to build or test the
-project. Runtime configuration is read from `OCOM_*` environment variables and
-`~/.config/ocom/config.toml`.
+project. Runtime configuration is read from `~/.config/ocom/config.toml`.
 
 ### Improving The Documentation
 

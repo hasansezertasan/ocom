@@ -81,7 +81,7 @@ class OpenVPNTool(BaseTool):
             return None
 
         config_path = Path(config.config_file).expanduser()
-        if not config_path.exists():
+        if not config_path.is_file():
             self._status = ToolStatus.ERROR
             self._error_message = f"Config file not found: {config_path}"
             return None
@@ -134,7 +134,11 @@ class OpenVPNTool(BaseTool):
         ):
             self._status = ToolStatus.ERROR
             self._error_message = "Authentication failed"
-            await self.stop()
+            # Tear the process down directly: calling stop() would reset the
+            # status to STOPPED and hide the authentication error from the UI.
+            if self._process is not None:
+                await ProcessManager.stop_process(self._process)
+                self._process = None
             return False
 
         # Initialized, or still connecting: assume success for now.
