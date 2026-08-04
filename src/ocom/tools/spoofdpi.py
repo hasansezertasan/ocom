@@ -3,7 +3,7 @@
 import asyncio
 from typing import ClassVar, final, override
 
-from ocom.config import SpoofDPIConfig
+from ocom.core.config import SpoofDPIConfig
 from ocom.core.process import ProcessManager
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 

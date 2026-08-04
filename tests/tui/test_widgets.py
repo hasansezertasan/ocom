@@ -9,8 +9,8 @@ from textual.app import App
 from textual.widgets import Button, RichLog
 
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
-from ocom.ui.widgets.log_panel import LogPanel
-from ocom.ui.widgets.tool_card import ToolCard
+from ocom.tui.widgets.log_panel import LogPanel
+from ocom.tui.widgets.tool_card import ToolCard
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 def _no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Prevent tests from reading a real user config file."""
     monkeypatch.setattr(
-        "ocom.config.get_config_path", lambda: tmp_path / "missing.toml"
+        "ocom.core.config.get_config_path", lambda: tmp_path / "missing.toml"
     )
 
 

@@ -11,6 +11,8 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
+from ocom.__metadata__ import PROJECT_NAME
+
 __all__ = [
     "AppConfig",
     "GeneralConfig",
@@ -24,7 +26,7 @@ __all__ = [
 ]
 
 
-APP_NAME = "ocom"
+APP_NAME = PROJECT_NAME
 
 
 def get_config_dir() -> Path:

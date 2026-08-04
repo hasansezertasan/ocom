@@ -13,15 +13,15 @@ from textual.widgets.option_list import Option
 
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 from ocom.tools import get_all_tools
-from ocom.ui.widgets.log_panel import LogPanel
-from ocom.ui.widgets.tool_card import ToolCard
+from ocom.tui.widgets.log_panel import LogPanel
+from ocom.tui.widgets.tool_card import ToolCard
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from textual.app import App, ComposeResult
 
-    from ocom.config import AppConfig
+    from ocom.core.config import AppConfig
 
 __all__ = ["ConfigSelectorScreen", "MainScreen", "PasswordPromptScreen"]
 

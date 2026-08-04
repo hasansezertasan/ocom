@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from ocom.config import (
+from ocom.core.config import (
     AppConfig,
     GeneralConfig,
     GoodbyeDPIConfig,

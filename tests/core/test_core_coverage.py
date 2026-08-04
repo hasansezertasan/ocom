@@ -13,7 +13,7 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 import ocom.core.process as process_mod
-from ocom.config import AppConfig
+from ocom.core.config import AppConfig
 
 if TYPE_CHECKING:
     import asyncio
@@ -98,6 +98,6 @@ class TestAppConfigNoFile:
     ) -> None:
         """With no config file, only the init source is used and defaults hold."""
         missing = tmp_path / "absent" / "config.toml"
-        monkeypatch.setattr("ocom.config.get_config_path", lambda: missing)
+        monkeypatch.setattr("ocom.core.config.get_config_path", lambda: missing)
         config = AppConfig()
         assert config.general.refresh_interval == 2

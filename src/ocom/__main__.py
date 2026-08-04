@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 
 from ocom import __version__
-from ocom.app import run
+from ocom.tui.app import run
 
 __all__ = ["main"]
 

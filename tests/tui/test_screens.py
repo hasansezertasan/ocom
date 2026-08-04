@@ -9,11 +9,11 @@ from textual.app import App
 from textual.css.query import NoMatches
 from textual.widgets import Button, Input, Label, OptionList, Static
 
-from ocom.config import AppConfig, GeneralConfig, OpenVPNConfig
+from ocom.core.config import AppConfig, GeneralConfig, OpenVPNConfig
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
-from ocom.ui.screens.main import ConfigSelectorScreen, MainScreen, PasswordPromptScreen
-from ocom.ui.widgets.log_panel import LogPanel
-from ocom.ui.widgets.tool_card import ToolCard
+from ocom.tui.screens.main import ConfigSelectorScreen, MainScreen, PasswordPromptScreen
+from ocom.tui.widgets.log_panel import LogPanel
+from ocom.tui.widgets.tool_card import ToolCard
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 def _no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Prevent tests from reading a real user config file."""
     monkeypatch.setattr(
-        "ocom.config.get_config_path", lambda: tmp_path / "missing.toml"
+        "ocom.core.config.get_config_path", lambda: tmp_path / "missing.toml"
     )
 
 
@@ -116,7 +116,7 @@ def _make_app(
     config: AppConfig | None = None,
 ) -> MainHostApp:
     """Build a host app whose MainScreen uses the given tools."""
-    monkeypatch.setattr("ocom.ui.screens.main.get_all_tools", lambda: tools)
+    monkeypatch.setattr("ocom.tui.screens.main.get_all_tools", lambda: tools)
     return MainHostApp(config or AppConfig(general=GeneralConfig()))
 
 
@@ -174,7 +174,7 @@ class TestToolOutput:
     ) -> None:
         """Early output is dropped when no panel exists yet."""
         monkeypatch.setattr(
-            "ocom.ui.screens.main.get_all_tools", lambda: [FakeTool("WARP")]
+            "ocom.tui.screens.main.get_all_tools", lambda: [FakeTool("WARP")]
         )
         screen = MainScreen(AppConfig(general=GeneralConfig()))
         with pytest.raises(NoMatches):
@@ -215,7 +215,7 @@ class TestActionHandler:
         self, monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
     ) -> None:
         """An install action opens the tool's install URL."""
-        opener = mocker.patch("ocom.ui.screens.main.webbrowser.open")
+        opener = mocker.patch("ocom.tui.screens.main.webbrowser.open")
         tool = FakeTool("WARP", install_url="https://example.com/install")
         app = _make_app(monkeypatch, [tool])
         async with app.run_test() as pilot:
@@ -230,7 +230,7 @@ class TestActionHandler:
         self, monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
     ) -> None:
         """Installing a tool with no URL reports it on the status bar."""
-        opener = mocker.patch("ocom.ui.screens.main.webbrowser.open")
+        opener = mocker.patch("ocom.tui.screens.main.webbrowser.open")
         tool = FakeTool("WARP", install_url="")
         app = _make_app(monkeypatch, [tool])
         async with app.run_test() as pilot:

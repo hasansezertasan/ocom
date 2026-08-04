@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ocom.app import OcomApp, run
-from ocom.config import AppConfig
-from ocom.ui.screens.main import MainScreen
+from ocom.core.config import AppConfig
+from ocom.tui.app import OcomApp, run
+from ocom.tui.screens.main import MainScreen
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def _no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Prevent tests from reading a real user config file."""
     monkeypatch.setattr(
-        "ocom.config.get_config_path", lambda: tmp_path / "missing.toml"
+        "ocom.core.config.get_config_path", lambda: tmp_path / "missing.toml"
     )
 
 
@@ -36,7 +36,7 @@ class TestOcomAppConfig:
     def test_loads_config_when_none(self, mocker: MockerFixture) -> None:
         """When no config is given, AppConfig.load supplies one."""
         sentinel = AppConfig()
-        loader = mocker.patch("ocom.app.AppConfig.load", return_value=sentinel)
+        loader = mocker.patch("ocom.tui.app.AppConfig.load", return_value=sentinel)
         app = OcomApp()
         assert app.config is sentinel
         loader.assert_called_once_with()
@@ -47,7 +47,7 @@ class TestOcomAppMount:
 
     async def test_pushes_main_screen(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Starting the app makes MainScreen the active screen."""
-        monkeypatch.setattr("ocom.ui.screens.main.get_all_tools", list)
+        monkeypatch.setattr("ocom.tui.screens.main.get_all_tools", list)
         app = OcomApp(AppConfig())
         async with app.run_test() as pilot:
             await pilot.pause()
@@ -59,7 +59,7 @@ class TestRun:
 
     def test_run_invokes_app_run(self, mocker: MockerFixture) -> None:
         """run() constructs OcomApp and calls its run() method once."""
-        mocker.patch("ocom.app.AppConfig.load", return_value=AppConfig())
-        app_run = mocker.patch("ocom.app.OcomApp.run")
+        mocker.patch("ocom.tui.app.AppConfig.load", return_value=AppConfig())
+        app_run = mocker.patch("ocom.tui.app.OcomApp.run")
         run()
         app_run.assert_called_once_with()

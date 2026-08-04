@@ -293,7 +293,7 @@ type = "layers"
 # implementations, which build on the shared `core` abstractions
 # (BaseTool/ProcessManager). `config` and `app` are left outside the contract as
 # unconstrained top-level modules.
-layers = ["ocom.ui", "ocom.tools", "ocom.core"]
+layers = ["ocom.tui", "ocom.tools", "ocom.core"]
 
 
 [tool.ruff]

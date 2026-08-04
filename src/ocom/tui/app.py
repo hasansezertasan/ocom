@@ -5,8 +5,8 @@ from typing import final
 
 from textual.app import App
 
-from ocom.config import AppConfig
-from ocom.ui.screens.main import MainScreen
+from ocom.core.config import AppConfig
+from ocom.tui.screens.main import MainScreen
 
 __all__ = ["OcomApp", "run"]
 

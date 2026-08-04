@@ -8,19 +8,19 @@ Modules
 An overview of the packages that make up ``ocom``.
 The API reference below is generated automatically from the source docstrings.
 
-Application (``ocom.app``)
+Application (``ocom.tui.app``)
 ----------------------------------
 
 The Textual application entry point.
 
-.. automodule:: ocom.app
+.. automodule:: ocom.tui.app
 
-Configuration (``ocom.config``)
+Configuration (``ocom.core.config``)
 ----------------------------------
 
 Pydantic-settings based configuration.
 
-.. automodule:: ocom.config
+.. automodule:: ocom.core.config
 
 Core (``ocom.core``)
 ----------------------------------
@@ -39,13 +39,13 @@ Concrete tool implementations (OpenVPN, SpoofDPI, GoodbyeDPI, WARP, Tailscale).
 
 .. automodule:: ocom.tools
 
-User interface (``ocom.ui``)
+User interface (``ocom.tui``)
 ----------------------------------
 
 Textual screens and widgets.
 
-.. automodule:: ocom.ui.screens.main
+.. automodule:: ocom.tui.screens.main
 
-.. automodule:: ocom.ui.widgets.tool_card
+.. automodule:: ocom.tui.widgets.tool_card
 
-.. automodule:: ocom.ui.widgets.log_panel
+.. automodule:: ocom.tui.widgets.log_panel
