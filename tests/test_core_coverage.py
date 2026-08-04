@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING, cast
 
 import ocom.core.process as process_mod
 from ocom.config import AppConfig
-from ocom.core.process import ProcessManager, is_admin
 
 if TYPE_CHECKING:
     import asyncio
@@ -30,17 +29,17 @@ class TestIsAdmin:
         """On non-Windows, admin status comes from a zero uid."""
         monkeypatch.setattr(process_mod, "IS_WINDOWS", False)
         monkeypatch.setattr(process_mod.os, "getuid", lambda: 0, raising=False)
-        assert is_admin() is True
+        assert process_mod.is_admin() is True
 
         monkeypatch.setattr(process_mod.os, "getuid", lambda: 1000, raising=False)
-        assert is_admin() is False
+        assert process_mod.is_admin() is False
 
     def test_windows_admin_true(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """On Windows, a truthy IsUserAnAdmin() means elevated."""
         monkeypatch.setattr(process_mod, "IS_WINDOWS", True)
         fake_windll = SimpleNamespace(shell32=SimpleNamespace(IsUserAnAdmin=lambda: 1))
         monkeypatch.setattr(ctypes, "windll", fake_windll, raising=False)
-        assert is_admin() is True
+        assert process_mod.is_admin() is True
 
     def test_windows_probe_failure_returns_false(
         self, monkeypatch: pytest.MonkeyPatch
@@ -54,7 +53,7 @@ class TestIsAdmin:
 
         fake_windll = SimpleNamespace(shell32=SimpleNamespace(IsUserAnAdmin=_boom))
         monkeypatch.setattr(ctypes, "windll", fake_windll, raising=False)
-        assert is_admin() is False
+        assert process_mod.is_admin() is False
 
 
 class TestStartProcessEnv:
@@ -62,7 +61,7 @@ class TestStartProcessEnv:
 
     async def test_env_is_merged(self) -> None:
         """A non-empty env is merged into the child environment."""
-        proc = await ProcessManager.start_process(
+        proc = await process_mod.ProcessManager.start_process(
             [sys.executable, "-c", "pass"], env={"OCOM_TEST_VAR": "1"}
         )
         try:
@@ -87,7 +86,7 @@ class TestStopProcessAlreadyReaped:
                 raise ProcessLookupError
 
         proc = cast("asyncio.subprocess.Process", _FakeProc())
-        result = await ProcessManager.stop_process(proc)
+        result = await process_mod.ProcessManager.stop_process(proc)
         assert result is True
 
 
