@@ -1,0 +1,40 @@
+"""Main Textual application for ocom."""
+
+from pathlib import Path
+from typing import final
+
+from textual.app import App
+
+from ocom.core.config import AppConfig
+from ocom.tui.screens.main import MainScreen
+
+__all__ = ["OcomApp", "run"]
+
+
+# Path to the TCSS file
+CSS_PATH = Path(__file__).parent / "styles" / "app.tcss"
+
+
+@final
+class OcomApp(App[None]):
+    """Network tools manager TUI application."""
+
+    TITLE = "ocom"
+    SUB_TITLE = "Network Tools Manager"
+
+    CSS_PATH = CSS_PATH if CSS_PATH.exists() else None
+
+    def __init__(self, config: AppConfig | None = None) -> None:
+        """Create the app, loading config from disk when none is given."""
+        super().__init__()
+        self.config = config or AppConfig.load()
+
+    def on_mount(self) -> None:
+        """Push the main screen on startup."""
+        self.push_screen(MainScreen(self.config))
+
+
+def run() -> None:
+    """Run the ocom application."""
+    app = OcomApp()
+    app.run()

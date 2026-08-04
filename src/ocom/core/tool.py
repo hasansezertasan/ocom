@@ -1,12 +1,17 @@
 """Base tool abstraction for network/privacy tools."""
 
-import asyncio
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import TYPE_CHECKING, ClassVar
 
 from ocom.core.process import ProcessManager
+
+if TYPE_CHECKING:
+    import asyncio
+    from collections.abc import Callable
+
+__all__ = ["BaseTool", "ToolConfig", "ToolStatus"]
 
 
 class ToolStatus(Enum):
@@ -22,12 +27,12 @@ class ToolStatus(Enum):
     @property
     def is_transitioning(self) -> bool:
         """Check if status is a transitional state."""
-        return self in (ToolStatus.STARTING, ToolStatus.STOPPING)
+        return self in {ToolStatus.STARTING, ToolStatus.STOPPING}
 
     @property
     def can_start(self) -> bool:
         """Check if tool can be started from this state."""
-        return self in (ToolStatus.STOPPED, ToolStatus.ERROR)
+        return self in {ToolStatus.STOPPED, ToolStatus.ERROR}
 
     @property
     def can_stop(self) -> bool:
@@ -61,12 +66,13 @@ class BaseTool(ABC):
     command: str = ""  # Primary CLI command to check availability
     requires_sudo: bool = False
     supports_configs: bool = False  # Whether tool uses config files (like .ovpn)
-    config_extensions: list[str] = []  # File extensions to scan (e.g., [".ovpn"])
+    config_extensions: ClassVar[list[str]] = []  # File extensions (e.g., [".ovpn"])
     install_url: str = ""  # URL to installation documentation
-    conflicts_with: list[str] = []  # Tool names that conflict (will be auto-stopped)
+    conflicts_with: ClassVar[list[str]] = []  # Conflicting tool names (auto-stopped)
 
     def __init__(self) -> None:
-        self._status = ToolStatus.UNAVAILABLE
+        """Initialize the tool in the UNAVAILABLE state."""
+        self._status: ToolStatus = ToolStatus.UNAVAILABLE
         self._process: asyncio.subprocess.Process | None = None
         self._error_message: str | None = None
         self._current_config: str | None = None
@@ -147,7 +153,7 @@ class BaseTool(ABC):
             Current ToolStatus.
         """
 
-    def get_config_files(self, config: ToolConfig) -> list[str]:
+    def get_config_files(self, config: ToolConfig) -> list[str]:  # noqa: PLR6301
         """Get list of available config files.
 
         Override this for tools that use config files.
@@ -158,12 +164,18 @@ class BaseTool(ABC):
         Returns:
             List of config file paths.
         """
+        # Base hook: the default implementation ignores config; subclasses that
+        # support config files override this and read it.
+        _ = config
         return []
 
     def get_status_text(self) -> str:
         """Get human-readable status text for display.
 
         Can be overridden for tool-specific status details.
+
+        Returns:
+            A human-readable string describing the current status.
         """
         if self._status == ToolStatus.ERROR and self._error_message:
             return f"Error: {self._error_message}"

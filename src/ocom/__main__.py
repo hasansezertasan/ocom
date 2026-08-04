@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 
 from ocom import __version__
-from ocom.app import run
+from ocom.tui.app import run
+
+__all__ = ["main"]
 
 
 def main() -> None:
@@ -16,13 +18,10 @@ def main() -> None:
     in a headless CI environment where launching the TUI would hang.
     """
     parser = argparse.ArgumentParser(
-        prog="ocom",
-        description="Unified TUI for managing network/privacy tools.",
+        prog="ocom", description="Unified TUI for managing network/privacy tools."
     )
     parser.add_argument(
-        "--version",
-        action="version",
-        version=f"%(prog)s {__version__}",
+        "--version", action="version", version=f"%(prog)s {__version__}"
     )
     parser.parse_args()
     run()

@@ -1,0 +1,221 @@
+"""Configuration management for ocom."""
+
+from pathlib import Path
+from typing import ClassVar, Literal, cast, override
+
+from pydantic import BaseModel, Field
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    TomlConfigSettingsSource,
+)
+
+from ocom.__metadata__ import PROJECT_NAME
+
+__all__ = [
+    "AppConfig",
+    "GeneralConfig",
+    "GoodbyeDPIConfig",
+    "OpenVPNConfig",
+    "SpoofDPIConfig",
+    "TailscaleConfig",
+    "WarpConfig",
+    "get_config_dir",
+    "get_config_path",
+]
+
+
+APP_NAME = PROJECT_NAME
+
+
+def get_config_dir() -> Path:
+    """Get the config directory (Linux-style ~/.config/ocom on all platforms).
+
+    Returns:
+        The per-user config directory path.
+    """
+    return Path.home() / ".config" / APP_NAME
+
+
+def get_config_path() -> Path:
+    """Get the path to the config file.
+
+    Returns:
+        The path to the ``config.toml`` file.
+    """
+    return get_config_dir() / "config.toml"
+
+
+class GeneralConfig(BaseModel):
+    """General application configuration."""
+
+    refresh_interval: int = Field(
+        default=2, ge=1, description="Status check interval in seconds"
+    )
+    auto_connect: bool = Field(
+        default=False, description="Auto-connect to default OpenVPN config"
+    )
+
+
+class OpenVPNConfig(BaseModel):
+    """OpenVPN-specific configuration."""
+
+    enabled: bool = True
+    config_dirs: list[str] = Field(default=["~/.openvpn", "~/vpn-configs"])
+    default_config: str = ""
+
+
+class SpoofDPIConfig(BaseModel):
+    """SpoofDPI-specific configuration."""
+
+    enabled: bool = True
+    dns_addr: str = "8.8.8.8:53"
+    dns_mode: Literal["udp", "https", "system"] = "https"
+    port: int = Field(default=8080, ge=1, le=65535)
+    system_proxy: bool = False
+
+
+class WarpConfig(BaseModel):
+    """Cloudflare WARP-specific configuration."""
+
+    enabled: bool = True
+    mode: Literal["warp", "doh", "proxy"] = "warp"
+
+
+class TailscaleConfig(BaseModel):
+    """Tailscale-specific configuration."""
+
+    enabled: bool = True
+
+
+class GoodbyeDPIConfig(BaseModel):
+    """GoodbyeDPI-specific configuration (Windows only)."""
+
+    enabled: bool = True
+    mode: int = Field(default=9, ge=1, le=9, description="Preset mode (1-9)")
+    block_quic: bool = Field(default=True, description="Block QUIC/HTTP3 protocol")
+
+
+class AppConfig(BaseSettings):
+    """Main application configuration."""
+
+    # Note: no ``toml_file`` here — both TOML sources below are constructed with
+    # an explicit ``toml_file=``, so declaring it in ``model_config`` would be an
+    # unused key. pydantic-settings warns on unused config keys, which the strict
+    # ``filterwarnings = ["error"]`` test config turns into a failure.
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(extra="ignore")
+
+    general: GeneralConfig = Field(default_factory=GeneralConfig)
+    openvpn: OpenVPNConfig = Field(default_factory=OpenVPNConfig)
+    spoofdpi: SpoofDPIConfig = Field(default_factory=SpoofDPIConfig)
+    warp: WarpConfig = Field(default_factory=WarpConfig)
+    tailscale: TailscaleConfig = Field(default_factory=TailscaleConfig)
+    goodbyedpi: GoodbyeDPIConfig = Field(default_factory=GoodbyeDPIConfig)
+
+    @classmethod
+    @override
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """Configure settings sources.
+
+        Values passed explicitly (``init_settings``) take priority so that
+        ``load(path)`` can supply file contents directly; the default config at
+        ``get_config_path()`` is used as a fallback when it exists.
+
+        Returns:
+            The ordered tuple of settings sources to read from.
+        """
+        toml_path = get_config_path()
+        if toml_path.exists():
+            return (
+                init_settings,
+                TomlConfigSettingsSource(settings_cls, toml_file=toml_path),
+            )
+        return (init_settings,)
+
+    @classmethod
+    def load(cls, path: Path | None = None) -> AppConfig:
+        """Load configuration from TOML file.
+
+        Args:
+            path: Path to config file. Uses default if None.
+
+        Returns:
+            Loaded AppConfig, or defaults if file doesn't exist.
+        """
+        if path and path.exists():
+            data: dict[str, object] = TomlConfigSettingsSource(cls, toml_file=path)()
+            return cls.model_validate(data)
+        return cls()
+
+    def save(self, path: Path | None = None) -> None:
+        """Save configuration to TOML file.
+
+        Args:
+            path: Path to config file. Uses default if None.
+        """
+        config_path = path or get_config_path()
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        config_path.write_text(self._to_toml())
+
+    def _to_toml(self) -> str:
+        """Convert config to TOML string.
+
+        Returns:
+            The configuration serialized as TOML text.
+        """
+        sections: dict[str, dict[str, object]] = {
+            "general": {
+                "refresh_interval": self.general.refresh_interval,
+                "auto_connect": self.general.auto_connect,
+            },
+            "openvpn": {
+                "enabled": self.openvpn.enabled,
+                "config_dirs": self.openvpn.config_dirs,
+                "default_config": self.openvpn.default_config,
+            },
+            "spoofdpi": {
+                "enabled": self.spoofdpi.enabled,
+                "dns_addr": self.spoofdpi.dns_addr,
+                "dns_mode": self.spoofdpi.dns_mode,
+                "port": self.spoofdpi.port,
+                "system_proxy": self.spoofdpi.system_proxy,
+            },
+            "warp": {"enabled": self.warp.enabled, "mode": self.warp.mode},
+            "tailscale": {"enabled": self.tailscale.enabled},
+            "goodbyedpi": {
+                "enabled": self.goodbyedpi.enabled,
+                "mode": self.goodbyedpi.mode,
+                "block_quic": self.goodbyedpi.block_quic,
+            },
+        }
+        lines: list[str] = []
+        for section, values in sections.items():
+            lines.append(f"[{section}]")
+            for key, value in values.items():
+                lines.append(f"{key} = {self._format_toml_value(value)}")
+            lines.append("")
+        return "\n".join(lines)
+
+    @staticmethod
+    def _format_toml_value(value: object) -> str:
+        """Format a value for TOML output.
+
+        Returns:
+            The value rendered as a TOML literal.
+        """
+        if isinstance(value, bool):
+            return str(value).lower()
+        if isinstance(value, int):
+            return str(value)
+        if isinstance(value, list):
+            items = cast("list[object]", value)
+            return repr(items)
+        return f'"{value}"'

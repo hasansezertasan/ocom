@@ -1,11 +1,15 @@
 """GoodbyeDPI tool implementation (Windows only)."""
 
 import asyncio
+from typing import ClassVar, final, override
 
 from ocom.core.process import ProcessManager, is_admin
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 
+__all__ = ["GoodbyeDPITool"]
 
+
+@final
 class GoodbyeDPITool(BaseTool):
     """GoodbyeDPI anti-censorship tool for Windows.
 
@@ -20,12 +24,14 @@ class GoodbyeDPITool(BaseTool):
     requires_sudo = False  # Windows uses Administrator, not sudo
     supports_configs = False
     install_url = "https://github.com/ValdikSS/GoodbyeDPI/releases"
-    conflicts_with = ["SpoofDPI"]  # Same function, different platform
+    conflicts_with: ClassVar[list[str]] = ["SpoofDPI"]  # Same function, other platform
 
     def __init__(self) -> None:
+        """Initialize the GoodbyeDPI tool with its default mode."""
         super().__init__()
         self._mode: int = 9  # Default mode
 
+    @override
     async def start(self, config: ToolConfig) -> bool:
         """Start GoodbyeDPI.
 
@@ -63,33 +69,34 @@ class GoodbyeDPITool(BaseTool):
 
         try:
             self._process = await ProcessManager.start_process(
-                args,
-                on_output=self._handle_output,
+                args, on_output=self._handle_output
             )
-
-            # Check if it started successfully
-            await asyncio.sleep(1)
-
-            if not ProcessManager.is_process_running(self._process):
-                self._status = ToolStatus.ERROR
-                self._error_message = (
-                    "Process exited unexpectedly (run as Administrator?)"
-                )
-                self._emit_output(f"Error: {self._error_message}")
-                return False
-
-            self._status = ToolStatus.RUNNING
-            self._emit_output(f"DPI bypass started (mode {self._mode})")
-            return True
-
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001  # external CLI can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             self._emit_output(f"Error: {e}")
             return False
 
+        # Check if it started successfully
+        await asyncio.sleep(1)
+
+        if not ProcessManager.is_process_running(self._process):
+            self._status = ToolStatus.ERROR
+            self._error_message = "Process exited unexpectedly (run as Administrator?)"
+            self._emit_output(f"Error: {self._error_message}")
+            return False
+
+        self._status = ToolStatus.RUNNING
+        self._emit_output(f"DPI bypass started (mode {self._mode})")
+        return True
+
+    @override
     async def stop(self) -> bool:
-        """Stop GoodbyeDPI."""
+        """Stop GoodbyeDPI.
+
+        Returns:
+            True if the process was stopped.
+        """
         if self._process is None:
             self._status = ToolStatus.STOPPED
             return True
@@ -102,8 +109,13 @@ class GoodbyeDPITool(BaseTool):
         self._emit_output("DPI bypass stopped")
         return success
 
+    @override
     async def refresh_status(self) -> ToolStatus:
-        """Refresh GoodbyeDPI status."""
+        """Refresh GoodbyeDPI status.
+
+        Returns:
+            The current ToolStatus.
+        """
         if self._status == ToolStatus.UNAVAILABLE:
             await self.check_available()
             return self._status
@@ -117,8 +129,13 @@ class GoodbyeDPITool(BaseTool):
 
         return self._status
 
+    @override
     def get_status_text(self) -> str:
-        """Get GoodbyeDPI-specific status text."""
+        """Get GoodbyeDPI-specific status text.
+
+        Returns:
+            A short human-readable status string.
+        """
         if self._status == ToolStatus.RUNNING:
             return f"Mode {self._mode}"
         return super().get_status_text()
