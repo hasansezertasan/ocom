@@ -109,6 +109,9 @@ hooks = [
   # and (b) surfaces strict-decorator errors in tests/ that the canonical run
   # never checks — neither is part of the shipped, type-checked surface.
   { id = "mypy", name = "Mypy Type Checker", files = "^src/", additional_dependencies = [
+    "textual==8.2.8",
+    "rich==15.0.0",
+    "pydantic-settings[toml]==2.14.2",
   ] },
 ]
 

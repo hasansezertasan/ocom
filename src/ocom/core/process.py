@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+__all__ = ["ProcessManager", "ProcessResult", "is_admin"]
+
 IS_WINDOWS = sys.platform == "win32"
 
 # Keep strong references to background output-reader tasks so they are not

@@ -185,7 +185,7 @@ class TestRefreshStatus:
     async def test_invalid_json_raises(
         self, tool: TailscaleTool, mocker: MockerFixture
     ) -> None:
-        """Unparseable JSON is caught and reported as ERROR."""
+        """Malformed JSON is caught and reported as ERROR."""
         tool._status = ToolStatus.RUNNING
         mocker.patch(
             "ocom.tools.tailscale.ProcessManager.run_command",

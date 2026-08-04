@@ -398,6 +398,11 @@ parenthesize-tuple-in-subscript = true
 
 [tool.mypy]
 files = ["src"]
+# Pin the analysis platform so the type checkers behave identically on every CI
+# OS (macOS/Linux/Windows). Without this, mypy on Windows rejects the Unix-only
+# `os.getuid()` in is_admin()'s non-Windows branch, while non-Windows checkers
+# reject the Windows-only ctypes.windll branch.
+platform = "linux"
 pretty = true
 python_version = "3.14"
 strict = true
@@ -406,6 +411,8 @@ strict = true
 [tool.basedpyright]
 exclude = [".venv"]
 include = ["src/ocom"]
+# See [tool.mypy].platform — pin the platform for cross-OS-consistent analysis.
+pythonPlatform = "Linux"
 pythonVersion = "3.14"
 # Textual exposes a fluent/builder API whose calls return values (mounted
 # widgets, AwaitMount, Worker, the bool from add_class/remove_class, etc.) that
@@ -425,6 +432,8 @@ respect-ignore-files = false
 
 
 [tool.ty.environment]
+# See [tool.mypy].platform — pin the platform for cross-OS-consistent analysis.
+python-platform = "linux"
 python-version = "3.14"
 
 
@@ -433,6 +442,8 @@ error-on-warning = true
 
 
 [tool.pyrefly]
+# See [tool.mypy].platform — pin the platform for cross-OS-consistent analysis.
+python-platform = "linux"
 python-version = "3.14"
 project-includes = ["src"]
 
