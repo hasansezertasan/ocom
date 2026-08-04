@@ -110,7 +110,9 @@ class ToolCard(Static):
             toggle_btn.disabled = False
             toggle_btn.label = "Stop"
             toggle_btn.variant = "error"
-        elif self.status.is_transitioning:
+        # The four clauses above are exhaustive over the six ToolStatus values,
+        # so the false arc of this final elif is unreachable (hence no branch).
+        elif self.status.is_transitioning:  # pragma: no branch
             toggle_btn.disabled = True
             toggle_btn.label = "..."
 

@@ -231,6 +231,8 @@ ignore_decorators = [
   "@app.after_startup",
   "@app.after_shutdown",
   "@server.call_tool",
+  # pytest invokes fixtures (esp. autouse ones) by injection, never by name.
+  "@pytest.fixture",
 ]
 # Public API surfaces vulture cannot see being used: ``main`` entry points are
 # referenced only via pyproject scripts, ``model_config`` is consumed by
