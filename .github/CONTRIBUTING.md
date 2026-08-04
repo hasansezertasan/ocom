@@ -412,7 +412,9 @@ merging: keep your project identity, adopt the template's tooling/config changes
 
 ## Join The Project Team
 
-<!-- TODO @hasansezertasan: Work in progress. -->
+Interested in helping maintain ocom? Open a
+[discussion](https://github.com/hasansezertasan/ocom/discussions)
+or reach out after a few merged contributions.
 
 <!-- omit in toc -->
 ## Attribution
