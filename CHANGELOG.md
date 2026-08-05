@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.1](https://github.com/hasansezertasan/ocom/compare/v0.1.0...v0.1.1) (2026-08-05)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** update python dependencies (non-major) ([#12](https://github.com/hasansezertasan/ocom/issues/12)) ([d76d7bd](https://github.com/hasansezertasan/ocom/commit/d76d7bde347e13961f72449eded117f2b0ed6dfa))
+* migrate suppression comments to ruff 0.16 structured syntax ([#40](https://github.com/hasansezertasan/ocom/issues/40)) ([b7d3f38](https://github.com/hasansezertasan/ocom/commit/b7d3f3899dbfbc75e6641b82d8c7ae64d2724a21))
+
+
+### 📝 Documentation
+
+* correct stale install instructions ([#46](https://github.com/hasansezertasan/ocom/issues/46)) ([891040b](https://github.com/hasansezertasan/ocom/commit/891040bb32a5922ed949ade73c5a98041ba3b5c8))
+
 ## 0.1.0 (2026-06-20)
 
 
