@@ -38,7 +38,7 @@ class ConfigSelectorScreen(ModalScreen[str | None]):
         configs: list[str],
         *,
         name: str | None = None,
-        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        id: str | None = None,  # ruff: ignore[builtin-argument-shadowing]  # mirrors Textual's id= API
         classes: str | None = None,
     ) -> None:
         """Store the tool and its available config files."""
@@ -89,7 +89,7 @@ class PasswordPromptScreen(ModalScreen[str | None]):
         tool: BaseTool,
         *,
         name: str | None = None,
-        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        id: str | None = None,  # ruff: ignore[builtin-argument-shadowing]  # mirrors Textual's id= API
         classes: str | None = None,
     ) -> None:
         """Store the tool that requires authentication."""
@@ -152,7 +152,7 @@ class MainScreen(Screen[None]):
         config: AppConfig,
         *,
         name: str | None = None,
-        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        id: str | None = None,  # ruff: ignore[builtin-argument-shadowing]  # mirrors Textual's id= API
         classes: str | None = None,
     ) -> None:
         """Store app config and build the tool set and card registry."""
@@ -298,7 +298,7 @@ class MainScreen(Screen[None]):
             try:
                 new_status = await tool.refresh_status()
                 self._cards[tool.name].refresh_status(new_status)
-            except Exception as exc:  # noqa: BLE001  # isolate per-tool refresh failures
+            except Exception as exc:  # ruff: ignore[blind-except]  # isolate per-tool refresh failures
                 log_panel.log_system(f"Error refreshing status for {tool.name}: {exc}")
 
     def on_tool_card_tool_action(self, event: ToolCard.ToolAction) -> None:

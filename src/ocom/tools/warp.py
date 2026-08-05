@@ -106,7 +106,7 @@ class WarpTool(BaseTool):
             result = await ProcessManager.run_command(
                 ["warp-cli", "status"], timeout=5.0
             )
-        except Exception as e:  # noqa: BLE001  # warp-cli can fail many ways
+        except Exception as e:  # ruff: ignore[blind-except]  # warp-cli can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             return self._status

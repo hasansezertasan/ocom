@@ -77,7 +77,7 @@ style = [
   "import-linter==2.13",
   "mypy==2.3.0",
   "pyrefly==1.2.0",
-  "ruff==0.15.19",
+  "ruff==0.16.1",
   "slotscheck==0.20.1",
   "sphinx-lint==1.0.2",
   "taplo==0.9.3",
@@ -320,7 +320,7 @@ skip-magic-trailing-comma = true
 
 [tool.ruff.lint]
 fixable = ["ALL"]
-ignore = ["COM812", "CPY", "FIX", "TD"]
+ignore = ["missing-trailing-comma", "CPY", "FIX", "TD"]
 logger-objects = ["logging_setup.logger"]
 preview = true
 select = ["ALL"]
@@ -360,32 +360,32 @@ convention = "pep257"
 # helpers without awaits (RUF029), define class-level fixtures data (RUF012),
 # compare against "" (PLC1901), and don't need full docstrings (D102/D107).
 "tests/**/*.py" = [
-  "S101",
-  "PLR2004",
-  "PLC2701",
-  "DOC201",
-  "PLR6301",
-  "SLF001",
-  "FBT001",
-  "FBT002",
-  "ARG002",
-  "ARG005",
-  "RUF029",
-  "RUF012",
-  "PLC1901",
-  "D102",
-  "D107",
+  "assert",
+  "magic-value-comparison",
+  "import-private-name",
+  "docstring-missing-returns",
+  "no-self-use",
+  "private-member-access",
+  "boolean-type-hint-positional-argument",
+  "boolean-default-value-positional-argument",
+  "unused-method-argument",
+  "unused-lambda-argument",
+  "unused-async",
+  "mutable-class-default",
+  "compare-to-empty-string",
+  "undocumented-public-method",
+  "undocumented-public-init",
 ]
 # Recursive so nested standalone example dirs (examples/simple, examples/advanced)
 # are covered — they are not importable packages.
-"examples/**/*.py" = ["INP001"]
+"examples/**/*.py" = ["implicit-namespace-package"]
 # The Sphinx config is a standalone module (INP001), and `copyright` is a
 # mandatory Sphinx conf variable name that shadows the builtin (A001).
-"docs/conf.py" = ["INP001", "A001"]
+"docs/conf.py" = ["implicit-namespace-package", "builtin-variable-shadowing"]
 # Package __init__ modules deliberately carry logic beyond re-exports: the top
 # package resolves the version from hatch-vcs, and tools/__init__ exposes the
 # `get_all_tools()` registry factory.
-"**/__init__.py" = ["RUF067"]
+"**/__init__.py" = ["non-empty-init-module"]
 
 
 [tool.ruff.lint.pyupgrade]
