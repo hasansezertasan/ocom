@@ -17,9 +17,37 @@ Cross-platform: macOS, Linux, and Windows.
 
 ## Installation
 
+`ocom` is a standalone end-user tool. Install it into an isolated environment
+with your preferred installer:
+
 ```bash
 uv tool install ocom
 ```
+
+```bash
+pipx install ocom
+```
+
+Or run it without installing:
+
+```bash
+uvx ocom
+```
+
+On macOS/Linux, install it from the [Homebrew tap](https://github.com/hasansezertasan/homebrew-tap):
+
+```bash
+brew install hasansezertasan/tap/ocom
+```
+
+On Windows, install it from the [Scoop bucket](https://github.com/hasansezertasan/scoop-bucket):
+
+```bash
+scoop bucket add hasansezertasan https://github.com/hasansezertasan/scoop-bucket
+scoop install ocom
+```
+
+Or install from source — see the [installation docs](https://hasansezertasan.github.io/ocom/installation.html).
 
 ## Usage
 

@@ -1,24 +1,44 @@
 Installation
 ============
 
-Possible extras:
-
-- ``all``: Installs all extras if available.
+``ocom`` is an end-user application, not a library, so install it as a
+standalone tool rather than as a project dependency. It ships a single
+``ocom`` command that launches the TUI.
 
 Stable release
 --------------
 
-To install ``ocom``, run this command in your terminal:
+Install ``ocom`` into an isolated environment with your preferred tool
+installer:
 
 .. code-block:: sh
 
-   uv add ocom
-
-Or if you prefer to use ``pip``:
+   uv tool install ocom
 
 .. code-block:: sh
 
-   pip install ocom
+   pipx install ocom
+
+Or run it without installing:
+
+.. code-block:: sh
+
+   uvx ocom
+
+On macOS/Linux, install it from the
+`Homebrew tap <https://github.com/hasansezertasan/homebrew-tap>`_:
+
+.. code-block:: sh
+
+   brew install hasansezertasan/tap/ocom
+
+On Windows, install it from the
+`Scoop bucket <https://github.com/hasansezertasan/scoop-bucket>`_:
+
+.. code-block:: sh
+
+   scoop bucket add hasansezertasan https://github.com/hasansezertasan/scoop-bucket
+   scoop install ocom
 
 From source
 -----------
