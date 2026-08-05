@@ -47,7 +47,7 @@ class ToolCard(Static):
         tool: BaseTool,
         *,
         name: str | None = None,
-        id: str | None = None,  # noqa: A002  # mirrors Textual's id= API
+        id: str | None = None,  # ruff: ignore[builtin-argument-shadowing]  # mirrors Textual's id= API
         classes: str | None = None,
     ) -> None:
         """Create a card bound to ``tool``, forwarding widget kwargs."""

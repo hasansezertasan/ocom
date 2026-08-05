@@ -153,7 +153,7 @@ class BaseTool(ABC):
             Current ToolStatus.
         """
 
-    def get_config_files(self, config: ToolConfig) -> list[str]:  # noqa: PLR6301
+    def get_config_files(self, config: ToolConfig) -> list[str]:  # ruff: ignore[no-self-use]
         """Get list of available config files.
 
         Override this for tools that use config files.

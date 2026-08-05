@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
 
-@pytest.fixture(autouse=True)  # noqa: RUF076
+@pytest.fixture(autouse=True)
 def _no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Prevent tests from reading a real user config file."""
     monkeypatch.setattr(

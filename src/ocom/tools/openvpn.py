@@ -57,7 +57,7 @@ class OpenVPNTool(BaseTool):
             self._process = await ProcessManager.start_process(
                 args, on_output=self._handle_output, stdin_data=password
             )
-        except Exception as e:  # noqa: BLE001  # external CLI can fail many ways
+        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             return False

@@ -117,7 +117,7 @@ class TailscaleTool(BaseTool):
                 return self._status_from_failure(result)
             status = cast("dict[str, object]", json.loads(result.stdout))
             backend_state = str(status.get("BackendState", ""))
-        except Exception as e:  # noqa: BLE001  # tailscale CLI/JSON can fail many ways
+        except Exception as e:  # ruff: ignore[blind-except]  # tailscale CLI/JSON can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             return self._status

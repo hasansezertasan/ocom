@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen
 
 
-@pytest.fixture(autouse=True)  # noqa: RUF076
+@pytest.fixture(autouse=True)
 def _no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Prevent tests from reading a real user config file."""
     monkeypatch.setattr(
@@ -38,7 +38,7 @@ class FakeTool(BaseTool):
     # fake can declare its own conflicts (intentional for the test double).
     conflicts_with: list[str]  # ty: ignore[invalid-attribute-override]
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # ruff: ignore[too-many-arguments]
         self,
         name: str,
         *,
@@ -455,7 +455,7 @@ class TestConfigSelectorFlow:
             app.screen.dismiss("hunter2")
             await pilot.pause()
             assert tool.started_with is not None
-            assert tool.started_with.options["sudo_password"] == "hunter2"  # noqa: S105
+            assert tool.started_with.options["sudo_password"] == "hunter2"  # ruff: ignore[hardcoded-password-string]
 
     async def test_password_cancel_does_not_start(
         self, monkeypatch: pytest.MonkeyPatch

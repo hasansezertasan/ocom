@@ -67,7 +67,7 @@ class SpoofDPITool(BaseTool):
             self._process = await ProcessManager.start_process(
                 args, on_output=self._emit_output
             )
-        except Exception as e:  # noqa: BLE001  # external CLI can fail many ways
+        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
             self._status = ToolStatus.ERROR
             self._error_message = str(e)
             self._emit_output(f"Error: {e}")

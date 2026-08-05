@@ -30,7 +30,7 @@ def is_admin() -> bool:
     """
     if IS_WINDOWS:
         try:
-            import ctypes  # noqa: PLC0415  # Windows-only lazy import
+            import ctypes  # ruff: ignore[import-outside-top-level]  # Windows-only lazy import
 
             # windll is Windows-only and absent from ctypes' type stubs on other
             # platforms. Reach it through an Any-typed alias so mypy doesn't flag
@@ -39,7 +39,7 @@ def is_admin() -> bool:
             # a getattr-with-constant (which ruff's B009 would rewrite back).
             ctypes_any: Any = ctypes  # pyright: ignore[reportExplicitAny]  # windll is Windows-only, absent from cross-platform ctypes stubs
             return bool(ctypes_any.windll.shell32.IsUserAnAdmin())  # pyright: ignore[reportAny]  # untyped Windows-only ctypes attribute chain
-        except Exception:  # noqa: BLE001  # ctypes call may fail many ways; treat as not-admin
+        except Exception:  # ruff: ignore[blind-except]  # ctypes call may fail many ways; treat as not-admin
             return False
     else:
         return os.getuid() == 0
@@ -85,7 +85,7 @@ class ProcessManager:
     async def run_command(
         args: list[str],
         *,
-        timeout: float | None = 30.0,  # noqa: ASYNC109  # explicit timeout is part of the public API
+        timeout: float | None = 30.0,  # ruff: ignore[async-function-with-timeout]  # explicit timeout is part of the public API
         check: bool = False,
     ) -> ProcessResult:
         """Run a command and wait for completion.
@@ -173,7 +173,7 @@ class ProcessManager:
     async def stop_process(
         proc: asyncio.subprocess.Process,
         *,
-        timeout: float = 5.0,  # noqa: ASYNC109  # explicit timeout is part of the public API
+        timeout: float = 5.0,  # ruff: ignore[async-function-with-timeout]  # explicit timeout is part of the public API
     ) -> bool:
         """Gracefully stop a process.
 
