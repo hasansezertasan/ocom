@@ -40,7 +40,7 @@ requires-python = ">=3.14"
 dependencies = [
   "textual==8.2.8",
   "rich==15.0.0",
-  "pydantic-settings[toml]==2.14.2",
+  "pydantic-settings[toml]==2.15.0",
 ]
 
 [project.optional-dependencies]
