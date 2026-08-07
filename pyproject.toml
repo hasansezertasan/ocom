@@ -111,7 +111,7 @@ test = [
 docs = [
   "sphinx==8.2.3",
   "shibuya==2026.7.12",
-  "sphinx-autobuild==2024.10.3",
+  "sphinx-autobuild==2025.8.25",
   "sphinx-copybutton==0.5.2",
   "sphinx-design==0.7.0",
   "sphinx-togglebutton==0.4.5",
