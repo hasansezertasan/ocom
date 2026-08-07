@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -233,7 +233,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="106">            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">run_command</span><span class="p">(</span>
 </span><span data-line="107">                <span class="p">[</span><span class="s2">&quot;warp-cli&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span>
 </span><span data-line="108">            <span class="p">)</span>
-</span><span data-line="109">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001  # warp-cli can fail many ways</span>
+</span><span data-line="109">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># ruff: ignore[blind-except]  # warp-cli can fail many ways</span>
 </span><span data-line="110">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
 </span><span data-line="111">            <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </span><span data-line="112">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span>
@@ -314,9 +314,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/hasansezertasan/ocom" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/hasansezertasan/ocom" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>
@@ -331,6 +331,5 @@ data-aria-dark="Switch to auto color mode">
       <script src="../../../_static/togglebutton.js?v=b8b12719"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../../_static/shibuya.js?v=50760d75"></script>
-      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script></body>
+      <script src="../../../_static/shibuya.js?v=50760d75"></script></body>
 </html>

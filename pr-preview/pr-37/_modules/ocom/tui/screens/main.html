@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -154,7 +154,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="38">        <span class="n">configs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 </span><span data-line="39">        <span class="o">*</span><span class="p">,</span>
 </span><span data-line="40">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="41">        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa: A002  # mirrors Textual&#39;s id= API</span>
+</span><span data-line="41">        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># ruff: ignore[builtin-argument-shadowing]  # mirrors Textual&#39;s id= API</span>
 </span><span data-line="42">        <span class="n">classes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span data-line="43">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="44"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store the tool and its available config files.&quot;&quot;&quot;</span>
@@ -220,7 +220,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="89">        <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span>
 </span><span data-line="90">        <span class="o">*</span><span class="p">,</span>
 </span><span data-line="91">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="92">        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa: A002  # mirrors Textual&#39;s id= API</span>
+</span><span data-line="92">        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># ruff: ignore[builtin-argument-shadowing]  # mirrors Textual&#39;s id= API</span>
 </span><span data-line="93">        <span class="n">classes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span data-line="94">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="95"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store the tool that requires authentication.&quot;&quot;&quot;</span>
@@ -296,7 +296,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="152">        <span class="n">config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">,</span>
 </span><span data-line="153">        <span class="o">*</span><span class="p">,</span>
 </span><span data-line="154">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="155">        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa: A002  # mirrors Textual&#39;s id= API</span>
+</span><span data-line="155">        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># ruff: ignore[builtin-argument-shadowing]  # mirrors Textual&#39;s id= API</span>
 </span><span data-line="156">        <span class="n">classes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span data-line="157">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="158"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store app config and build the tool set and card registry.&quot;&quot;&quot;</span>
@@ -442,7 +442,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="298">            <span class="k">try</span><span class="p">:</span>
 </span><span data-line="299">                <span class="n">new_status</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">()</span>
 </span><span data-line="300">                <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">new_status</span><span class="p">)</span>
-</span><span data-line="301">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># noqa: BLE001  # isolate per-tool refresh failures</span>
+</span><span data-line="301">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># ruff: ignore[blind-except]  # isolate per-tool refresh failures</span>
 </span><span data-line="302">                <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error refreshing status for </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span><span data-line="303">
 </span><span data-line="304">    <span class="k">def</span><span class="w"> </span><span class="nf">on_tool_card_tool_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">ToolCard</span><span class="o">.</span><span class="n">ToolAction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -668,9 +668,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/hasansezertasan/ocom" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/hasansezertasan/ocom" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>
@@ -685,6 +685,5 @@ data-aria-dark="Switch to auto color mode">
       <script src="../../../../_static/togglebutton.js?v=b8b12719"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../../../_static/shibuya.js?v=50760d75"></script>
-      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script></body>
+      <script src="../../../../_static/shibuya.js?v=50760d75"></script></body>
 </html>
