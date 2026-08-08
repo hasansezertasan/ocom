@@ -1,13 +1,18 @@
 Installation
 ============
 
+<<<<<<< before updating
 ``ocom`` is an end-user application, not a library, so install it as a
 standalone tool rather than as a project dependency. It ships a single
 ``ocom`` command that launches the TUI.
+=======
+``ocom`` is a library. Add it to your project as a dependency.
+>>>>>>> after updating
 
 Stable release
 --------------
 
+<<<<<<< before updating
 Install ``ocom`` into an isolated environment with your preferred tool
 installer:
 
@@ -27,6 +32,10 @@ Or run it without installing:
 
 On macOS/Linux, install it from the
 `Homebrew tap <https://github.com/hasansezertasan/homebrew-tap>`_:
+=======
+To add ``ocom`` to your project, run this command in your
+terminal:
+>>>>>>> after updating
 
 .. code-block:: sh
 
