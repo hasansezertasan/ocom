@@ -1,0 +1,34 @@
+Usage
+===========
+
+``ocom`` manages network/privacy tools (OpenVPN, SpoofDPI/GoodbyeDPI, Cloudflare
+WARP, Tailscale). It ships a small command-line interface alongside a full
+Textual terminal user interface.
+
+As a command-line tool
+--------------------------
+
+After installation, the ``ocom`` command exposes a few subcommands:
+
+.. code-block:: sh
+
+   ocom version
+   ocom info
+   ocom interactive
+
+``ocom version`` prints the installed version, ``ocom info`` reports the version
+and platform details, and ``ocom interactive`` launches the TUI.
+
+As a TUI
+------------
+
+Launch the terminal user interface directly with the ``ocom-tui`` command
+(equivalent to ``ocom interactive``):
+
+.. code-block:: sh
+
+   ocom-tui
+
+Inside the app, each tool card shows the tool's status and an action button to
+install, start, or stop it. Starting a tool automatically stops any running tool
+it conflicts with.
