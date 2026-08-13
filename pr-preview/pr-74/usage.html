@@ -79,8 +79,8 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#as-a-command-line-tool">As a command-line tool</a></li>
-<li><a class="reference internal" href="#as-a-tui">As a TUI</a></li>
+<li><a class="reference internal" href="#launching-the-tui">Launching the TUI</a></li>
+<li><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
 </ul>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
@@ -114,29 +114,25 @@ data-aria-dark="Switch to auto color mode">
           <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">ocom</span></code> manages network/privacy tools (OpenVPN, SpoofDPI/GoodbyeDPI, Cloudflare
-WARP, Tailscale). It ships a small command-line interface alongside a full
-Textual terminal user interface.</p>
-<section id="as-a-command-line-tool">
-<h2>As a command-line tool<a class="headerlink" href="#as-a-command-line-tool" title="Link to this heading">#</a></h2>
-<p>After installation, the <code class="docutils literal notranslate"><span class="pre">ocom</span></code> command exposes a few subcommands:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span data-line="1">ocom<span class="w"> </span>version
-</span><span data-line="2">ocom<span class="w"> </span>info
-</span><span data-line="3">ocom<span class="w"> </span>interactive
-</span></pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">version</span></code> prints the installed version, <code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">info</span></code> reports the version
-and platform details, and <code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">interactive</span></code> launches the TUI.</p>
-</section>
-<section id="as-a-tui">
-<h2>As a TUI<a class="headerlink" href="#as-a-tui" title="Link to this heading">#</a></h2>
-<p>Launch the terminal user interface directly with the <code class="docutils literal notranslate"><span class="pre">ocom-tui</span></code> command
-(equivalent to <code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">interactive</span></code>):</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span data-line="1">ocom-tui
+WARP, Tailscale) through a Textual terminal user interface, with a small
+command-line interface built into the same <code class="docutils literal notranslate"><span class="pre">ocom</span></code> command.</p>
+<section id="launching-the-tui">
+<h2>Launching the TUI<a class="headerlink" href="#launching-the-tui" title="Link to this heading">#</a></h2>
+<p>Run <code class="docutils literal notranslate"><span class="pre">ocom</span></code> with no arguments to start the terminal user interface:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span data-line="1">ocom
 </span></pre></div>
 </div>
 <p>Inside the app, each tool card shows the tool’s status and an action button to
 install, start, or stop it. Starting a tool automatically stops any running tool
 it conflicts with.</p>
+</section>
+<section id="command-line-interface">
+<h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">#</a></h2>
+<p>The same <code class="docutils literal notranslate"><span class="pre">ocom</span></code> command exposes a few subcommands (see <code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">--help</span></code>):</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span data-line="1">ocom<span class="w"> </span>version<span class="w">   </span><span class="c1"># print the installed version</span>
+</span><span data-line="2">ocom<span class="w"> </span>info<span class="w">      </span><span class="c1"># print version, Python, and platform details</span>
+</span></pre></div>
+</div>
 </section>
 </section>
 

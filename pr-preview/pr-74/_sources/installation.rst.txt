@@ -2,8 +2,9 @@ Installation
 ============
 
 ``ocom`` is an end-user application, not a library, so install it as a
-standalone tool rather than as a project dependency. It ships an ``ocom``
-command (a small CLI) alongside an ``ocom-tui`` command that launches the TUI.
+standalone tool rather than as a project dependency. It ships a single ``ocom``
+command: run it with no arguments to launch the TUI, or use its subcommands
+(``ocom version``, ``ocom info``, ``ocom --help``) as a CLI.
 
 Stable release
 --------------
