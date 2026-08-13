@@ -51,7 +51,7 @@ requires-python = ">=3.14"
 # fails at launch. Same for pydantic-settings, which ``core.config`` imports
 # unconditionally when enabled.
 dependencies = [
-  "typer==0.20.0",
+  "typer==0.27.1",
   "textual==8.2.8",
   "rich==15.0.0",
   "pydantic-settings[toml]==2.15.0",
