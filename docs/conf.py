@@ -26,6 +26,7 @@ extensions = [
     "sphinx_paramlinks",
     "auto_pytabs.sphinx_ext",
     "myst_parser",
+    "sphinx_click",
 ]
 
 # Both reStructuredText and (via MyST) Markdown source files are supported.
@@ -56,6 +57,7 @@ auto_pytabs_max_version = (3, 14)
 
 # -- Intersphinx -------------------------------------------------------------
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+intersphinx_mapping["pydantic"] = ("https://docs.pydantic.dev/latest", None)
 
 
 # -- HTML output (Shibuya theme) ---------------------------------------------

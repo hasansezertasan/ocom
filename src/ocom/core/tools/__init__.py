@@ -3,11 +3,11 @@
 from typing import TYPE_CHECKING
 
 from ocom.core.process import IS_WINDOWS
-from ocom.tools.goodbyedpi import GoodbyeDPITool
-from ocom.tools.openvpn import OpenVPNTool
-from ocom.tools.spoofdpi import SpoofDPITool
-from ocom.tools.tailscale import TailscaleTool
-from ocom.tools.warp import WarpTool
+from ocom.core.tools.goodbyedpi import GoodbyeDPITool
+from ocom.core.tools.openvpn import OpenVPNTool
+from ocom.core.tools.spoofdpi import SpoofDPITool
+from ocom.core.tools.tailscale import TailscaleTool
+from ocom.core.tools.warp import WarpTool
 
 if TYPE_CHECKING:
     from ocom.core.tool import BaseTool

@@ -2,8 +2,9 @@ Installation
 ============
 
 ``ocom`` is an end-user application, not a library, so install it as a
-standalone tool rather than as a project dependency. It ships a single
-``ocom`` command that launches the TUI.
+standalone tool rather than as a project dependency. It ships a single ``ocom``
+command: run it with no arguments to launch the TUI, or use its subcommands
+(``ocom version``, ``ocom info``, ``ocom --help``) as a CLI.
 
 Stable release
 --------------
@@ -38,7 +39,7 @@ On Windows, install it from the
 .. code-block:: sh
 
    scoop bucket add hasansezertasan https://github.com/hasansezertasan/scoop-bucket
-   scoop install ocom
+   scoop install hasansezertasan/ocom
 
 From source
 -----------
@@ -65,4 +66,4 @@ Once you have a copy of the source, you can install it with:
 .. code-block:: sh
 
    cd ocom
-   uv sync
+   uv tool install .

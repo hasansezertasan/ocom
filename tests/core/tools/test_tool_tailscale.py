@@ -8,7 +8,7 @@ import pytest
 
 from ocom.core.process import ProcessResult
 from ocom.core.tool import ToolConfig, ToolStatus
-from ocom.tools.tailscale import TailscaleTool
+from ocom.core.tools.tailscale import TailscaleTool
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
@@ -44,7 +44,7 @@ class TestCheckAvailable:
     ) -> None:
         """A missing CLI short-circuits to unavailable."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.find_command", return_value=None
+            "ocom.core.tools.tailscale.ProcessManager.find_command", return_value=None
         )
         assert await tool.check_available() is False
         assert tool.status == ToolStatus.UNAVAILABLE
@@ -54,11 +54,11 @@ class TestCheckAvailable:
     ) -> None:
         """An available CLI reconciles with the daemon state."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.find_command",
+            "ocom.core.tools.tailscale.ProcessManager.find_command",
             return_value="/usr/bin/tailscale",
         )
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(
                 return_value=_result(stdout=json.dumps({"BackendState": "Running"}))
             ),
@@ -75,7 +75,7 @@ class TestStart:
     ) -> None:
         """A successful up sets RUNNING."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout="ok")),
         )
         assert await tool.start(ToolConfig()) is True
@@ -86,7 +86,7 @@ class TestStart:
     ) -> None:
         """A failing up sets ERROR with stderr message."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1, stderr="login url")),
         )
         assert await tool.start(ToolConfig()) is False
@@ -98,7 +98,7 @@ class TestStart:
     ) -> None:
         """A failing up with no output uses a default message."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1)),
         )
         assert await tool.start(ToolConfig()) is False
@@ -113,7 +113,7 @@ class TestStop:
     ) -> None:
         """A successful down sets STOPPED."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout="ok")),
         )
         assert await tool.stop() is True
@@ -124,7 +124,7 @@ class TestStop:
     ) -> None:
         """A failing down sets ERROR with the message."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1, stdout="cannot")),
         )
         assert await tool.stop() is False
@@ -136,7 +136,7 @@ class TestStop:
     ) -> None:
         """A failing down with no output uses a default message."""
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1)),
         )
         assert await tool.stop() is False
@@ -152,9 +152,9 @@ class TestRefreshStatus:
         """UNAVAILABLE with no CLI short-circuits without running commands."""
         tool._status = ToolStatus.UNAVAILABLE
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.find_command", return_value=None
+            "ocom.core.tools.tailscale.ProcessManager.find_command", return_value=None
         )
-        run = mocker.patch("ocom.tools.tailscale.ProcessManager.run_command")
+        run = mocker.patch("ocom.core.tools.tailscale.ProcessManager.run_command")
         assert await tool.refresh_status() == ToolStatus.UNAVAILABLE
         run.assert_not_called()
 
@@ -164,7 +164,7 @@ class TestRefreshStatus:
         """A failed status query records the stderr message as ERROR."""
         tool._status = ToolStatus.RUNNING
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1, stderr="  boom  ")),
         )
         assert await tool.refresh_status() == ToolStatus.ERROR
@@ -176,7 +176,7 @@ class TestRefreshStatus:
         """A failed status query with no stderr uses a default message."""
         tool._status = ToolStatus.RUNNING
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1)),
         )
         assert await tool.refresh_status() == ToolStatus.ERROR
@@ -188,7 +188,7 @@ class TestRefreshStatus:
         """Malformed JSON is caught and reported as ERROR."""
         tool._status = ToolStatus.RUNNING
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout="not json")),
         )
         assert await tool.refresh_status() == ToolStatus.ERROR
@@ -216,7 +216,7 @@ class TestRefreshStatus:
         """Each BackendState maps to the expected ToolStatus."""
         tool._status = ToolStatus.STOPPED
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(
                 return_value=_result(stdout=json.dumps({"BackendState": state}))
             ),
@@ -230,7 +230,7 @@ class TestRefreshStatus:
         tool._status = ToolStatus.ERROR
         tool._error_message = "old error"
         mocker.patch(
-            "ocom.tools.tailscale.ProcessManager.run_command",
+            "ocom.core.tools.tailscale.ProcessManager.run_command",
             new=AsyncMock(
                 return_value=_result(stdout=json.dumps({"BackendState": "Running"}))
             ),

@@ -12,7 +12,7 @@ from textual.widgets import Button, Footer, Header, Input, Label, OptionList, St
 from textual.widgets.option_list import Option
 
 from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
-from ocom.tools import get_all_tools
+from ocom.core.tools import get_all_tools
 from ocom.tui.widgets.log_panel import LogPanel
 from ocom.tui.widgets.tool_card import ToolCard
 

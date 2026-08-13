@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from ocom.core.tool import ToolConfig, ToolStatus
-from ocom.tools.openvpn import OpenVPNTool
+from ocom.core.tools.openvpn import OpenVPNTool
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -59,7 +59,7 @@ class TestBuildCommand:
 
     def test_windows_command(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """On Windows the command runs directly without sudo."""
-        monkeypatch.setattr("ocom.tools.openvpn.IS_WINDOWS", True)
+        monkeypatch.setattr("ocom.core.tools.openvpn.IS_WINDOWS", True)
         config = ToolConfig(extra_args=["--verb", "3"])
         args, sudo_pw = OpenVPNTool._build_command(config, Path("my.ovpn"))
         assert args[:3] == ["openvpn", "--config", "my.ovpn"]
@@ -68,7 +68,7 @@ class TestBuildCommand:
 
     def test_unix_command_with_password(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """On Unix a provided sudo password is threaded through."""
-        monkeypatch.setattr("ocom.tools.openvpn.IS_WINDOWS", False)
+        monkeypatch.setattr("ocom.core.tools.openvpn.IS_WINDOWS", False)
         config = ToolConfig(options={"sudo_password": "secret"})
         args, sudo_pw = OpenVPNTool._build_command(config, Path("my.ovpn"))
         assert args[:4] == ["sudo", "-S", "openvpn", "--config"]
@@ -78,7 +78,7 @@ class TestBuildCommand:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """On Unix a missing sudo password yields None."""
-        monkeypatch.setattr("ocom.tools.openvpn.IS_WINDOWS", False)
+        monkeypatch.setattr("ocom.core.tools.openvpn.IS_WINDOWS", False)
         args, sudo_pw = OpenVPNTool._build_command(ToolConfig(), Path("my.ovpn"))
         assert args[0] == "sudo"
         assert sudo_pw is None
@@ -94,7 +94,7 @@ class TestStart:
         config_file = tmp_path / "vpn.ovpn"
         config_file.write_text("dummy")
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.start_process",
+            "ocom.core.tools.openvpn.ProcessManager.start_process",
             new=AsyncMock(side_effect=RuntimeError("boom")),
         )
         result = await tool.start(ToolConfig(config_file=str(config_file)))
@@ -109,13 +109,14 @@ class TestStart:
         config_file = tmp_path / "vpn.ovpn"
         config_file.write_text("dummy")
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.start_process",
+            "ocom.core.tools.openvpn.ProcessManager.start_process",
             new=AsyncMock(return_value=MagicMock(returncode=None)),
         )
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=True,
         )
-        mocker.patch("ocom.tools.openvpn.asyncio.sleep", new=AsyncMock())
+        mocker.patch("ocom.core.tools.openvpn.asyncio.sleep", new=AsyncMock())
         result = await tool.start(ToolConfig(config_file=str(config_file)))
         assert result is True
         assert tool.status == ToolStatus.RUNNING
@@ -131,7 +132,8 @@ class TestEvaluateStart:
         """A dead process should be reported as ERROR."""
         tool._process = MagicMock(returncode=1)
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=False
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=False,
         )
         result = await tool._evaluate_start()
         assert result is False
@@ -143,10 +145,11 @@ class TestEvaluateStart:
         tool._process = MagicMock(returncode=None)
         tool._output_lines = ["some log", "AUTH_FAILED"]
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=True,
         )
         stop = mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.stop_process",
+            "ocom.core.tools.openvpn.ProcessManager.stop_process",
             new=AsyncMock(return_value=True),
         )
         result = await tool._evaluate_start()
@@ -163,7 +166,8 @@ class TestEvaluateStart:
         tool._process = MagicMock(returncode=None)
         tool._output_lines = ["Initialization Sequence Completed", "AUTH_FAILED"]
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=True,
         )
         result = await tool._evaluate_start()
         assert result is True
@@ -176,7 +180,8 @@ class TestEvaluateStart:
         tool._process = MagicMock(returncode=None)
         tool._output_lines = ["connecting..."]
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=True,
         )
         result = await tool._evaluate_start()
         assert result is True
@@ -199,7 +204,7 @@ class TestStop:
         tool._process = MagicMock(returncode=None)
         tool._current_config = "vpn.ovpn"
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.stop_process",
+            "ocom.core.tools.openvpn.ProcessManager.stop_process",
             new=AsyncMock(return_value=True),
         )
         result = await tool.stop()
@@ -218,7 +223,7 @@ class TestRefreshStatus:
         """UNAVAILABLE should re-run availability detection."""
         tool._status = ToolStatus.UNAVAILABLE
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.find_command", return_value=None
+            "ocom.core.tools.openvpn.ProcessManager.find_command", return_value=None
         )
         assert await tool.refresh_status() == ToolStatus.UNAVAILABLE
 
@@ -229,7 +234,8 @@ class TestRefreshStatus:
         tool._status = ToolStatus.RUNNING
         tool._process = MagicMock(returncode=None)
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=True,
         )
         assert await tool.refresh_status() == ToolStatus.RUNNING
 
@@ -239,7 +245,8 @@ class TestRefreshStatus:
         tool._process = MagicMock(returncode=1)
         tool._current_config = "vpn.ovpn"
         mocker.patch(
-            "ocom.tools.openvpn.ProcessManager.is_process_running", return_value=False
+            "ocom.core.tools.openvpn.ProcessManager.is_process_running",
+            return_value=False,
         )
         assert await tool.refresh_status() == ToolStatus.STOPPED
         assert tool._process is None

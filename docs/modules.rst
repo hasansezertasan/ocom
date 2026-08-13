@@ -16,7 +16,7 @@ The Textual application entry point.
 .. automodule:: ocom.tui.app
 
 Configuration (``ocom.core.config``)
-----------------------------------
+-------------------------------------
 
 Pydantic-settings based configuration.
 
@@ -32,12 +32,12 @@ Shared abstractions: the ``BaseTool`` interface and the subprocess
 
 .. automodule:: ocom.core.process
 
-Tools (``ocom.tools``)
+Tools (``ocom.core.tools``)
 ----------------------------------
 
 Concrete tool implementations (OpenVPN, SpoofDPI, GoodbyeDPI, WARP, Tailscale).
 
-.. automodule:: ocom.tools
+.. automodule:: ocom.core.tools
 
 User interface (``ocom.tui``)
 ----------------------------------
@@ -49,3 +49,11 @@ Textual screens and widgets.
 .. automodule:: ocom.tui.widgets.tool_card
 
 .. automodule:: ocom.tui.widgets.log_panel
+
+CLI (``ocom.cli``)
+----------------------------------
+
+Typer command-line interface. Bare ``ocom`` launches the TUI; the ``version``
+and ``info`` subcommands act as a conventional CLI.
+
+.. automodule:: ocom.cli.app

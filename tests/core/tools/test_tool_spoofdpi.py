@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from ocom.core.tool import ToolConfig, ToolStatus
-from ocom.tools.spoofdpi import SpoofDPITool
+from ocom.core.tools.spoofdpi import SpoofDPITool
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
@@ -39,17 +39,18 @@ class TestStart:
     ) -> None:
         """A running process with a bound port reports RUNNING."""
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.start_process",
+            "ocom.core.tools.spoofdpi.ProcessManager.start_process",
             new=AsyncMock(return_value=MagicMock(returncode=None)),
         )
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.spoofdpi.ProcessManager.is_process_running",
+            return_value=True,
         )
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.check_port_in_use",
+            "ocom.core.tools.spoofdpi.ProcessManager.check_port_in_use",
             new=AsyncMock(return_value=True),
         )
-        mocker.patch("ocom.tools.spoofdpi.asyncio.sleep", new=AsyncMock())
+        mocker.patch("ocom.core.tools.spoofdpi.asyncio.sleep", new=AsyncMock())
         config = ToolConfig(
             options={
                 "port": 9090,
@@ -69,17 +70,18 @@ class TestStart:
     ) -> None:
         """A running process without a bound port still reports RUNNING."""
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.start_process",
+            "ocom.core.tools.spoofdpi.ProcessManager.start_process",
             new=AsyncMock(return_value=MagicMock(returncode=None)),
         )
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.spoofdpi.ProcessManager.is_process_running",
+            return_value=True,
         )
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.check_port_in_use",
+            "ocom.core.tools.spoofdpi.ProcessManager.check_port_in_use",
             new=AsyncMock(return_value=False),
         )
-        mocker.patch("ocom.tools.spoofdpi.asyncio.sleep", new=AsyncMock())
+        mocker.patch("ocom.core.tools.spoofdpi.asyncio.sleep", new=AsyncMock())
         result = await tool.start(ToolConfig())
         assert result is True
         assert tool.status == ToolStatus.RUNNING
@@ -89,7 +91,7 @@ class TestStart:
     ) -> None:
         """A raising start_process should be caught and reported as ERROR."""
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.start_process",
+            "ocom.core.tools.spoofdpi.ProcessManager.start_process",
             new=AsyncMock(side_effect=RuntimeError("boom")),
         )
         result = await tool.start(ToolConfig())
@@ -102,13 +104,14 @@ class TestStart:
     ) -> None:
         """A process that exits early should be reported as ERROR."""
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.start_process",
+            "ocom.core.tools.spoofdpi.ProcessManager.start_process",
             new=AsyncMock(return_value=MagicMock(returncode=3)),
         )
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.is_process_running", return_value=False
+            "ocom.core.tools.spoofdpi.ProcessManager.is_process_running",
+            return_value=False,
         )
-        mocker.patch("ocom.tools.spoofdpi.asyncio.sleep", new=AsyncMock())
+        mocker.patch("ocom.core.tools.spoofdpi.asyncio.sleep", new=AsyncMock())
         result = await tool.start(ToolConfig())
         assert result is False
         assert tool.status == ToolStatus.ERROR
@@ -130,7 +133,7 @@ class TestStop:
         """Stopping with a process should stop it and clear state."""
         tool._process = MagicMock(returncode=None)
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.stop_process",
+            "ocom.core.tools.spoofdpi.ProcessManager.stop_process",
             new=AsyncMock(return_value=True),
         )
         result = await tool.stop()
@@ -148,7 +151,7 @@ class TestRefreshStatus:
         """UNAVAILABLE should re-run availability detection."""
         tool._status = ToolStatus.UNAVAILABLE
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.find_command", return_value=None
+            "ocom.core.tools.spoofdpi.ProcessManager.find_command", return_value=None
         )
         assert await tool.refresh_status() == ToolStatus.UNAVAILABLE
 
@@ -159,7 +162,8 @@ class TestRefreshStatus:
         tool._status = ToolStatus.RUNNING
         tool._process = MagicMock(returncode=None)
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.is_process_running", return_value=True
+            "ocom.core.tools.spoofdpi.ProcessManager.is_process_running",
+            return_value=True,
         )
         assert await tool.refresh_status() == ToolStatus.RUNNING
 
@@ -170,7 +174,8 @@ class TestRefreshStatus:
         tool._status = ToolStatus.RUNNING
         tool._process = MagicMock(returncode=1)
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.is_process_running", return_value=False
+            "ocom.core.tools.spoofdpi.ProcessManager.is_process_running",
+            return_value=False,
         )
         assert await tool.refresh_status() == ToolStatus.STOPPED
         assert tool._process is None
@@ -182,7 +187,7 @@ class TestRefreshStatus:
         tool._status = ToolStatus.RUNNING
         tool._process = None
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.check_port_in_use",
+            "ocom.core.tools.spoofdpi.ProcessManager.check_port_in_use",
             new=AsyncMock(return_value=True),
         )
         assert await tool.refresh_status() == ToolStatus.RUNNING
@@ -198,7 +203,7 @@ class TestRefreshStatus:
         tool._status = ToolStatus.RUNNING
         tool._process = None
         mocker.patch(
-            "ocom.tools.spoofdpi.ProcessManager.check_port_in_use",
+            "ocom.core.tools.spoofdpi.ProcessManager.check_port_in_use",
             new=AsyncMock(return_value=False),
         )
         assert await tool.refresh_status() == ToolStatus.STOPPED
