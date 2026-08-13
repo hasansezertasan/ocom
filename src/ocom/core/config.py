@@ -1,5 +1,6 @@
 """Configuration management for ocom."""
 
+from functools import cache
 from pathlib import Path
 from typing import ClassVar, Literal, cast, override
 
@@ -12,21 +13,62 @@ from pydantic_settings import (
 )
 
 from ocom.__metadata__ import PROJECT_NAME
+from ocom.core.dirs import ROOT_FOLDER_PATH
 
 __all__ = [
     "AppConfig",
     "GeneralConfig",
     "GoodbyeDPIConfig",
     "OpenVPNConfig",
+    "Settings",
     "SpoofDPIConfig",
     "TailscaleConfig",
     "WarpConfig",
     "get_config_dir",
     "get_config_path",
+    "get_settings",
 ]
 
 
 APP_NAME = PROJECT_NAME
+
+
+class Settings(BaseSettings):
+    """Process-wide settings sourced from the environment or a ``.env`` file.
+
+    Distinct from :class:`AppConfig` (the user-facing, TOML-backed tool
+    configuration): these are environment-level knobs consumed by cross-cutting
+    infrastructure. ``log_level`` is read by ``core/logging_setup.py``; ``debug``
+    and ``config_dir`` are placeholders kept for parity with the template
+    scaffold. All variables are prefixed with the project name (``OCOM_``).
+    """
+
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix=f"{PROJECT_NAME.upper().replace('-', '_')}_",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    debug: bool = Field(default=False, description="Enable debug mode")
+    log_level: str = Field(default="INFO", description="Logging level")
+    config_dir: Path = Field(
+        default=ROOT_FOLDER_PATH, description="Configuration directory"
+    )
+
+
+@cache
+def get_settings() -> Settings:
+    """Return the cached settings singleton.
+
+    Cached so all callers share one instance; tests can reset or override it
+    via ``get_settings.cache_clear()`` instead of patching an import-time value.
+
+    Returns:
+        Settings: The cached settings instance.
+    """
+    return Settings()
 
 
 def get_config_dir() -> Path:

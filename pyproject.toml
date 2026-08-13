@@ -17,6 +17,11 @@ keywords = [
   "goodbyedpi",
   "network",
   "privacy",
+  "command-line",
+  "cli",
+  "typer",
+  "textual",
+  "pydantic",
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -35,21 +40,22 @@ classifiers = [
   "Topic :: Internet",
   "Topic :: System :: Networking",
   "Typing :: Typed",
+  "Topic :: Utilities",
+  "Topic :: Terminals",
 ]
 requires-python = ">=3.14"
+# The enabled component's runtime deps live here, not in an optional extra: a
+# selected component is chosen at generation time and ``__main__`` imports it
+# unconditionally (see the CLI > GUI > TUI > web > MCP > worker precedence
+# there), so ``pip install ocom`` must pull them or the binary
+# fails at launch. Same for pydantic-settings, which ``core.config`` imports
+# unconditionally when enabled.
 dependencies = [
+  "typer==0.20.0",
   "textual==8.2.8",
   "rich==15.0.0",
   "pydantic-settings[toml]==2.15.0",
 ]
-
-[project.optional-dependencies]
-
-
-all = []
-
-[project.scripts]
-ocom = "ocom.__main__:main"
 
 
 [project.urls]
@@ -60,10 +66,11 @@ issues = "https://github.com/hasansezertasan/ocom/issues"
 releasenotes = "https://github.com/hasansezertasan/ocom/releases"
 source = "https://github.com/hasansezertasan/ocom.git"
 
+[project.scripts]
+ocom = "ocom.__main__:main"
 
 [dependency-groups]
 dev = [
-  "ocom[all]",
   "tox==4.59.0",
   "tox-uv==1.36.0",
   "debugpy==1.8.21",
@@ -71,11 +78,11 @@ dev = [
   { include-group = "test" },
 ]
 style = [
-  "actionlint-py==1.7.12.24",
   "basedpyright==1.39.9",
   "editorconfig-checker==3.11.1",
   "import-linter==2.13",
   "mypy==2.3.0",
+  "pylint==4.0.6",
   "pyrefly==1.2.0",
   "ruff==0.16.3",
   "slotscheck==0.20.1",
@@ -83,18 +90,7 @@ style = [
   "taplo==0.9.3",
   "ty==0.0.71",
   "typos==1.49.0",
-  "validate-pyproject[all]==0.25",
-  "vulture==2.16",
   "zuban==0.9.1",
-  # "google-yamlfmt",
-  # "shellcheck-makefile>=1.27.3",
-  # "shellcheck-py>=0.10.0.1",
-  # "types-PyYAML",
-  # "types-setuptools",
-  # "types-ujson",
-  # "yamlfix>=1.18.0",
-  # "yamlfmt>=1.1.1",
-  # "yamllint>=1.37.1",
 ]
 test = [
   "coverage-enable-subprocess==1.0",
@@ -118,6 +114,7 @@ docs = [
   "sphinx-paramlinks==0.6.0",
   "auto-pytabs[sphinx]==0.5.0",
   "myst-parser==5.1.0",
+  "sphinx-click==6.2.0",
 ]
 tool = [
   "commitizen==4.17.0",
@@ -147,7 +144,12 @@ trusted-publishing = "always"
 
 [tool.hatch.version]
 source = "vcs"
-fallback-version = "0.1.0"
+# Last-resort sentinel: only used when a build sees neither a .git directory nor
+# an expanded .git_archival.txt (e.g. an archive of a commit with no reachable
+# tag). "0.0.0" reads clearly as "version could not be determined" rather than
+# masquerading as a real early release. See .git_archival.txt + .gitattributes
+# `export-subst` for the archive path that recovers the real tag-derived version.
+fallback-version = "0.0.0"
 
 
 [tool.hatch.build]
@@ -289,11 +291,12 @@ root_package = "ocom"
 name = "Layered architecture"
 type = "layers"
 # Layers are listed high -> low: a layer may import lower layers but never a
-# higher one. The Textual UI (screens/widgets) orchestrates the tool
-# implementations, which build on the shared `core` abstractions
-# (BaseTool/ProcessManager). `config` and `app` are left outside the contract as
-# unconstrained top-level modules.
-layers = ["ocom.tui", "ocom.tools", "ocom.core"]
+# higher one. `cli` is the orchestrator layer — bare `ocom` launches the TUI via
+# a lazy import — so it sits ABOVE the Textual UI, which orchestrates the tool
+# implementations (`core.tools`) that build on the shared `core` abstractions
+# (BaseTool/ProcessManager); `core` sits above the leaf `utils`. `__metadata__`
+# is left outside the contract as an unconstrained foundation.
+layers = ["ocom.cli", "ocom.tui", "ocom.core", "ocom.utils"]
 
 
 [tool.ruff]
@@ -301,7 +304,7 @@ fix = true
 output-format = "full"
 preview = true
 show-fixes = true
-src = ["src", "tests", "examples"]
+src = ["src", "tests"]
 target-version = "py314"
 unsafe-fixes = true
 
@@ -320,7 +323,11 @@ skip-magic-trailing-comma = true
 
 [tool.ruff.lint]
 fixable = ["ALL"]
-ignore = ["missing-trailing-comma", "CPY", "FIX", "TD"]
+# Two opinionated ruff 0.16 preview rules are disabled: RUF105 would rewrite the
+# portable `# noqa` comments into ruff's own `# ruff: ignore` syntax (its docs note
+# `# noqa` is needed for cross-tool compatibility), and RUF201 would rewrite every
+# rule *code* in this config's selectors into long rule *names*. Both are stylistic.
+ignore = ["COM812", "CPY", "FIX", "RUF105", "RUF201", "TD"]
 logger-objects = ["logging_setup.logger"]
 preview = true
 select = ["ALL"]
@@ -336,6 +343,16 @@ author = "Hasan Sezer Tasan <hasansezertasan@gmail.com>"
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
+
+
+[tool.ruff.lint.flake8-type-checking]
+# Pydantic evaluates annotations at runtime, so imports used only in model
+# field annotations (e.g. `pathlib.Path`) must NOT be moved into a
+# `TYPE_CHECKING` block — doing so breaks model construction.
+runtime-evaluated-base-classes = [
+  "pydantic.BaseModel",
+  "pydantic_settings.BaseSettings",
+]
 
 
 [tool.ruff.lint.mccabe]
@@ -376,9 +393,6 @@ convention = "pep257"
   "undocumented-public-method",
   "undocumented-public-init",
 ]
-# Recursive so nested standalone example dirs (examples/simple, examples/advanced)
-# are covered — they are not importable packages.
-"examples/**/*.py" = ["implicit-namespace-package"]
 # The Sphinx config is a standalone module (INP001), and `copyright` is a
 # mandatory Sphinx conf variable name that shadows the builtin (A001).
 "docs/conf.py" = ["implicit-namespace-package", "builtin-variable-shadowing"]
@@ -447,12 +461,71 @@ python-platform = "linux"
 python-version = "3.14"
 project-includes = ["src"]
 
+[tool.pylint.main]
+# pylint runs as an always-on gate that deliberately overlaps ruff's PL* rules.
+# Its canonical invocation is `pylint src`, so it never descends into tests; this
+# ignore-paths is a defensive scope guard for broader invocations (`pylint .`,
+# filename-passing hooks). Tests are linted by ruff, not pylint.
+ignore-paths = ["^tests/.*$"]
+# `.pyi` stubs (the c-extension type stub) are signature-only: their bodies are
+# `...` and every parameter is unused by construction, so pylint's unused-argument
+# check is a guaranteed false positive there. Stubs are type-checked by the
+# type-checker gate, not pylint.
+ignore-patterns = ['.*\.pyi$']
+
+[tool.pylint."messages control"]
+# Only formatter-owned checks, the docstring family, and too-few-public-methods
+# are disabled so pylint is usable out of the box; everything else stays on.
+disable = [
+  "line-too-long",              # C0301 — ruff-format owns line length
+  "missing-module-docstring",   # C0114
+  "missing-class-docstring",    # C0115
+  "missing-function-docstring", # C0116
+  "too-few-public-methods",     # R0903 — trips dataclasses / config / Protocol classes
+  "import-outside-toplevel",    # C0415 — components (cli->tui/gui/web, and each
+  # component's own optional-dependency probe) are
+  # deliberately lazy-imported so import-linter's
+  # layering contract holds and optional extras
+  # aren't required at import time.
+  "try-except-raise", # W0706 — the generated TUI entry point
+  # explicitly re-raises KeyboardInterrupt/SystemExit
+  # ahead of a broad `except Exception` to make the
+  # "let these propagate" intent obvious to readers,
+  # even though BaseException subclasses wouldn't be
+  # caught by the Exception clause anyway.
+  "duplicate-code", # R0801 — the component skeletons (gui/tui/mcp/
+  # worker) are deliberately parallel: each fetches
+  # package metadata and formats the same info block
+  # the same way. That structural symmetry is a
+  # feature of the scaffold, not copy-paste debt, and
+  # R0801 cannot be suppressed inline at the call site.
+  # The three below are redundant with checks the stricter, type-aware gates
+  # already own, so pylint's versions only add noise (or false positives):
+  "no-member", # E1101 — false-positives on pydantic sub-model
+  # attribute access (`self.general.refresh_interval`
+  # infers as FieldInfo). The five type checkers
+  # (mypy/basedpyright/ty/pyrefly/zuban) resolve real
+  # attribute errors correctly; pylint cannot here.
+  "broad-exception-caught", # W0718 — ruff's BLE001 already governs blind
+  # `except Exception`; the tool wrappers catch broadly
+  # on purpose to surface any CLI failure in the log
+  # panel (suppressed for ruff inline at each site).
+  "redefined-builtin", # W0622 — the `id=` keyword mirrors Textual's widget
+  # API; ruff's A002 already governs builtin shadowing
+  # (suppressed inline where the API demands `id`).
+]
+
+[tool.pylint.design]
+max-args = 10
+max-positional-arguments = 10
+max-branches = 20
+
 [tool.tox]
 # The ``worker`` env is intentionally omitted: it starts a broker-bound process
 # and would hang/fail under ``tox run`` in CI (where no broker is available).
 # The worker is covered by its pytest TestBroker suite; run it on demand with
 # ``tox -e worker`` when a broker is up (e.g. inside the devcontainer).
-env_list = ["style", "3.14"]
+env_list = ["style", "cli", "3.14"]
 requires = ["tox>=4"]
 
 
@@ -478,7 +551,6 @@ env_tmp_dir = "{toxworkdir}/tmp/{envname}"
 # `coverage run` plus `parallel = true` writes per-env data files that the CI
 # `coverage combine` step merges.
 set_env = { COVERAGE_PROCESS_START = "{tox_root}/pyproject.toml" }
-extras = ["all"]
 
 package = "wheel"
 
@@ -497,7 +569,7 @@ commands = [
   ["ty", "check"],
   ["pyrefly", "check"],
   ["zuban", "check", "src"],
-  ["vulture"],
+  ["pylint", "src"],
   ["python", "-m", "slotscheck", "src"],
   ["lint-imports"],
   ["taplo", "lint", "*.toml"],
@@ -509,12 +581,9 @@ commands = [
   # `--check` gate is a follow-up that first requires the generated
   # pyproject/prek to be clean.
   ["taplo", "format", "*.toml"],
-  ["validate-pyproject", "pyproject.toml"],
   ["typos", "--diff"],
-  ["actionlint"],
   ["ec"],
   ["sphinx-lint", "docs"],
-  # ["yamlfmt", "."],
 ]
 # `test` is included so the type checkers that scope tests (e.g. ty) can
 # resolve pytest and other test-only imports.
@@ -532,7 +601,6 @@ runner = "uv-venv-runner"
 
 [tool.tox.env.docs-build]
 commands = [["sphinx-build", "-b", "html", "docs", "docs/_build/html"]]
-extras = ["all"]
 dependency_groups = ["docs"]
 description = "Build Docs"
 runner = "uv-venv-runner"
@@ -540,7 +608,6 @@ runner = "uv-venv-runner"
 
 [tool.tox.env.docs-server]
 commands = [["sphinx-autobuild", "docs", "docs/_build/html"]]
-extras = ["all"]
 dependency_groups = ["docs"]
 description = "Start the live-reloading docs server"
 runner = "uv-venv-runner"
@@ -558,7 +625,18 @@ commands = [
     "docs/_build/linkcheck",
   ],
 ]
-extras = ["all"]
 dependency_groups = ["docs"]
 description = "Check documentation for broken links"
+runner = "uv-venv-runner"
+
+[tool.tox.env.cli]
+commands = [
+  [
+    "ocom",
+    { replace = "posargs", default = [
+      "version",
+    ], extend = true },
+  ],
+]
+description = "Run the CLI application."
 runner = "uv-venv-runner"

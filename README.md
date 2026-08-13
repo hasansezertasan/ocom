@@ -44,15 +44,24 @@ On Windows, install it from the [Scoop bucket](https://github.com/hasansezertasa
 
 ```bash
 scoop bucket add hasansezertasan https://github.com/hasansezertasan/scoop-bucket
-scoop install ocom
+scoop install hasansezertasan/ocom
 ```
 
 Or install from source — see the [installation docs](https://hasansezertasan.github.io/ocom/installation.html).
 
 ## Usage
 
+Run `ocom` with no arguments to launch the TUI:
+
 ```bash
 ocom
+```
+
+The same command also works as a small CLI — `ocom --help` lists everything:
+
+```bash
+ocom version   # print the version
+ocom info      # version + Python/platform details
 ```
 
 ### Keyboard Shortcuts

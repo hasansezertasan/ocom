@@ -33,10 +33,34 @@
     },
     
     
+    {
+      "name": "Python: CLI",
+      "type": "debugpy",
+      "request": "launch",
+      "justMyCode": true,
+      "module": "uv",
+      "args": ["run", "ocom", "${input:args}"]
+    },
+    
+    
+    {
+      "name": "Python: TUI",
+      "type": "debugpy",
+      "request": "launch",
+      "justMyCode": true,
+      "module": "uv",
+      "args": ["run", "ocom"]
+    },
     
     
     
   ],
   "inputs": [
+    {
+      "id": "args",
+      "type": "promptString",
+      "default": "",
+      "description": "Arguments passed to the ocom CLI"
+    }
   ]
 }

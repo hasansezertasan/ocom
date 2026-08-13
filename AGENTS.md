@@ -37,8 +37,9 @@ Guidance for AI coding agents working in this repository.
 
 ocom is a unified Terminal User Interface (TUI) for managing network/privacy
 tools: OpenVPN, SpoofDPI/GoodbyeDPI, and Cloudflare WARP. Built with Textual.
-Cross-platform: macOS, Linux, and Windows. Launch it with the `ocom` console
-script or `python -m ocom`.
+Cross-platform: macOS, Linux, and Windows. Running `ocom` with no arguments
+launches the TUI; the same command is a small Typer CLI (`ocom version`,
+`ocom info`, `ocom --help`).
 
 ## Architecture
 
@@ -53,7 +54,7 @@ script or `python -m ocom`.
 - **ProcessManager** (`process.py`): subprocess handling — `run_command()`,
   `start_process()`, `stop_process()`, `find_command()`.
 
-### Tool implementations (`src/ocom/tools/`)
+### Tool implementations (`src/ocom/core/tools/`)
 
 | Tool           | Command      | Sudo      | Platform | Notes                                      |
 | -------------- | ------------ | --------- | -------- | ------------------------------------------ |
@@ -63,7 +64,7 @@ script or `python -m ocom`.
 | WarpTool       | `warp-cli`   | No        | All      | CLI connect/disconnect. Conflicts OpenVPN. |
 | TailscaleTool  | `tailscale`  | No        | All      | Mesh VPN via `tailscale up`/`down`.        |
 
-### UI layer (`src/ocom/ui/`)
+### UI layer (`src/ocom/tui/`)
 
 - Screens (`screens/main.py`): MainScreen dashboard, ConfigSelectorScreen,
   PasswordPromptScreen.
@@ -72,16 +73,17 @@ script or `python -m ocom`.
 - Message flow: Button press → `ToolCard.ToolAction` → MainScreen handler →
   (optional modals) → `tool.start/stop` → output callbacks → LogPanel.
 
-Configuration lives in `src/ocom/config.py` (pydantic-settings + TOML,
+Configuration lives in `src/ocom/core/config.py` (pydantic-settings + TOML,
 `~/.config/ocom/config.toml`). Layering is enforced by import-linter:
-`ocom.ui` → `ocom.tools` → `ocom.core`.
+`ocom.cli` → `ocom.tui` → `ocom.core` → `ocom.utils` (tool implementations live
+in `ocom.core.tools`).
 
 ## Adding a new tool
 
-1. Create `src/ocom/tools/newtool.py` implementing `BaseTool` (set `name`,
+1. Create `src/ocom/core/tools/newtool.py` implementing `BaseTool` (set `name`,
    `command`, `requires_sudo`, `supports_configs`, `install_url`,
    `conflicts_with`, and the async `start`/`stop`/`refresh_status`).
-2. Register it in `src/ocom/tools/__init__.py` `get_all_tools()`.
+2. Register it in `src/ocom/core/tools/__init__.py` `get_all_tools()`.
 3. Add a config section to `config.py` if needed.
 4. Optionally add a color to `LogPanel.SOURCE_COLORS`.
 
@@ -91,3 +93,24 @@ Configuration lives in `src/ocom/config.py` (pydantic-settings + TOML,
 - **Reactive UI**: ToolCard uses Textual's reactive `status` attribute.
 - **Conflict resolution**: starting a tool auto-stops running tools in `conflicts_with`.
 - **Async-first**: all I/O uses asyncio.
+
+## Pull Requests
+
+CI blocks a PR whose branch name or title breaks these conventions — follow them
+before opening one:
+
+- **Branch names** follow [Conventional Branch](https://conventionalbranch.org/):
+  `<type>/<short-description>` (e.g. `feat/add-login`). Allowed types are
+  `feature`/`feat`, `bugfix`/`fix`, `hotfix`, `release`, `chore`, plus the
+  AI-agent prefixes `ai`, `copilot`, `cursor`, `claude`, `codex`. The description
+  is lowercase alphanumerics separated by single `-` or `.` (no leading, trailing,
+  or consecutive separators). Enforced by `check-branch-name.yml`, which also
+  whitelists the `renovate/*` and `release-please--*` automation branches — leave
+  those as-is.
+- **PR titles** follow [Conventional Commits](https://www.conventionalcommits.org/)
+  (e.g. `feat: add login`) — the title becomes the squash commit release-please
+  parses, so it drives versioning. Enforced by `check-pr-title.yml`.
+- Every human-authored PR must **link an issue** (a `Closes #N` keyword in the
+  body) unless it carries the `no-issue` label. Enforced by
+  `check-linked-issues.yml`, which auto-skips PRs opened by a bot account (login
+  ending in `[bot]`) — don't fabricate an issue reference for those.

@@ -7,7 +7,7 @@ import pytest
 
 from ocom.core.process import ProcessResult
 from ocom.core.tool import ToolConfig, ToolStatus
-from ocom.tools.warp import WarpTool
+from ocom.core.tools.warp import WarpTool
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
@@ -40,7 +40,9 @@ class TestCheckAvailable:
 
     async def test_command_missing(self, tool: WarpTool, mocker: MockerFixture) -> None:
         """A missing CLI should short-circuit to unavailable."""
-        mocker.patch("ocom.tools.warp.ProcessManager.find_command", return_value=None)
+        mocker.patch(
+            "ocom.core.tools.warp.ProcessManager.find_command", return_value=None
+        )
         assert await tool.check_available() is False
         assert tool.status == ToolStatus.UNAVAILABLE
 
@@ -49,11 +51,11 @@ class TestCheckAvailable:
     ) -> None:
         """An available CLI with a running daemon reflects that status."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.find_command",
+            "ocom.core.tools.warp.ProcessManager.find_command",
             return_value="/usr/bin/warp-cli",
         )
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout="Status: Connected")),
         )
         assert await tool.check_available() is True
@@ -64,7 +66,7 @@ class TestCheckAvailable:
     ) -> None:
         """A daemon status left UNAVAILABLE is normalized to STOPPED."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.find_command",
+            "ocom.core.tools.warp.ProcessManager.find_command",
             return_value="/usr/bin/warp-cli",
         )
 
@@ -84,7 +86,7 @@ class TestStart:
     async def test_start_success(self, tool: WarpTool, mocker: MockerFixture) -> None:
         """Successful connect sets RUNNING and sends the mode command."""
         run = mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout="ok")),
         )
         result = await tool.start(ToolConfig(options={"mode": "doh"}))
@@ -96,7 +98,7 @@ class TestStart:
     async def test_start_failure(self, tool: WarpTool, mocker: MockerFixture) -> None:
         """A failing connect sets ERROR with the stderr message."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1, stderr="nope")),
         )
         result = await tool.start(ToolConfig())
@@ -109,7 +111,7 @@ class TestStart:
     ) -> None:
         """With no stderr/stdout a default failure message is used."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1)),
         )
         result = await tool.start(ToolConfig(options={"mode": ""}))
@@ -123,7 +125,7 @@ class TestStop:
     async def test_stop_success(self, tool: WarpTool, mocker: MockerFixture) -> None:
         """A successful disconnect sets STOPPED."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout="ok")),
         )
         result = await tool.stop()
@@ -133,7 +135,7 @@ class TestStop:
     async def test_stop_failure(self, tool: WarpTool, mocker: MockerFixture) -> None:
         """A failing disconnect sets ERROR with the message."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1, stdout="cannot")),
         )
         result = await tool.stop()
@@ -146,7 +148,7 @@ class TestStop:
     ) -> None:
         """With no output a default disconnect message is used."""
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1)),
         )
         result = await tool.stop()
@@ -162,8 +164,10 @@ class TestRefreshStatus:
     ) -> None:
         """UNAVAILABLE with no CLI short-circuits without running commands."""
         tool._status = ToolStatus.UNAVAILABLE
-        mocker.patch("ocom.tools.warp.ProcessManager.find_command", return_value=None)
-        run = mocker.patch("ocom.tools.warp.ProcessManager.run_command")
+        mocker.patch(
+            "ocom.core.tools.warp.ProcessManager.find_command", return_value=None
+        )
+        run = mocker.patch("ocom.core.tools.warp.ProcessManager.run_command")
         assert await tool.refresh_status() == ToolStatus.UNAVAILABLE
         run.assert_not_called()
 
@@ -173,7 +177,7 @@ class TestRefreshStatus:
         """A raising status command yields ERROR."""
         tool._status = ToolStatus.RUNNING
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(side_effect=RuntimeError("crash")),
         )
         assert await tool.refresh_status() == ToolStatus.ERROR
@@ -194,7 +198,7 @@ class TestRefreshStatus:
         """Status text is mapped to the right ToolStatus."""
         tool._status = ToolStatus.STOPPED
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(stdout=stdout)),
         )
         assert await tool.refresh_status() == expected
@@ -205,7 +209,7 @@ class TestRefreshStatus:
         """An unreachable daemon maps to ERROR."""
         tool._status = ToolStatus.STOPPED
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(
                 return_value=_result(returncode=1, stderr="Unable to connect")
             ),
@@ -219,7 +223,7 @@ class TestRefreshStatus:
         """A generic failure maps to STOPPED."""
         tool._status = ToolStatus.RUNNING
         mocker.patch(
-            "ocom.tools.warp.ProcessManager.run_command",
+            "ocom.core.tools.warp.ProcessManager.run_command",
             new=AsyncMock(return_value=_result(returncode=1, stderr="other error")),
         )
         assert await tool.refresh_status() == ToolStatus.STOPPED
