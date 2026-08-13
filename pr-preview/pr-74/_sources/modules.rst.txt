@@ -16,7 +16,7 @@ The Textual application entry point.
 .. automodule:: ocom.tui.app
 
 Configuration (``ocom.core.config``)
-----------------------------------
+-------------------------------------
 
 Pydantic-settings based configuration.
 
