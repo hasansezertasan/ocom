@@ -252,6 +252,7 @@ changelog by hand:
 
 ### Repository setup (one-time)
 
+<<<<<<< before updating
 A few repository settings must be in place for the automated release and
 maintenance workflows to work. Each can be applied from the GitHub UI or with
 the [`gh` CLI](https://cli.github.com/) commands shown below.
@@ -497,6 +498,16 @@ The "Include in the home page" activity toggles (Releases / Packages /
 Deployments in the About sidebar) are **not** settable through any GitHub API,
 so neither this App nor any workflow can manage them — set those in the web UI.
 Labels are managed separately by `.github/labels.yml`, not here.
+=======
+The one-time repository setup — squash-merge policy, branch protection, PyPI
+trusted publishing, coverage and docs-site enablement, dependency and template
+updates, and the optional third-party integrations — is **author/maintainer**
+work, not something a contributor does. It lives in its own home:
+[`docs/maintaining/setup.rst`](../docs/maintaining/setup.rst) (published under
+**Maintainer guide** on the documentation site). Each step there is tagged
+`[AGENT]` (a scriptable `gh` command) or `[HUMAN]` (browser-only), so it doubles
+as a runnable setup checklist.
+>>>>>>> after updating
 
 ## Join The Project Team
 
