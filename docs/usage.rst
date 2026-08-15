@@ -25,5 +25,9 @@ The same ``ocom`` command exposes a few subcommands (see ``ocom --help``):
 
 .. code-block:: sh
 
+<<<<<<< before updating
    ocom version   # print the installed version
    ocom info      # print version, Python, and platform details
+=======
+   ocom interactive
+>>>>>>> after updating
