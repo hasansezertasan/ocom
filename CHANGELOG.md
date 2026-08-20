@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/hasansezertasan/ocom/compare/v0.1.1...v0.1.2) (2026-08-20)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** update dependency pydantic-settings to v2.15.0 ([#75](https://github.com/hasansezertasan/ocom/issues/75)) ([bc3d2d7](https://github.com/hasansezertasan/ocom/commit/bc3d2d791f6458d16eec400b7787934085730477))
+* **deps:** update dependency typer to v0.27.1 ([#94](https://github.com/hasansezertasan/ocom/issues/94)) ([07ede31](https://github.com/hasansezertasan/ocom/commit/07ede31b02375c74c18a7c7d49da453c59147278))
+* **renovate:** resolve copier template git-tags lookup failure ([#58](https://github.com/hasansezertasan/ocom/issues/58)) ([b532d30](https://github.com/hasansezertasan/ocom/commit/b532d305c89a683ba2162cdead31bb7ca31eb67a))
+
 ## [0.1.1](https://github.com/hasansezertasan/ocom/compare/v0.1.0...v0.1.1) (2026-08-05)
 
 
