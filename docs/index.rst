@@ -11,6 +11,12 @@ A unified TUI for managing network/privacy tools: OpenVPN, SpoofDPI, Cloudflare 
    usage
    modules
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Maintainer guide
+
+   maintaining/setup
+
 Indices and tables
 ==================
 
