@@ -60,8 +60,12 @@ ocom
 The same command also works as a small CLI — `ocom --help` lists everything:
 
 ```bash
+<<<<<<< before updating
 ocom version   # print the version
 ocom info      # version + Python/platform details
+=======
+ocom interactive
+>>>>>>> after updating
 ```
 
 ### Keyboard Shortcuts
@@ -168,10 +172,14 @@ reports a clear error if they are missing.
 
 ### Auto-connect
 
+<<<<<<< before updating
 When `auto_connect = true`, ocom attempts to connect to OpenVPN on startup using
 `openvpn.default_config` (which must point to a valid `.ovpn` file). On Unix a sudo
 password prompt appears immediately; on Windows the connection starts automatically
 (run as Administrator).
+=======
+Versioning and releases are automated with [release-please](https://github.com/googleapis/release-please), driven by [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) PR titles squash-merged into `main`. release-please maintains a release PR that bumps the version and `CHANGELOG.md`; merging it tags the release and publishes to PyPI. See the [Contributing Guidelines](./.github/CONTRIBUTING.md#releasing) for the commit conventions, and the one-time [Repository setup](./docs/maintaining/setup.rst) guide (squash-merge settings, Actions permissions, release immutability, and PyPI trusted publishing) for maintainers.
+>>>>>>> after updating
 
 ```toml
 [general]

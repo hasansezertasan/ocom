@@ -68,6 +68,12 @@ source = "https://github.com/hasansezertasan/ocom.git"
 
 [project.scripts]
 ocom = "ocom.__main__:main"
+<<<<<<< before updating
+=======
+
+
+
+>>>>>>> after updating
 
 [dependency-groups]
 dev = [
@@ -291,12 +297,28 @@ root_package = "ocom"
 name = "Layered architecture"
 type = "layers"
 # Layers are listed high -> low: a layer may import lower layers but never a
+<<<<<<< before updating
 # higher one. `cli` is the orchestrator layer — bare `ocom` launches the TUI via
 # a lazy import — so it sits ABOVE the Textual UI, which orchestrates the tool
 # implementations (`core.tools`) that build on the shared `core` abstractions
 # (BaseTool/ProcessManager); `core` sits above the leaf `utils`. `__metadata__`
 # is left outside the contract as an unconstrained foundation.
 layers = ["ocom.cli", "ocom.tui", "ocom.core", "ocom.utils"]
+=======
+# higher one. Modules joined by ` | ` on one line are independent SIBLINGS that
+# may not import each other. `cli` is the orchestrator layer — the
+# `ocom` console root, whose subcommands launch the other
+# components (web/gui/tui/mcp/worker) via lazy imports — so it sits ABOVE the
+# independent component group, which sits above `core`, which sits above the leaf
+# `utils`. `__metadata__` is left outside the contract as an unconstrained
+# foundation.
+layers = [
+  "ocom.cli",
+  "ocom.tui",
+  "ocom.core",
+  "ocom.utils",
+]
+>>>>>>> after updating
 
 
 [tool.ruff]

@@ -1,4 +1,4 @@
-"""Test cases for the Typer CLI application commands."""
+"""Test cases for the ocom Typer root."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from ocom.cli.app import app
 
 if TYPE_CHECKING:
     from typer.testing import Result
+
 
 # The cli ``__init__`` re-exports the Typer ``app`` object, which shadows the
 # ``app`` submodule on any attribute-based import (``from ... import app``,
@@ -35,60 +36,46 @@ def runner() -> CliRunner:
     return CliRunner()
 
 
+def test_help_exits_cleanly(runner: CliRunner) -> None:
+    """``--help`` renders the root usage and exits 0.
+
+    Given:
+        - The ocom Typer root.
+    When:
+        - ``--help`` is requested.
+    Then:
+        - The command exits 0 and every enabled component
+          subcommand is advertised in the help output.
+    """
+    result: Result = runner.invoke(app, ["--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "interactive" in result.output
+
+
 def test_version(runner: CliRunner) -> None:
-    """Test the `version` command of the CLI application.
+    """The `version` command runs successfully and prints the version.
 
-    This test checks if the `version` command runs without any errors.
-
-    Scenario:
-        - Run the `version` command of the CLI application.
-
-    Expected Result:
-        - The command should execute successfully and return the application version.
     Given:
         - The application is set up with a `version` command.
     When:
         - The `version` command is invoked using the CLI runner.
     Then:
-        - The command should exit with code 0, indicating success.
-        - The output should contain the application version information.
-    And:
-        - If the command fails, the test should fail with the output message.
-
-    Note:
-        - This test does not check the actual version number,
-        only that the command runs successfully.
-
+        - The command exits 0 and the output contains the version.
     """
     result: Result = runner.invoke(app, ["version"])
     assert result.exit_code == 0, result.output
 
 
 def test_info(runner: CliRunner) -> None:
-    """Test the `info` command of the CLI application.
+    """The `info` command runs successfully and prints application information.
 
-    This test checks if the `info` command runs without any errors.
-
-    Scenario:
-        - Run the `info` command of the CLI application.
-
-    Expected Result:
-        - The command should execute successfully and return the application
-        information.
     Given:
         - The application is set up with an `info` command.
     When:
         - The `info` command is invoked using the CLI runner.
     Then:
-        - The command should exit with code 0, indicating success.
-        - The output should contain the application information.
-    And:
-        - If the command fails, the test should fail with the output message.
-
-    Note:
-        - This test does not check the actual information content,
-        only that the command runs successfully.
-
+        - The command exits 0 and the output contains the application info.
     """
     result: Result = runner.invoke(app, ["info"])
     assert result.exit_code == 0, result.output
