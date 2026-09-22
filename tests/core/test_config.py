@@ -1,4 +1,17 @@
+<<<<<<< before updating
 """Tests for AppConfig and related configuration classes."""
+=======
+"""Tests for the configuration module.
+
+These tests assert only the public ``Settings`` behavior shared by both the
+pydantic-settings and stdlib backends, so they hold regardless of the
+``include_pydantic_settings`` choice. The one backend-specific detail is
+``.env`` isolation in ``test_defaults`` — only the pydantic-settings backend
+reads a dotenv file.
+"""
+
+from __future__ import annotations
+>>>>>>> after updating
 
 from typing import TYPE_CHECKING
 
@@ -24,8 +37,49 @@ if TYPE_CHECKING:
 ENV_PREFIX = f"{PROJECT_NAME.upper().replace('-', '_')}_"
 
 
+<<<<<<< before updating
 class TestGeneralConfig:
     """Test GeneralConfig model."""
+=======
+def test_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Settings expose the documented defaults when no env vars are set."""
+    for name in ("DEBUG", "LOG_LEVEL", "CONFIG_DIR"):
+        monkeypatch.delenv(f"{ENV_PREFIX}{name}", raising=False)
+
+    # Clearing the environment is not enough: the pydantic-settings backend also
+    # reads `.env`, which .env.example tells contributors to create. Without
+    # this the test passes on CI and fails on any configured machine.
+    settings = Settings(_env_file=None)
+
+    assert settings.debug is False
+    assert settings.log_level == "INFO"
+    assert settings.config_dir == ROOT_FOLDER_PATH
+
+
+def test_log_level_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The log level is read from the prefixed environment variable."""
+    monkeypatch.setenv(f"{ENV_PREFIX}LOG_LEVEL", "DEBUG")
+
+    assert Settings().log_level == "DEBUG"
+
+
+def test_config_dir_env_override(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The config directory is read from the prefixed environment variable."""
+    monkeypatch.setenv(f"{ENV_PREFIX}CONFIG_DIR", str(tmp_path))
+
+    assert Settings().config_dir == tmp_path
+
+
+@pytest.mark.parametrize("value", ["1", "true", "YES", "on", "y"])
+def test_debug_truthy(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
+    """Recognized truthy strings enable debug mode (case-insensitively)."""
+    monkeypatch.setenv(f"{ENV_PREFIX}DEBUG", value)
+
+    assert Settings().debug is True
+
+>>>>>>> after updating
 
     def test_default_values(self) -> None:
         """GeneralConfig should have sensible defaults."""

@@ -47,8 +47,32 @@ scoop bucket add hasansezertasan https://github.com/hasansezertasan/scoop-bucket
 scoop install hasansezertasan/ocom
 ```
 
+<<<<<<< before updating
 Or install from source — see the [installation docs](https://hasansezertasan.github.io/ocom/installation.html).
 
+=======
+### Verify the installation
+
+The package root is importable after installation:
+
+```pycon
+>>> from ocom import __doc__
+>>> isinstance(__doc__, str)
+True
+
+```
+
+<!--
+TODO @hasansezertasan: Add project-specific, runnable examples here.
+
+pytest runs the pycon examples in this file (--doctest-glob=README.md).
+doctest cannot see Markdown and ends an example's expected output at the first
+blank line, so leave a blank line before every closing fence -- as the example
+above does. Without it the closing delimiter is read as part of the expected
+output and the example fails ("Expected: 2 / Got: 2"). Examples with no output
+line at all need the blank line too.
+-->
+>>>>>>> after updating
 ## Usage
 
 Run `ocom` with no arguments to launch the TUI:
@@ -60,8 +84,12 @@ ocom
 The same command also works as a small CLI — `ocom --help` lists everything:
 
 ```bash
+<<<<<<< before updating
 ocom version   # print the version
 ocom info      # version + Python/platform details
+=======
+ocom interactive
+>>>>>>> after updating
 ```
 
 ### Keyboard Shortcuts
@@ -168,10 +196,14 @@ reports a clear error if they are missing.
 
 ### Auto-connect
 
+<<<<<<< before updating
 When `auto_connect = true`, ocom attempts to connect to OpenVPN on startup using
 `openvpn.default_config` (which must point to a valid `.ovpn` file). On Unix a sudo
 password prompt appears immediately; on Windows the connection starts automatically
 (run as Administrator).
+=======
+Versioning and releases are automated with [release-please](https://github.com/googleapis/release-please), driven by [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) PR titles squash-merged into `main`. release-please maintains a release PR that bumps the version and `CHANGELOG.md`; merging it tags the release and publishes to PyPI. See the [Contributing Guidelines](./.github/CONTRIBUTING.md#releasing) for the commit conventions, and the [Repository setup](./docs/maintaining/setup.rst) guide for one-time configuration and optional post-launch integrations such as a social preview, downstream packaging, and Repology.
+>>>>>>> after updating
 
 ```toml
 [general]
