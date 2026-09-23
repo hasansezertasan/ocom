@@ -1,4 +1,4 @@
-"""Tests for the OcomApp application and run() entry point."""
+"""Tests for the OcomApp application and main() entry point."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from ocom.core.config import AppConfig
-from ocom.tui.app import OcomApp, run
+from ocom.tui.app import OcomApp, main
 from ocom.tui.screens.main import MainScreen
 
 if TYPE_CHECKING:
@@ -54,12 +54,12 @@ class TestOcomAppMount:
             assert isinstance(app.screen, MainScreen)
 
 
-class TestRun:
-    """run() builds an app and starts its event loop."""
+class TestMain:
+    """main() builds an app, starts its event loop, and reports its exit code."""
 
-    def test_run_invokes_app_run(self, mocker: MockerFixture) -> None:
-        """run() constructs OcomApp and calls its run() method once."""
+    def test_main_invokes_app_run(self, mocker: MockerFixture) -> None:
+        """main() constructs OcomApp, calls its run() once, and returns 0."""
         mocker.patch("ocom.tui.app.AppConfig.load", return_value=AppConfig())
         app_run = mocker.patch("ocom.tui.app.OcomApp.run")
-        run()
+        assert main() == 0
         app_run.assert_called_once_with()

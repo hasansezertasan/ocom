@@ -8,7 +8,7 @@ from textual.app import App
 from ocom.core.config import AppConfig
 from ocom.tui.screens.main import MainScreen
 
-__all__ = ["OcomApp", "run"]
+__all__ = ["OcomApp", "main"]
 
 
 # Path to the TCSS file
@@ -34,7 +34,12 @@ class OcomApp(App[None]):
         self.push_screen(MainScreen(self.config))
 
 
-def run() -> None:
-    """Run the ocom application."""
+def main() -> int:
+    """Run the ocom application.
+
+    Returns:
+        int: The app's exit code (``0`` when it exits normally).
+    """
     app = OcomApp()
     app.run()
+    return app.return_code or 0

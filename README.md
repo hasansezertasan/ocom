@@ -49,15 +49,36 @@ scoop install hasansezertasan/ocom
 
 Or install from source — see the [installation docs](https://hasansezertasan.github.io/ocom/installation.html).
 
-## Usage
+### Verify the installation
 
-Run `ocom` with no arguments to launch the TUI:
+The package root is importable after installation:
 
-```bash
-ocom
+```pycon
+>>> from ocom import __doc__
+>>> isinstance(__doc__, str)
+True
+
 ```
 
-The same command also works as a small CLI — `ocom --help` lists everything:
+<!--
+pytest runs the pycon examples in this file (--doctest-glob=README.md).
+doctest cannot see Markdown and ends an example's expected output at the first
+blank line, so leave a blank line before every closing fence -- as the example
+above does. Without it the closing delimiter is read as part of the expected
+output and the example fails ("Expected: 2 / Got: 2"). Examples with no output
+line at all need the blank line too.
+-->
+
+## Usage
+
+Launch the TUI with the `interactive` subcommand:
+
+```bash
+ocom interactive
+```
+
+The same command also works as a small CLI — running `ocom` with no arguments (or
+`ocom --help`) lists everything:
 
 ```bash
 ocom version   # print the version

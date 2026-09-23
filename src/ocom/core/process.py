@@ -42,7 +42,10 @@ def is_admin() -> bool:
         except Exception:  # ruff: ignore[blind-except]  # ctypes call may fail many ways; treat as not-admin
             return False
     else:
-        return os.getuid() == 0
+        # getuid is Unix-only, so the win32 mypy sweep cannot see it; the same
+        # Any-typed alias as the windll branch above keeps both sweeps clean.
+        os_any: Any = os  # pyright: ignore[reportExplicitAny]  # getuid is Unix-only, absent from Windows os stubs
+        return bool(os_any.getuid() == 0)  # pyright: ignore[reportAny]  # untyped Unix-only os attribute
 
 
 @dataclass

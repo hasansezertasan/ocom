@@ -184,7 +184,10 @@ class TestSettings:
         for name in ("DEBUG", "LOG_LEVEL", "CONFIG_DIR"):
             monkeypatch.delenv(f"{ENV_PREFIX}{name}", raising=False)
 
-        settings = Settings()
+        # Clearing the environment is not enough: pydantic-settings also reads
+        # `.env`, which .env.example tells contributors to create. Without this
+        # the test passes on CI and fails on any configured machine.
+        settings = Settings(_env_file=None)
 
         assert settings.debug is False
         assert settings.log_level == "INFO"
