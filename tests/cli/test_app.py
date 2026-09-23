@@ -31,6 +31,19 @@ _NAMELESS_MODULE_MESSAGE = "nameless import failure"
 _SUBMODULE_MESSAGE = "No module named 'uvicorn.user_plugin'"
 
 
+def _raise(exc: BaseException) -> None:
+    """Raise ``exc`` from inside a guard block under test.
+
+    Raising through a call rather than a bare ``raise`` keeps the assertions
+    after each ``with`` block visibly reachable to static analysis: the guard
+    and ``pytest.raises`` suppress the exception, which CodeQL cannot see.
+
+    Args:
+        exc: The exception to raise; it always propagates to the caller.
+    """
+    raise exc
+
+
 @pytest.fixture
 def runner() -> CliRunner:
     """Fixture that provides a CLI runner for testing Typer commands."""
@@ -116,16 +129,12 @@ def test_missing_component_dependency_is_actionable(
         - The guard raises ``typer.Exit(1)`` and stderr names the component, the
           missing module, and ``uv sync`` -- instead of dumping a bare
           ``ModuleNotFoundError``.
-
-    Raises:
-        ModuleNotFoundError: Simulating the missing dependency; the guard converts
-            it into the actionable exit.
     """
     with (
         pytest.raises(typer.Exit) as excinfo,
         vars(cli_app)["_component_dependencies"]("web", "uvicorn"),
     ):
-        raise ModuleNotFoundError(_MISSING_MODULE_MESSAGE, name="uvicorn")
+        _raise(ModuleNotFoundError(_MISSING_MODULE_MESSAGE, name="uvicorn"))
 
     assert excinfo.value.exit_code == 1
     err = capsys.readouterr().err
@@ -147,15 +156,12 @@ def test_nameless_module_error_is_not_translated(
     Then:
         - The original error propagates instead of being relabelled as an
           out-of-sync environment.
-
-    Raises:
-        ModuleNotFoundError: The nameless failure under test.
     """
     with (
         pytest.raises(ModuleNotFoundError, match="nameless"),
         vars(cli_app)["_component_dependencies"]("web", "uvicorn"),
     ):
-        raise ModuleNotFoundError(_NAMELESS_MODULE_MESSAGE)
+        _raise(ModuleNotFoundError(_NAMELESS_MODULE_MESSAGE))
 
     assert "uv sync" not in capsys.readouterr().err
 
@@ -175,15 +181,12 @@ def test_submodule_of_a_dependency_is_not_translated(
         - The original error propagates: this is an application defect, and
           recommending ``uv sync`` for it would send the reader down the wrong
           path.
-
-    Raises:
-        ModuleNotFoundError: The application defect under test.
     """
     with (
         pytest.raises(ModuleNotFoundError, match="user_plugin"),
         vars(cli_app)["_component_dependencies"]("web", "uvicorn"),
     ):
-        raise ModuleNotFoundError(_SUBMODULE_MESSAGE, name="uvicorn.user_plugin")
+        _raise(ModuleNotFoundError(_SUBMODULE_MESSAGE, name="uvicorn.user_plugin"))
 
     assert "uv sync" not in capsys.readouterr().err
 

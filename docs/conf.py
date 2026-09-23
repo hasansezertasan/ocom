@@ -116,16 +116,31 @@ html_theme_options = {
 # ``_switcher_base = "/"`` instead.
 _switcher_base = "/ocom/"
 _versions_file = Path(__file__).parent / "_static" / "versions.json"
-if _versions_file.exists():
-    _versions = json.loads(_versions_file.read_text(encoding="utf-8"))
-    _current = os.environ.get("DOCS_BUILD_VERSION_SLUG") or _versions.get("latest", "")
-    html_context = {
-        "current_version": _current,
+
+
+def _version_switcher_context() -> dict[str, object]:
+    """Build the Shibuya version switcher's ``html_context``.
+
+    Returns:
+        dict[str, object]: The current version slug and the switcher entries, or
+            ``{}`` when ``versions.json`` is absent (e.g. a local docs build).
+    """
+    if not _versions_file.exists():
+        return {}
+    versions = json.loads(_versions_file.read_text(encoding="utf-8"))
+    current = os.environ.get("DOCS_BUILD_VERSION_SLUG") or versions.get("latest", "")
+    return {
+        "current_version": current,
         "versions": [
             ["latest", f"{_switcher_base}latest/"],
-            *([slug, f"{_switcher_base}{slug}/"] for slug in _versions["versions"]),
+            *([slug, f"{_switcher_base}{slug}/"] for slug in versions["versions"]),
         ],
     }
+
+
+# Assigned unconditionally, like every other Sphinx setting, so it reads as the
+# module-level config value Sphinx consumes rather than an unused global.
+html_context = _version_switcher_context()
 
 # -- Generated interface schemas and reference material ----------------------
 # Emit the project's machine-readable interface contracts and CLI reference
