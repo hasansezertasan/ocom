@@ -67,9 +67,9 @@ agreed, add it to the import-linter contract in the same PR.
 
 ocom is a unified Terminal User Interface (TUI) for managing network/privacy
 tools: OpenVPN, SpoofDPI/GoodbyeDPI, and Cloudflare WARP. Built with Textual.
-Cross-platform: macOS, Linux, and Windows. Running `ocom` with no arguments
-launches the TUI; the same command is a small Typer CLI (`ocom version`,
-`ocom info`, `ocom --help`).
+Cross-platform: macOS, Linux, and Windows. `ocom interactive` launches the
+TUI; the same command is a small Typer CLI (`ocom version`, `ocom info`), and
+running `ocom` with no arguments prints its help.
 
 ## Architecture
 

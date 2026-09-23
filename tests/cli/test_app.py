@@ -102,28 +102,6 @@ def test_command_fails_loudly_when_metadata_missing(
     assert result.exit_code == 1
 
 
-<<<<<<< before updating
-def test_bare_invocation_launches_tui(
-    runner: CliRunner, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Running ``ocom`` with no subcommand launches the TUI.
-
-    Given:
-        - The CLI is invoked with no subcommand or arguments.
-    When:
-        - The Typer app runs (its ``invoke_without_command`` callback fires).
-    Then:
-        - The TUI ``run()`` entry point is called exactly once and the process
-          exits cleanly.
-    """
-    launched: list[bool] = []
-    monkeypatch.setattr("ocom.tui.app.run", lambda: launched.append(True))
-
-    result: Result = runner.invoke(app, [])
-
-    assert result.exit_code == 0, result.output
-    assert launched == [True]
-=======
 def test_missing_component_dependency_is_actionable(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -292,4 +270,3 @@ def test_subcommand_interactive_dispatches(
     result: Result = runner.invoke(app, ["interactive"])
     assert result.exit_code == 0
     assert called
->>>>>>> after updating

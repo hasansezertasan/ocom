@@ -5,33 +5,25 @@ See https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 from __future__ import annotations
 
-<<<<<<< before updating
-from datetime import UTC, datetime
-=======
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
->>>>>>> after updating
 
 # -- Project information -----------------------------------------------------
 project = "ocom"
 author = "Hasan Sezer Tasan"
-<<<<<<< before updating
-copyright = f"{datetime.now(tz=UTC):%Y}, Hasan Sezer Tasan"
-=======
 # Reproducible builds: honor SOURCE_DATE_EPOCH (https://reproducible-builds.org/)
 # so the stamped copyright year is a function of the source (e.g. the last
 # commit date, as exported by the CI docs steps) rather than the clock. Local
 # `tox` runs leave it unset and fall back to the current year below.
 _source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
 _build_date = (
-    datetime.fromtimestamp(int(_source_date_epoch), tz=timezone.utc)
+    datetime.fromtimestamp(int(_source_date_epoch), tz=UTC)
     if _source_date_epoch
-    else datetime.now(tz=timezone.utc)
+    else datetime.now(tz=UTC)
 )
-copyright = f"{_build_date:%Y}, Hasan Sezer Tasan"  # noqa: A001
->>>>>>> after updating
+copyright = f"{_build_date:%Y}, Hasan Sezer Tasan"
 
 # -- General configuration ---------------------------------------------------
 extensions = [

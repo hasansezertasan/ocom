@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ocom.__metadata__ import PROJECT_NAME
+from ocom.core.tools import get_all_tools
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -37,3 +38,9 @@ def test_version_lookup_example_uses_the_installed_distribution() -> None:
     """The usage-page example resolves the same version as package metadata."""
     example = _load_example(EXAMPLES_DIR / "version_lookup.py")
     assert example.version_lookup() == version(PROJECT_NAME)
+
+
+def test_tool_registry_example_lists_the_dashboard_tools() -> None:
+    """The usage-page example names every tool the dashboard shows."""
+    example = _load_example(EXAMPLES_DIR / "tool_registry.py")
+    assert example.tool_names() == [tool.name for tool in get_all_tools()]

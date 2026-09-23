@@ -1,17 +1,10 @@
-<<<<<<< before updating
 """CLI application for ocom.
 
-Running bare ``ocom`` (no subcommand) launches the Textual TUI; subcommands
-(``version``, ``info``) and ``--help`` act as a conventional command-line tool.
-=======
-"""CLI application for the project.
-
-The ``ocom`` command is the single Typer root. Every enabled
-component other than the primary (CLI > GUI > TUI > web > MCP > worker) is hung
-off it as a lazily-imported subcommand — ``ocom interactive``
-(TUI), ``ocom web``, ``ocom mcp``, ... — rather
-than a separate ``ocom-<name>`` console script (see ADR-019).
->>>>>>> after updating
+The ``ocom`` command is the single Typer root: ``ocom --help`` lists the
+commands, ``version`` and ``info`` report on the install, and every other
+component is hung off it as a lazily-imported subcommand -- ``ocom interactive``
+launches the Textual TUI -- rather than a separate ``ocom-<name>`` console script
+(see ADR-019).
 """
 # mypy: disable-error-code="misc"
 
@@ -27,29 +20,6 @@ from ocom.__metadata__ import PROJECT_NAME
 from ocom.core import app as service
 from ocom.core.logging_setup import get_logger
 
-<<<<<<< before updating
-__all__ = ["app", "info", "main_callback", "show_version"]
-
-logger = get_logger()
-
-app = typer.Typer(name=PROJECT_NAME, no_args_is_help=False)
-
-
-@app.callback(invoke_without_command=True)
-def main_callback(ctx: typer.Context) -> None:
-    """Manage network/privacy tools. Run with no command to open the TUI.
-
-    Typer runs this callback before any subcommand, so when one (version, info)
-    was requested we defer to it; otherwise bare ocom starts the Textual
-    dashboard.
-    """
-    if ctx.invoked_subcommand is not None:
-        return
-    logger.info("No subcommand given; launching the TUI.")
-    from ocom.tui.app import run  # noqa: PLC0415
-
-    run()
-=======
 if TYPE_CHECKING:
     from collections.abc import Generator
 
@@ -63,7 +33,7 @@ logger = get_logger()
 # That happens after a ``copier update`` enables a component, or in a stale venv.
 _MISSING_DEPENDENCY = "Error: The {component} component requires '{missing}', which is not available in this environment. {hint}"  # noqa: E501
 _SYNC_HINT = f"Component dependencies ship with '{PROJECT_NAME}', so this usually means your environment is out of sync -- run `uv sync` (or reinstall the package) and try again."  # noqa: E501
-_TUI_DEPENDENCIES = ("textual", "typing_extensions")
+_TUI_DEPENDENCIES = ("textual",)
 
 
 def _preflight(module: str) -> None:
@@ -100,7 +70,7 @@ def _preflight(module: str) -> None:
 @contextlib.contextmanager
 def _component_dependencies(
     component: str, *dependencies: str, hint: str = _SYNC_HINT
-) -> Generator[None, None, None]:
+) -> Generator[None]:
     """Translate a missing component dependency into an actionable CLI error.
 
     Wraps a launcher command's lazy import so a ``ModuleNotFoundError`` for a
@@ -151,7 +121,6 @@ def _component_dependencies(
 
 
 app = typer.Typer(name="ocom", no_args_is_help=True)
->>>>>>> after updating
 
 
 @app.command(name="version")
@@ -201,8 +170,6 @@ def info() -> None:
     typer.echo(f"Python Version: {python}")
     typer.echo(f"Platform: {payload['platform']}")
     logger.info("Application information displayed successfully.")
-<<<<<<< before updating
-=======
 
 
 @app.command()
@@ -221,4 +188,3 @@ def interactive() -> None:
         from ocom.tui.app import main  # noqa: PLC0415
 
     raise typer.Exit(code=main())
->>>>>>> after updating
