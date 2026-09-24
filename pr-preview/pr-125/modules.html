@@ -2,13 +2,14 @@
 <html lang="en" data-accent-color="amber" data-content_root="./">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Modules - ocom</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Usage" href="usage.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Modules - ocom</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Configuration" href="configuration.html" /><link rel="prev" title="CLI reference" href="cli-reference.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
@@ -66,7 +67,17 @@ data-aria-dark="Switch to auto color mode">
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-reference.html">CLI reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Maintainer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="maintaining/setup.html">Repository setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packaging/homebrew-tap/README.html">Homebrew tap setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packaging/scoop-bucket/README.html">Scoop bucket setup</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -87,7 +98,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.tui.app.OcomApp.on_mount"><code class="docutils literal notranslate"><span class="pre">OcomApp.on_mount()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocom.tui.app.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li><a class="reference internal" href="#ocom.tui.app.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configuration-ocom-core-config">Configuration (<code class="docutils literal notranslate"><span class="pre">ocom.core.config</span></code>)</a><ul>
@@ -269,7 +280,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#cli-ocom-cli">CLI (<code class="docutils literal notranslate"><span class="pre">ocom.cli</span></code>)</a><ul>
 <li><a class="reference internal" href="#ocom.cli.app.info"><code class="docutils literal notranslate"><span class="pre">info()</span></code></a></li>
-<li><a class="reference internal" href="#ocom.cli.app.main_callback"><code class="docutils literal notranslate"><span class="pre">main_callback()</span></code></a></li>
+<li><a class="reference internal" href="#ocom.cli.app.interactive"><code class="docutils literal notranslate"><span class="pre">interactive()</span></code></a></li>
 <li><a class="reference internal" href="#ocom.cli.app.show_version"><code class="docutils literal notranslate"><span class="pre">show_version()</span></code></a></li>
 </ul>
 </li>
@@ -358,12 +369,15 @@ See also [the <cite>Screen.SUB_TITLE</cite> attribute][textual.screen.Screen.SUB
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ocom.tui.app.run">
-<span class="sig-prename descclassname"><span class="pre">ocom.tui.app.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tui/app.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tui.app.run" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="ocom.tui.app.main">
+<span class="sig-prename descclassname"><span class="pre">ocom.tui.app.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/tui/app.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.tui.app.main" title="Link to this definition">#</a></dt>
 <dd><p>Run the ocom application.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The app’s exit code (<code class="docutils literal notranslate"><span class="pre">0</span></code> when it exits normally).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2077,8 +2091,11 @@ logger attribute that Textual’s <code class="docutils literal notranslate"><sp
 <p>Typer command-line interface. Bare <code class="docutils literal notranslate"><span class="pre">ocom</span></code> launches the TUI; the <code class="docutils literal notranslate"><span class="pre">version</span></code>
 and <code class="docutils literal notranslate"><span class="pre">info</span></code> subcommands act as a conventional CLI.</p>
 <p id="module-ocom.cli.app">CLI application for ocom.</p>
-<p>Running bare <code class="docutils literal notranslate"><span class="pre">ocom</span></code> (no subcommand) launches the Textual TUI; subcommands
-(<code class="docutils literal notranslate"><span class="pre">version</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code>) and <code class="docutils literal notranslate"><span class="pre">--help</span></code> act as a conventional command-line tool.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ocom</span></code> command is the single Typer root: <code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">--help</span></code> lists the
+commands, <code class="docutils literal notranslate"><span class="pre">version</span></code> and <code class="docutils literal notranslate"><span class="pre">info</span></code> report on the install, and every other
+component is hung off it as a lazily-imported subcommand – <code class="docutils literal notranslate"><span class="pre">ocom</span> <span class="pre">interactive</span></code>
+launches the Textual TUI – rather than a separate <code class="docutils literal notranslate"><span class="pre">ocom-&lt;name&gt;</span></code> console script
+(see ADR-019).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ocom.cli.app.info">
 <span class="sig-prename descclassname"><span class="pre">ocom.cli.app.</span></span><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/cli/app.html#info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.cli.app.info" title="Link to this definition">#</a></dt>
@@ -2094,15 +2111,17 @@ and <code class="docutils literal notranslate"><span class="pre">info</span></co
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="ocom.cli.app.main_callback">
-<span class="sig-prename descclassname"><span class="pre">ocom.cli.app.</span></span><span class="sig-name descname"><span class="pre">main_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/cli/app.html#main_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.cli.app.main_callback" title="Link to this definition">#</a></dt>
-<dd><p>Manage network/privacy tools. Run with no command to open the TUI.</p>
-<p>Typer runs this callback before any subcommand, so when one (version, info)
-was requested we defer to it; otherwise bare ocom starts the Textual
-dashboard.</p>
+<dt class="sig sig-object py" id="ocom.cli.app.interactive">
+<span class="sig-prename descclassname"><span class="pre">ocom.cli.app.</span></span><span class="sig-name descname"><span class="pre">interactive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/cli/app.html#interactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.cli.app.interactive" title="Link to this definition">#</a></dt>
+<dd><p>Start interactive mode (TUI) for ocom.</p>
+<dl class="simple">
+<dt>Launch the terminal user interface:</dt><dd><p>ocom interactive</p>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ctx</strong> (<em>Context</em>)</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>typer.Exit</strong> – Propagating the TUI’s exit code, or code 1 if a dependency of
+    the TUI is missing from this environment.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -2133,10 +2152,18 @@ dashboard.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="usage.html">
+    <a href="cli-reference.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">Usage</div></div>
+        <span>Previous</span><div class="title">CLI reference</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="configuration.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Configuration</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
     </a>
   </div></div></div>
     </div>
