@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
@@ -66,7 +67,17 @@ data-aria-dark="Switch to auto color mode">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli-reference.html">CLI reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Maintainer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../maintaining/setup.html">Repository setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../packaging/homebrew-tap/README.html">Homebrew tap setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../packaging/scoop-bucket/README.html">Scoop bucket setup</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -122,7 +133,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
 </span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">ocom.tui.screens.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainScreen</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"OcomApp"</span><span class="p">,</span> <span class="s2">"run"</span><span class="p">]</span>
+</span><span data-line="11"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"OcomApp"</span><span class="p">,</span> <span class="s2">"main"</span><span class="p">]</span>
 </span><span data-line="12">
 </span><span data-line="13">
 </span><span data-line="14"><span class="c1"># Path to the TCSS file</span>
@@ -154,12 +165,17 @@ data-aria-dark="Switch to auto color mode">
 
 </span><span data-line="35">
 </span><span data-line="36">
-<div class="viewcode-block" id="run">
-<a class="viewcode-back" href="../../../modules.html#ocom.tui.app.run">[docs]</a>
-</span><span data-line="37"><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="38"><span class="w">    </span><span class="sd">"""Run the ocom application."""</span>
-</span><span data-line="39">    <span class="n">app</span> <span class="o">=</span> <span class="n">OcomApp</span><span class="p">()</span>
-</span><span data-line="40">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../modules.html#ocom.tui.app.main">[docs]</a>
+</span><span data-line="37"><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="38"><span class="w">    </span><span class="sd">"""Run the ocom application.</span>
+</span><span data-line="39">
+</span><span data-line="40"><span class="sd">    Returns:</span>
+</span><span data-line="41"><span class="sd">        int: The app's exit code (``0`` when it exits normally).</span>
+</span><span data-line="42"><span class="sd">    """</span>
+</span><span data-line="43">    <span class="n">app</span> <span class="o">=</span> <span class="n">OcomApp</span><span class="p">()</span>
+</span><span data-line="44">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span><span data-line="45">    <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">return_code</span> <span class="ow">or</span> <span class="mi">0</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

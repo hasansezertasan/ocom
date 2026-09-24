@@ -3,8 +3,8 @@ Installation
 
 ``ocom`` is an end-user application, not a library, so install it as a
 standalone tool rather than as a project dependency. It ships a single ``ocom``
-command: run it with no arguments to launch the TUI, or use its subcommands
-(``ocom version``, ``ocom info``, ``ocom --help``) as a CLI.
+command: run ``ocom interactive`` to launch the TUI, or use its other
+subcommands (``ocom version``, ``ocom info``, ``ocom --help``) as a CLI.
 
 Stable release
 --------------
@@ -40,6 +40,24 @@ On Windows, install it from the
 
    scoop bucket add hasansezertasan https://github.com/hasansezertasan/scoop-bucket
    scoop install hasansezertasan/ocom
+
+Verify release provenance
+-------------------------
+
+Public-repository release distributions include Sigstore-signed build
+provenance. After downloading a wheel or source distribution, verify that the
+release workflow built it from ``main`` in this repository:
+
+.. code-block:: sh
+
+   gh attestation verify <downloaded-distribution> \
+     --repo hasansezertasan/ocom \
+     --signer-workflow hasansezertasan/ocom/.github/workflows/release.yml \
+     --source-ref refs/heads/main
+
+Artifact attestations are available for public repositories on current GitHub
+plans. Private and internal repositories require GitHub Enterprise Cloud and
+the repository variable ``ENABLE_PRIVATE_ATTESTATIONS=true``.
 
 From source
 -----------
