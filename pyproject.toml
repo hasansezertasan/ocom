@@ -90,7 +90,7 @@ style = [
   "sphinx-lint==1.0.2",
   "taplo==0.9.3",
   "ty==0.0.84",
-  "typos==1.50.2",
+  "typos==1.50.3",
   "zuban==0.10.0",
 ]
 # semgrep is deliberately its own group rather than part of `style`: `dev`
