@@ -9,6 +9,11 @@ from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
 
 __all__ = ["SpoofDPITool"]
 
+# How long start() waits for the proxy to accept connections before giving up.
+READY_TIMEOUT = 10.0
+# Delay between readiness probes while waiting for the listener.
+READY_POLL_INTERVAL = 0.25
+
 
 @final
 class SpoofDPITool(BaseTool):
@@ -73,24 +78,51 @@ class SpoofDPITool(BaseTool):
             self._emit_output(f"Error: {e}")
             return False
 
-        # Check if it started successfully by testing the port
-        await asyncio.sleep(1)
-
-        if not ProcessManager.is_process_running(self._process):
-            # Try to capture the exit code for debugging
-            exit_code = self._process.returncode
-            self._status = ToolStatus.ERROR
-            self._error_message = f"Process exited with code {exit_code}"
-            self._emit_output(f"Error: {self._error_message}")
+        if not await self._wait_until_ready():
             self._emit_output(f"Command was: {' '.join(args)}")
+            await self._abort_start()
             return False
 
-        # Process running - report status based on port availability
         self._status = ToolStatus.RUNNING
-        port_ready = await ProcessManager.check_port_in_use(self._port)
-        status_msg = "started" if port_ready else "starting"
-        self._emit_output(f"Proxy {status_msg} on 127.0.0.1:{self._port}")
+        self._emit_output(f"Proxy started on 127.0.0.1:{self._port}")
         return True
+
+    async def _wait_until_ready(self) -> bool:
+        """Poll until the proxy listens, the process exits, or time runs out.
+
+        Returns:
+            True once the port accepts connections; False (with the error
+            recorded) if the process exits or the port never opens in time.
+        """
+        try:
+            async with asyncio.timeout(READY_TIMEOUT):
+                while not await ProcessManager.check_port_in_use(self._port):
+                    if not ProcessManager.is_process_running(self._process):
+                        exit_code = self._process.returncode if self._process else None
+                        return self._fail(f"Process exited with code {exit_code}")
+                    await asyncio.sleep(READY_POLL_INTERVAL)
+        except TimeoutError:
+            address = f"127.0.0.1:{self._port}"
+            timeout = f"{READY_TIMEOUT:g}s"
+            return self._fail(f"Proxy did not listen on {address} within {timeout}")
+        return True
+
+    def _fail(self, message: str) -> bool:
+        """Record a startup failure as ERROR and log it.
+
+        Returns:
+            Always False, so callers can ``return self._fail(...)``.
+        """
+        self._status = ToolStatus.ERROR
+        self._error_message = message
+        self._emit_output(f"Error: {message}")
+        return False
+
+    async def _abort_start(self) -> None:
+        """Stop a process that never became ready, keeping the ERROR status."""
+        if self._process is not None:
+            await ProcessManager.stop_process(self._process)
+        self._process = None
 
     @override
     async def stop(self) -> bool:
@@ -120,6 +152,11 @@ class SpoofDPITool(BaseTool):
         """
         if self._status == ToolStatus.UNAVAILABLE:
             await self.check_available()
+            return self._status
+
+        # start()/stop() own the status while a transition is in flight, so a
+        # periodic refresh must not report RUNNING before the port is ready.
+        if self._status.is_transitioning:
             return self._status
 
         if self._process is not None:
