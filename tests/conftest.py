@@ -13,6 +13,9 @@ differently when the package metadata is unreadable, but they all read it
 through ``core.app``, so one fixture covers every component's error path
 (ADR-033).
 
+Also hosts the ``no_user_config`` fixture, which the TUI test modules opt into
+with a module-level ``pytestmark`` so no test reads the developer's real config.
+
 Also hosts the ``MockTool`` double and the tool fixtures built on it, shared by
 the ``core`` tool and TUI tests.
 """
@@ -96,6 +99,17 @@ def missing_metadata(monkeypatch: pytest.MonkeyPatch) -> None:
     ``monkeypatch`` reverses the patch at teardown, so nothing is yielded.
     """
     monkeypatch.setattr(service, "Distribution", _MissingDistribution)
+
+
+@pytest.fixture
+def no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Point the config loader at a missing file so the real user config is unread.
+
+    ``monkeypatch`` reverses the patch at teardown, so nothing is yielded.
+    """
+    monkeypatch.setattr(
+        "ocom.core.config.get_config_path", lambda: tmp_path / "missing.toml"
+    )
 
 
 class MockTool(BaseTool):

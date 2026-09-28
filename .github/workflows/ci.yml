@@ -632,4 +632,9 @@ jobs:
       - name: Decide whether the needed jobs succeeded or failed
         uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35  # release/v1
         with:
+          # The component jobs are skipped by design when `changes` finds no
+          # matching paths (e.g. a Renovate bump touching only hook or workflow
+          # pins), so a skip there is not a failure. `changes` itself stays
+          # strictly required, so a broken filter still fails this gate.
+          allowed-skips: test-cli, test-tui, coverage-cli, coverage-tui
           jobs: ${{ toJSON(needs) }}

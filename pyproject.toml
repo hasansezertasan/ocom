@@ -299,6 +299,7 @@ ignore_names = [
   "logger",
   "main",
   "model_config",
+  "pytestmark",
   "pytest_*",
   "collect_ignore_glob",
   "compose",

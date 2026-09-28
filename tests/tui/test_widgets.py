@@ -13,17 +13,10 @@ from ocom.tui.widgets.log_panel import LogPanel
 from ocom.tui.widgets.tool_card import ToolCard
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from textual.app import ComposeResult
 
 
-@pytest.fixture(autouse=True)
-def _no_user_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Prevent tests from reading a real user config file."""
-    monkeypatch.setattr(
-        "ocom.core.config.get_config_path", lambda: tmp_path / "missing.toml"
-    )
+pytestmark = pytest.mark.usefixtures("no_user_config")
 
 
 class FakeTool(BaseTool):
