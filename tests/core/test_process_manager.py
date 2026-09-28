@@ -1,6 +1,7 @@
 """Tests for ProcessManager."""
 
 import asyncio
+import contextlib
 import sys
 
 import pytest
@@ -235,7 +236,8 @@ class TestStopProcess:
             assert task.cancelled()
             assert not ProcessManager.is_process_running(proc)
         finally:
-            if ProcessManager.is_process_running(proc):
+            # Unconditional cleanup so a failed assertion can't leak the child.
+            with contextlib.suppress(ProcessLookupError):
                 proc.kill()
             await proc.wait()
 
