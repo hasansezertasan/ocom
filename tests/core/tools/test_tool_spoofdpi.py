@@ -202,11 +202,11 @@ class TestStart:
         self, tool: SpoofDPITool, mocker: MockerFixture
     ) -> None:
         """Cancelling during the port pre-check settles on STOPPED."""
-        gate = asyncio.Event()
 
         async def blocked_probe(_port: int) -> bool:
-            await gate.wait()
-            return False
+            # Never resolves: the test cancels while this is pending.
+            never: asyncio.Future[bool] = asyncio.get_running_loop().create_future()
+            return await never
 
         mocker.patch(
             "ocom.core.tools.spoofdpi.ProcessManager.check_port_in_use",
@@ -309,11 +309,11 @@ class TestStop:
         """Cancelling mid-stop still settles on STOPPED and drops the process."""
         tool._status = ToolStatus.RUNNING
         tool._process = MagicMock(returncode=None)
-        gate = asyncio.Event()
 
         async def blocked_stop(_proc: MagicMock) -> bool:
-            await gate.wait()
-            return True
+            # Never resolves: the test cancels while this is pending.
+            never: asyncio.Future[bool] = asyncio.get_running_loop().create_future()
+            return await never
 
         mocker.patch(
             "ocom.core.tools.spoofdpi.ProcessManager.stop_process", new=blocked_stop
