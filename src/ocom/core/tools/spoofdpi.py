@@ -68,26 +68,47 @@ class SpoofDPITool(BaseTool):
 
         args.extend(config.extra_args)
 
-        try:
-            self._process = await ProcessManager.start_process(
-                args, on_output=self._emit_output
-            )
-        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
-            self._status = ToolStatus.ERROR
-            self._error_message = str(e)
-            self._emit_output(f"Error: {e}")
-            return False
+        address = f"127.0.0.1:{self._port}"
+        # A listener already on the port would answer the readiness probe even
+        # though the new process cannot bind, so refuse up front.
+        if await ProcessManager.check_port_in_use(self._port):
+            return self._fail(f"Port {address} is already in use")
 
-        if not await self._wait_until_ready():
+        try:
+            proc = await ProcessManager.start_process(args, on_output=self._emit_output)
+        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
+            return self._fail(str(e))
+        self._process = proc
+
+        if not await self._wait_or_abort(proc):
             self._emit_output(f"Command was: {' '.join(args)}")
-            await self._abort_start()
             return False
 
         self._status = ToolStatus.RUNNING
-        self._emit_output(f"Proxy started on 127.0.0.1:{self._port}")
+        self._emit_output(f"Proxy started on {address}")
         return True
 
-    async def _wait_until_ready(self) -> bool:
+    async def _wait_or_abort(self, proc: asyncio.subprocess.Process) -> bool:
+        """Wait for readiness, stopping the process if it never gets there.
+
+        Returns:
+            True once the proxy is listening; False after a recorded failure.
+
+        Raises:
+            CancelledError: Re-raised after cleanup if the wait is cancelled.
+        """
+        try:
+            ready = await self._wait_until_ready(proc)
+        except asyncio.CancelledError:
+            # Don't strand the tool in STARTING (refresh leaves it alone).
+            self._status = ToolStatus.STOPPED
+            await self._abort_start(proc)
+            raise
+        if not ready:
+            await self._abort_start(proc)
+        return ready
+
+    async def _wait_until_ready(self, proc: asyncio.subprocess.Process) -> bool:
         """Poll until the proxy listens, the process exits, or time runs out.
 
         Returns:
@@ -96,16 +117,16 @@ class SpoofDPITool(BaseTool):
         """
         try:
             async with asyncio.timeout(READY_TIMEOUT):
-                while not await ProcessManager.check_port_in_use(self._port):
-                    if not ProcessManager.is_process_running(self._process):
-                        exit_code = self._process.returncode if self._process else None
-                        return self._fail(f"Process exited with code {exit_code}")
+                while True:
+                    if not ProcessManager.is_process_running(proc):
+                        return self._fail(f"Process exited with code {proc.returncode}")
+                    if await ProcessManager.check_port_in_use(self._port):
+                        return True
                     await asyncio.sleep(READY_POLL_INTERVAL)
         except TimeoutError:
             address = f"127.0.0.1:{self._port}"
             timeout = f"{READY_TIMEOUT:g}s"
             return self._fail(f"Proxy did not listen on {address} within {timeout}")
-        return True
 
     def _fail(self, message: str) -> bool:
         """Record a startup failure as ERROR and log it.
@@ -118,11 +139,14 @@ class SpoofDPITool(BaseTool):
         self._emit_output(f"Error: {message}")
         return False
 
-    async def _abort_start(self) -> None:
-        """Stop a process that never became ready, keeping the ERROR status."""
-        if self._process is not None:
-            await ProcessManager.stop_process(self._process)
+    async def _abort_start(self, proc: asyncio.subprocess.Process) -> None:
+        """Stop a process that never became ready.
+
+        The process is detached first so a refresh while it shuts down sees no
+        tracked process and cannot overwrite the recorded status.
+        """
         self._process = None
+        await ProcessManager.stop_process(proc)
 
     @override
     async def stop(self) -> bool:
