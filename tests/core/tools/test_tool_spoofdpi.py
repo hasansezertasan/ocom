@@ -192,8 +192,8 @@ class TestStart:
         await asyncio.sleep(0.01)
         assert tool.status == ToolStatus.STARTING
         task.cancel()
-        with pytest.raises(asyncio.CancelledError):
-            await task
+        await asyncio.wait([task])
+        assert task.cancelled()
         assert tool.status == ToolStatus.STOPPED
         assert tool._process is None
         stop.assert_awaited_once_with(proc)
@@ -216,8 +216,8 @@ class TestStart:
         await asyncio.sleep(0)
         assert tool.status == ToolStatus.STARTING
         task.cancel()
-        with pytest.raises(asyncio.CancelledError):
-            await task
+        await asyncio.wait([task])
+        assert task.cancelled()
         assert tool.status == ToolStatus.STOPPED
 
     async def test_start_unexpected_error(
@@ -322,8 +322,8 @@ class TestStop:
         await asyncio.sleep(0)
         assert tool.status == ToolStatus.STOPPING
         task.cancel()
-        with pytest.raises(asyncio.CancelledError):
-            await task
+        await asyncio.wait([task])
+        assert task.cancelled()
         assert tool.status == ToolStatus.STOPPED
         assert tool._process is None
 

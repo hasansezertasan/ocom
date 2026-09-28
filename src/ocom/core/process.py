@@ -1,6 +1,7 @@
 """Process management for running network tools."""
 
 import asyncio
+import contextlib
 import os
 import shutil
 import sys
@@ -188,6 +189,9 @@ class ProcessManager:
 
         Returns:
             True if process was stopped.
+
+        Raises:
+            CancelledError: Re-raised after killing the process if cancelled.
         """
         if proc.returncode is not None:
             return True
@@ -197,11 +201,22 @@ class ProcessManager:
             proc.terminate()
             await asyncio.wait_for(proc.wait(), timeout=timeout)
         except TimeoutError:
-            proc.kill()
-            await proc.wait()
+            await ProcessManager._kill_and_reap(proc)
+        except asyncio.CancelledError:
+            # Callers treat a cancelled stop as done, so don't leave a child that
+            # ignored terminate() running untracked.
+            await ProcessManager._kill_and_reap(proc)
+            raise
         except ProcessLookupError:
             return True
         return True
+
+    @staticmethod
+    async def _kill_and_reap(proc: asyncio.subprocess.Process) -> None:
+        """Force-kill ``proc`` and wait for it, even if the caller is cancelled."""
+        with contextlib.suppress(ProcessLookupError):
+            proc.kill()
+        await asyncio.shield(proc.wait())
 
     @staticmethod
     def is_process_running(proc: asyncio.subprocess.Process | None) -> bool:

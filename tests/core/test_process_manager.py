@@ -215,6 +215,30 @@ class TestStopProcess:
                 proc.kill()
             await proc.wait()
 
+    async def test_cancelled_stop_kills_process(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A stop cancelled mid-wait kills the child rather than orphaning it."""
+        proc = await ProcessManager.start_process([
+            sys.executable,
+            "-c",
+            "import time; time.sleep(30)",
+        ])
+        # Simulate a child that ignores terminate().
+        monkeypatch.setattr(proc, "terminate", lambda: None)
+
+        try:
+            task = asyncio.create_task(ProcessManager.stop_process(proc, timeout=30))
+            await asyncio.sleep(0.05)
+            task.cancel()
+            await asyncio.wait([task])
+            assert task.cancelled()
+            assert not ProcessManager.is_process_running(proc)
+        finally:
+            if ProcessManager.is_process_running(proc):
+                proc.kill()
+            await proc.wait()
+
 
 class TestIsProcessRunning:
     """Test ProcessManager.is_process_running()."""
