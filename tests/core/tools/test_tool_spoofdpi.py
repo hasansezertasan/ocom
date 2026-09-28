@@ -40,7 +40,7 @@ class TestStart:
     def fast_ready(self, mocker: MockerFixture) -> None:
         """Shrink the readiness wait so a hung poll fails fast instead of hanging."""
         mocker.patch("ocom.core.tools.spoofdpi.READY_TIMEOUT", 1.0)
-        mocker.patch("ocom.core.tools.spoofdpi.READY_POLL_INTERVAL", 0.001)
+        mocker.patch("ocom.core.tool.READY_POLL_INTERVAL", 0.001)
 
     @pytest.fixture
     def proc(self, mocker: MockerFixture) -> MagicMock:

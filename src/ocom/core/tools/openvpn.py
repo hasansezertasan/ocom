@@ -1,13 +1,19 @@
 """OpenVPN tool implementation."""
 
-import asyncio
 from pathlib import Path
 from typing import ClassVar, final, override
 
 from ocom.core.process import IS_WINDOWS, ProcessManager
-from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
+from ocom.core.tool import BaseTool, StartError, ToolConfig, ToolStatus
 
 __all__ = ["OpenVPNTool"]
+
+# How long start() waits for the tunnel to come up before giving up.
+READY_TIMEOUT = 30.0
+# Logged once the tunnel is up.
+INIT_COMPLETE = "Initialization Sequence Completed"
+# Logged when the server rejects the credentials.
+AUTH_FAILED = "AUTH_FAILED"
 
 
 @final
@@ -29,42 +35,49 @@ class OpenVPNTool(BaseTool):
     conflicts_with: ClassVar[list[str]] = ["WARP"]  # Both control routing and DNS
 
     def __init__(self) -> None:
-        """Initialize the OpenVPN tool with an empty output buffer."""
+        """Initialize the OpenVPN tool with no connection progress seen."""
         super().__init__()
-        self._output_lines: list[str] = []
+        # Progress markers seen in the current start's output.
+        self._initialized = False
+        self._auth_failed = False
 
     @override
     async def start(self, config: ToolConfig) -> bool:
         """Start OpenVPN with the specified config file.
 
+        The tool stays STARTING until OpenVPN logs
+        ``Initialization Sequence Completed``.
+
         Args:
             config: Must have config_file set to an .ovpn path.
 
         Returns:
-            True if connection initiated successfully.
+            True once the tunnel is up.
         """
         config_path = self._validate_config(config)
         if config_path is None:
             return False
 
-        self._status = ToolStatus.STARTING
+        return await self._run_start(lambda: self._launch(config, config_path))
+
+    async def _launch(self, config: ToolConfig, config_path: Path) -> None:
+        """Spawn OpenVPN and wait for the tunnel to come up.
+
+        Raises:
+            StartError: If authentication fails, the process exits, or the
+                tunnel is not up within ``READY_TIMEOUT``.
+        """
         self._current_config = config_path.name
-        self._output_lines.clear()
+        self._initialized = False
+        self._auth_failed = False
 
         args, password = self._build_command(config, config_path)
-
-        try:
-            self._process = await ProcessManager.start_process(
-                args, on_output=self._handle_output, stdin_data=password
-            )
-        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
-            self._status = ToolStatus.ERROR
-            self._error_message = str(e)
-            return False
-
-        # Wait briefly for initial connection attempt
-        await asyncio.sleep(2)
-        return await self._evaluate_start()
+        self._process = await ProcessManager.start_process(
+            args, on_output=self._handle_output, stdin_data=password
+        )
+        if not await self._wait_until_ready(self._is_connected, within=READY_TIMEOUT):
+            msg = f"Connection not established within {READY_TIMEOUT:g}s"
+            raise StartError(msg)
 
     def _validate_config(self, config: ToolConfig) -> Path | None:
         """Validate the selected config file and resolve its path.
@@ -114,36 +127,23 @@ class OpenVPNTool(BaseTool):
         args.extend(config.extra_args)
         return args, password
 
-    async def _evaluate_start(self) -> bool:
-        """Evaluate the process state after the initial connection attempt.
+    async def _is_connected(self) -> bool:
+        """Report whether OpenVPN has finished initializing.
+
+        A completed initialization wins even if AUTH_FAILED was also logged.
 
         Returns:
-            True if the connection is up (or still initializing).
+            True once ``Initialization Sequence Completed`` has been logged.
+
+        Raises:
+            StartError: If authentication failed before initialization.
         """
-        if not ProcessManager.is_process_running(self._process):
-            self._status = ToolStatus.ERROR
-            self._error_message = "Process exited unexpectedly"
-            return False
-
-        # Check output for success/failure indicators. A completed
-        # initialization wins even if AUTH_FAILED also appears in the log.
-        output = "\n".join(self._output_lines)
-        if (
-            "Initialization Sequence Completed" not in output
-            and "AUTH_FAILED" in output
-        ):
-            self._status = ToolStatus.ERROR
-            self._error_message = "Authentication failed"
-            # Tear the process down directly: calling stop() would reset the
-            # status to STOPPED and hide the authentication error from the UI.
-            if self._process is not None:
-                await ProcessManager.stop_process(self._process)
-                self._process = None
-            return False
-
-        # Initialized, or still connecting: assume success for now.
-        self._status = ToolStatus.RUNNING
-        return True
+        if self._initialized:
+            return True
+        if self._auth_failed:
+            msg = "Authentication failed"
+            raise StartError(msg)
+        return False
 
     @override
     async def stop(self) -> bool:
@@ -152,17 +152,8 @@ class OpenVPNTool(BaseTool):
         Returns:
             True if the connection was stopped.
         """
-        if self._process is None:
-            self._status = ToolStatus.STOPPED
-            return True
-
-        self._status = ToolStatus.STOPPING
-
-        success = await ProcessManager.stop_process(self._process)
-        self._process = None
         self._current_config = None
-        self._status = ToolStatus.STOPPED
-        return success
+        return await self._stop_tracked_process()
 
     @override
     async def refresh_status(self) -> ToolStatus:
@@ -173,6 +164,11 @@ class OpenVPNTool(BaseTool):
         """
         if self._status == ToolStatus.UNAVAILABLE:
             await self.check_available()
+            return self._status
+
+        # start()/stop() own the status while a transition is in flight, so a
+        # periodic refresh must not report RUNNING before the tunnel is up.
+        if self._status.is_transitioning:
             return self._status
 
         if self._process is not None:
@@ -209,7 +205,9 @@ class OpenVPNTool(BaseTool):
         return sorted(files)
 
     def _handle_output(self, line: str) -> None:
-        """Handle output from OpenVPN process."""
-        self._output_lines.append(line)
-        self._output_lines = self._output_lines[-100:]  # Keep only last 100 lines
+        """Track connection progress markers and forward the line."""
+        if INIT_COMPLETE in line:
+            self._initialized = True
+        elif AUTH_FAILED in line:
+            self._auth_failed = True
         self._emit_output(line)

@@ -1,5 +1,6 @@
 """Base tool abstraction for network/privacy tools."""
 
+import asyncio
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
@@ -8,10 +9,16 @@ from typing import TYPE_CHECKING, ClassVar
 from ocom.core.process import ProcessManager
 
 if TYPE_CHECKING:
-    import asyncio
-    from collections.abc import Callable
+    from collections.abc import Awaitable, Callable
 
-__all__ = ["BaseTool", "ToolConfig", "ToolStatus"]
+__all__ = ["BaseTool", "StartError", "ToolConfig", "ToolStatus"]
+
+# Delay between readiness probes while a started process comes up.
+READY_POLL_INTERVAL = 0.25
+
+
+class StartError(Exception):
+    """A tool failed to start; the message is shown to the user."""
 
 
 class ToolStatus(Enum):
@@ -152,6 +159,116 @@ class BaseTool(ABC):
         Returns:
             Current ToolStatus.
         """
+
+    async def _run_start(self, launch: Callable[[], Awaitable[None]]) -> bool:
+        """Run ``launch`` as a start transition that always settles.
+
+        The tool is STARTING while ``launch`` runs and RUNNING once it returns.
+        Every other exit leaves a terminal status and no stray process behind,
+        because ``refresh_status()`` does not correct a transitional status.
+
+        Args:
+            launch: Spawns the tool and waits for it to be ready; raises
+                ``StartError`` (or anything else) on failure.
+
+        Returns:
+            True if the tool is RUNNING; False after a recorded failure.
+
+        Raises:
+            CancelledError: Re-raised after cleanup if the start is cancelled.
+        """
+        self._status = ToolStatus.STARTING
+        try:
+            await launch()
+        except asyncio.CancelledError:
+            await self._abandon(ToolStatus.STOPPED)
+            raise
+        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
+            self._fail(str(e))
+            await self._abandon(ToolStatus.ERROR)
+            return False
+        self._status = ToolStatus.RUNNING
+        return True
+
+    async def _wait_until_ready(
+        self, is_ready: Callable[[], Awaitable[bool]] | None, *, within: float
+    ) -> bool:
+        """Poll the tracked process until it is ready, exits, or time runs out.
+
+        A process that exits before it is ready raises ``StartError``.
+
+        Args:
+            is_ready: Tool-specific readiness probe; may raise ``StartError``
+                for a definite failure. None watches liveness for the whole
+                window, for tools whose only readiness signal is staying up.
+            within: Seconds to wait.
+
+        Returns:
+            True once ``is_ready`` passes; False if the window ends with the
+            process still alive.
+        """
+        try:
+            async with asyncio.timeout(within):
+                while True:
+                    self._raise_if_exited()
+                    if is_ready is not None and await is_ready():
+                        return True
+                    await asyncio.sleep(READY_POLL_INTERVAL)
+        except TimeoutError:
+            return False
+
+    def _raise_if_exited(self) -> None:
+        """Raise ``StartError`` if the tracked process is not running.
+
+        Raises:
+            StartError: If the process has exited (or was never spawned).
+        """
+        proc = self._process
+        if not ProcessManager.is_process_running(proc):
+            code = proc.returncode if proc is not None else None
+            msg = f"Process exited with code {code}"
+            raise StartError(msg)
+
+    def _fail(self, message: str) -> None:
+        """Record a failure as ERROR and log it."""
+        self._status = ToolStatus.ERROR
+        self._error_message = message
+        self._emit_output(f"Error: {message}")
+
+    async def _abandon(self, status: ToolStatus) -> None:
+        """Settle on ``status`` and stop the tracked process, if any.
+
+        The status is set and the process detached before awaiting its
+        shutdown, so a refresh meanwhile cannot overwrite the outcome.
+        """
+        self._status = status
+        proc, self._process = self._process, None
+        if proc is not None:
+            await ProcessManager.stop_process(proc)
+
+    async def _stop_tracked_process(self, stopped_message: str | None = None) -> bool:
+        """Stop the tracked process and settle on STOPPED, even if cancelled.
+
+        Args:
+            stopped_message: Logged once a tracked process has been stopped.
+
+        Returns:
+            True if the process was stopped (or there was none).
+        """
+        proc, self._process = self._process, None
+        if proc is None:
+            self._status = ToolStatus.STOPPED
+            return True
+
+        self._status = ToolStatus.STOPPING
+        try:
+            success = await ProcessManager.stop_process(proc)
+        finally:
+            # Settle even if cancelled: refresh_status() won't leave STOPPING.
+            self._status = ToolStatus.STOPPED
+        if stopped_message:
+            self._emit_output(stopped_message)
+        return success
 
     def get_config_files(self, config: ToolConfig) -> list[str]:  # ruff: ignore[no-self-use]
         """Get list of available config files.
