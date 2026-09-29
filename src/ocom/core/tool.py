@@ -186,18 +186,28 @@ class BaseTool(ABC):
         self._error_message = None
         self._start_task = asyncio.current_task()
         try:
-            await launch()
+            return await self._attempt_start(launch)
         except asyncio.CancelledError:
+            # Also reached when stop() lands during a failed start's cleanup.
             await self._abandon(ToolStatus.STOPPED)
             if not self._absorb_abort():
                 raise
             return False
+        finally:
+            self._start_task = None
+
+    async def _attempt_start(self, launch: Callable[[], Awaitable[None]]) -> bool:
+        """Run ``launch``, settling on RUNNING or, after a failure, ERROR.
+
+        Returns:
+            True if the tool is RUNNING; False after a recorded failure.
+        """
+        try:
+            await launch()
         except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
             self._fail(str(e) or type(e).__name__)
             await self._abandon(ToolStatus.ERROR)
             return False
-        finally:
-            self._start_task = None
         self._status = ToolStatus.RUNNING
         return True
 

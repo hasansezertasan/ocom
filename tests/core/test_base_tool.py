@@ -372,6 +372,31 @@ class TestAbortStart:
         assert mock_tool._process is None
         stop.assert_awaited_once_with(proc)
 
+    async def test_stop_during_failure_cleanup(
+        self, mock_tool: MockTool, mocker: MockerFixture
+    ) -> None:
+        """stop() while a failed start stops its process still settles."""
+        proc = MagicMock(returncode=None)
+        release = asyncio.Event()
+
+        async def slow_stop(_proc: MagicMock) -> bool:
+            await release.wait()
+            return True
+
+        mocker.patch("ocom.core.tool.ProcessManager.stop_process", new=slow_stop)
+
+        async def launch() -> None:
+            mock_tool._process = proc
+            msg = "boom"
+            raise StartError(msg)
+
+        start = asyncio.create_task(mock_tool._run_start(launch))
+        await asyncio.sleep(0)
+        assert mock_tool.status == ToolStatus.ERROR  # cleanup in progress
+        assert await mock_tool._stop_tracked_process() is True
+        assert await start is False
+        assert mock_tool.status == ToolStatus.STOPPED
+
     @pytest.mark.usefixtures("stop")
     async def test_outside_cancel_still_propagates(self, mock_tool: MockTool) -> None:
         """An outside cancel arriving with the abort is not swallowed."""
