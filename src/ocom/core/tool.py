@@ -302,6 +302,8 @@ class BaseTool(ABC):
             and self._start_task is not asyncio.current_task()
         ):
             await self._abort_start(self._start_task)
+            if stopped_message:
+                self._emit_output(stopped_message)
             return True
 
         proc, self._process = self._process, None
@@ -322,11 +324,14 @@ class BaseTool(ABC):
     async def _abort_start(self, task: asyncio.Task[object]) -> None:
         """Cancel an in-flight ``_run_start()`` and wait for it to settle.
 
-        The start's own cleanup stops the process and settles on STOPPED.
+        The start's own cleanup stops the process and settles on STOPPED. A
+        second stop() while that cleanup runs only waits for it: cancelling
+        again would interrupt the cleanup and leave the tool STOPPING.
         """
-        self._status = ToolStatus.STOPPING
-        self._start_aborted = True
-        task.cancel()
+        if not self._start_aborted:
+            self._status = ToolStatus.STOPPING
+            self._start_aborted = True
+            task.cancel()
         await asyncio.wait([task])
 
     def get_config_files(self, config: ToolConfig) -> list[str]:  # ruff: ignore[no-self-use]

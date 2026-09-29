@@ -3,6 +3,7 @@
 import asyncio
 import contextlib
 import sys
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -150,6 +151,20 @@ class TestStartProcess:
         await proc.wait()
 
         assert b"hello_stdin" in output
+
+    @pytest.mark.parametrize("error", [BrokenPipeError(), asyncio.CancelledError()])
+    async def test_failed_stdin_write_reaps_process(self, error: BaseException) -> None:
+        """A failed or cancelled stdin write kills the child instead of orphaning it."""
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable,
+            "-c",
+            "import time; time.sleep(30)",
+            stdin=asyncio.subprocess.PIPE,
+        )
+        stdin = MagicMock(drain=AsyncMock(side_effect=error))
+        with pytest.raises(type(error)):
+            await ProcessManager._write_stdin(proc, stdin, "secret")
+        assert proc.returncode is not None
 
 
 class TestStopProcess:

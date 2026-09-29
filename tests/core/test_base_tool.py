@@ -397,6 +397,44 @@ class TestAbortStart:
         assert await start is False
         assert mock_tool.status == ToolStatus.STOPPED
 
+    async def test_second_stop_during_abort_cleanup(
+        self, mock_tool: MockTool, mocker: MockerFixture
+    ) -> None:
+        """A second stop() while the abort cleans up waits instead of re-cancelling."""
+        release = asyncio.Event()
+
+        async def slow_stop(_proc: MagicMock) -> bool:
+            await release.wait()
+            return True
+
+        mocker.patch("ocom.core.tool.ProcessManager.stop_process", new=slow_stop)
+        proc = MagicMock(returncode=None)
+        start = asyncio.create_task(mock_tool._run_start(self._launch(mock_tool, proc)))
+        await asyncio.sleep(0)
+        first = asyncio.create_task(mock_tool._stop_tracked_process())
+        await asyncio.sleep(0)
+        second = asyncio.create_task(mock_tool._stop_tracked_process())
+        await asyncio.sleep(0)
+        release.set()
+        assert await asyncio.gather(first, second) == [True, True]
+        assert await start is False
+        assert mock_tool.status == ToolStatus.STOPPED
+        assert mock_tool._start_aborted is False
+
+    async def test_abort_logs_stopped_message(
+        self, mock_tool: MockTool, stop: AsyncMock
+    ) -> None:
+        """Aborting a start logs the same message as a normal stop."""
+        _ = stop
+        messages: list[str] = []
+        mock_tool.set_output_callback(lambda _name, msg: messages.append(msg))
+        proc = MagicMock(returncode=None)
+        start = asyncio.create_task(mock_tool._run_start(self._launch(mock_tool, proc)))
+        await asyncio.sleep(0)
+        await mock_tool._stop_tracked_process("stopped")
+        await start
+        assert messages == ["stopped"]
+
     @pytest.mark.usefixtures("stop")
     async def test_outside_cancel_still_propagates(self, mock_tool: MockTool) -> None:
         """An outside cancel arriving with the abort is not swallowed."""
