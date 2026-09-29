@@ -358,15 +358,19 @@ class MainScreen(Screen[None]):
             self._update_status_bar(f"No install URL configured for {tool.name}")
 
     def _get_running_conflicts(self, tool: BaseTool) -> list[BaseTool]:
-        """Find running tools that conflict with the given tool.
+        """Find running or starting tools that conflict with the given tool.
+
+        A starting tool counts too: left alone, it would come up alongside
+        ``tool``. Stopping it aborts its start.
 
         Returns:
-            The running tools whose names appear in ``tool.conflicts_with``.
+            The running or starting tools named in ``tool.conflicts_with``.
         """
+        active = {ToolStatus.RUNNING, ToolStatus.STARTING}
         return [
             other
             for other in self.tools
-            if other.name in tool.conflicts_with and other.status == ToolStatus.RUNNING
+            if other.name in tool.conflicts_with and other.status in active
         ]
 
     async def _start_tool(self, tool: BaseTool, config: ToolConfig) -> None:
@@ -398,6 +402,9 @@ class MainScreen(Screen[None]):
 
         if success:
             self._update_status_bar(f"{tool.name} started")
+        elif tool.status == ToolStatus.STOPPED:
+            # A concurrent stop() (e.g. a conflicting tool) aborted the start.
+            self._update_status_bar(f"{tool.name} start cancelled")
         else:
             self._update_status_bar(
                 f"Failed to start {tool.name}: {tool.error_message}"

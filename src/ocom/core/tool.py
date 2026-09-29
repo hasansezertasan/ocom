@@ -84,6 +84,9 @@ class BaseTool(ABC):
         self._error_message: str | None = None
         self._current_config: str | None = None
         self._output_callback: Callable[[str, str], None] | None = None
+        # The task running _run_start(), so a concurrent stop() can abort it.
+        self._start_task: asyncio.Task[object] | None = None
+        self._start_aborted: bool = False
 
     def set_output_callback(self, callback: Callable[[str, str], None] | None) -> None:
         """Set callback for tool output.
@@ -166,6 +169,8 @@ class BaseTool(ABC):
         The tool is STARTING while ``launch`` runs and RUNNING once it returns.
         Every other exit leaves a terminal status and no stray process behind,
         because ``refresh_status()`` does not correct a transitional status.
+        A concurrent ``stop()`` aborts the start, which then returns False
+        with the tool STOPPED.
 
         Args:
             launch: Spawns the tool and waits for it to be ready; raises
@@ -178,17 +183,34 @@ class BaseTool(ABC):
             CancelledError: Re-raised after cleanup if the start is cancelled.
         """
         self._status = ToolStatus.STARTING
+        self._error_message = None
+        self._start_task = asyncio.current_task()
         try:
             await launch()
         except asyncio.CancelledError:
             await self._abandon(ToolStatus.STOPPED)
-            raise
+            if not self._absorb_abort():
+                raise
+            return False
         except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
-            self._fail(str(e))
+            self._fail(str(e) or type(e).__name__)
             await self._abandon(ToolStatus.ERROR)
             return False
+        finally:
+            self._start_task = None
         self._status = ToolStatus.RUNNING
         return True
+
+    def _absorb_abort(self) -> bool:
+        """Swallow a cancellation that came only from ``stop()``.
+
+        Returns:
+            True if ``stop()`` requested the cancellation and nothing else
+            also cancelled the task; False if it must propagate.
+        """
+        aborted, self._start_aborted = self._start_aborted, False
+        task = asyncio.current_task()
+        return aborted and task is not None and task.uncancel() == 0
 
     async def _wait_until_ready(
         self, is_ready: Callable[[], Awaitable[bool]] | None, *, within: float
@@ -206,16 +228,26 @@ class BaseTool(ABC):
         Returns:
             True once ``is_ready`` passes; False if the window ends with the
             process still alive.
+
+        Raises:
+            TimeoutError: If ``is_ready`` itself times out.
         """
+        deadline = asyncio.timeout(within)
         try:
-            async with asyncio.timeout(within):
+            async with deadline:
                 while True:
-                    self._raise_if_exited()
+                    # Probe before the liveness check, so a tool that logs why
+                    # it failed and then exits reports that reason.
                     if is_ready is not None and await is_ready():
                         return True
+                    self._raise_if_exited()
                     await asyncio.sleep(READY_POLL_INTERVAL)
         except TimeoutError:
-            return False
+            # Only the deadline means "not ready in time"; a probe's own
+            # TimeoutError is a failure like any other.
+            if not deadline.expired():
+                raise
+        return False
 
     def _raise_if_exited(self) -> None:
         """Raise ``StartError`` if the tracked process is not running.
@@ -255,6 +287,13 @@ class BaseTool(ABC):
         Returns:
             True if the process was stopped (or there was none).
         """
+        if (
+            self._start_task is not None
+            and self._start_task is not asyncio.current_task()
+        ):
+            await self._abort_start(self._start_task)
+            return True
+
         proc, self._process = self._process, None
         if proc is None:
             self._status = ToolStatus.STOPPED
@@ -269,6 +308,16 @@ class BaseTool(ABC):
         if stopped_message:
             self._emit_output(stopped_message)
         return success
+
+    async def _abort_start(self, task: asyncio.Task[object]) -> None:
+        """Cancel an in-flight ``_run_start()`` and wait for it to settle.
+
+        The start's own cleanup stops the process and settles on STOPPED.
+        """
+        self._status = ToolStatus.STOPPING
+        self._start_aborted = True
+        task.cancel()
+        await asyncio.wait([task])
 
     def get_config_files(self, config: ToolConfig) -> list[str]:  # ruff: ignore[no-self-use]
         """Get list of available config files.

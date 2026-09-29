@@ -67,7 +67,6 @@ class OpenVPNTool(BaseTool):
             StartError: If authentication fails, the process exits, or the
                 tunnel is not up within ``READY_TIMEOUT``.
         """
-        self._current_config = config_path.name
         self._initialized = False
         self._auth_failed = False
 
@@ -78,6 +77,8 @@ class OpenVPNTool(BaseTool):
         if not await self._wait_until_ready(self._is_connected, within=READY_TIMEOUT):
             msg = f"Connection not established within {READY_TIMEOUT:g}s"
             raise StartError(msg)
+        # Recorded only once connected, so a failed start leaves no stale name.
+        self._current_config = config_path.name
 
     def _validate_config(self, config: ToolConfig) -> Path | None:
         """Validate the selected config file and resolve its path.
@@ -89,14 +90,12 @@ class OpenVPNTool(BaseTool):
             The resolved config path, or None if it is missing or invalid.
         """
         if not config.config_file:
-            self._status = ToolStatus.ERROR
-            self._error_message = "No config file selected"
+            self._fail("No config file selected")
             return None
 
         config_path = Path(config.config_file).expanduser()
         if not config_path.is_file():
-            self._status = ToolStatus.ERROR
-            self._error_message = f"Config file not found: {config_path}"
+            self._fail(f"Config file not found: {config_path}")
             return None
 
         return config_path

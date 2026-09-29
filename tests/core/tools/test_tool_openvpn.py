@@ -46,6 +46,10 @@ class TestValidateConfig:
         assert result is False
         assert tool.status == ToolStatus.ERROR
         assert tool.error_message == "No config file selected"
+        messages: list[str] = []
+        tool.set_output_callback(lambda _name, msg: messages.append(msg))
+        await tool.start(ToolConfig())
+        assert messages == ["Error: No config file selected"]
 
     async def test_start_config_not_found(self, tool: OpenVPNTool) -> None:
         """Nonexistent config file should set ERROR and return False."""
@@ -180,6 +184,15 @@ class TestStart:
         assert tool._process is None
         stop.assert_awaited_once_with(proc)
 
+    @pytest.mark.usefixtures("stop")
+    async def test_auth_failed_then_exit(
+        self, tool: OpenVPNTool, config: ToolConfig, mocker: MockerFixture
+    ) -> None:
+        """OpenVPN exits right after AUTH_FAILED; the auth reason still shows."""
+        self._spawn_logging(mocker, tool, ["AUTH_FAILED"], returncode=1)
+        assert await tool.start(config) is False
+        assert tool.error_message == "Authentication failed"
+
     async def test_init_completed_wins_over_auth_failed(
         self, tool: OpenVPNTool, config: ToolConfig, mocker: MockerFixture
     ) -> None:
@@ -218,6 +231,7 @@ class TestStart:
         assert tool.status == ToolStatus.ERROR
         assert tool.error_message == "Connection not established within 0.02s"
         assert tool._process is None
+        assert tool.current_config is None
         stop.assert_awaited_once_with(proc)
 
     @pytest.mark.usefixtures("stop")
