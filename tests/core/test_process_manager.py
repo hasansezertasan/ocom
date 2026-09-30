@@ -92,6 +92,32 @@ class TestRunCommand:
                 [sys.executable, "-c", "import time; time.sleep(10)"], timeout=0.1
             )
 
+    async def test_cancelled_run_command_kills_child(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Cancelling the caller kills the command instead of leaving it running."""
+        spawned: list[asyncio.subprocess.Process] = []
+        started = asyncio.Event()
+        real_exec = asyncio.create_subprocess_exec
+
+        async def spy(*args: str, **kwargs: object) -> asyncio.subprocess.Process:
+            proc = await real_exec(*args, **kwargs)  # ty: ignore[invalid-argument-type]
+            spawned.append(proc)
+            started.set()
+            return proc
+
+        monkeypatch.setattr(asyncio, "create_subprocess_exec", spy)
+        task = asyncio.create_task(
+            ProcessManager.run_command(
+                [sys.executable, "-c", "import time; time.sleep(30)"], timeout=None
+            )
+        )
+        _ = await started.wait()
+        task.cancel()
+        await asyncio.wait([task])
+        assert task.cancelled()
+        assert spawned[0].returncode is not None
+
     async def test_run_command_check_raises(self) -> None:
         """Should raise when check=True and command fails."""
         with pytest.raises(RuntimeError, match="Command failed"):

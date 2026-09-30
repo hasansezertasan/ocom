@@ -3,7 +3,7 @@
 from typing import ClassVar, final, override
 
 from ocom.core.process import ProcessManager, ProcessResult
-from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
+from ocom.core.tool import BaseTool, StartError, ToolConfig, ToolStatus
 
 __all__ = ["WarpTool"]
 
@@ -49,24 +49,25 @@ class WarpTool(BaseTool):
         Returns:
             True if connection initiated.
         """
-        self._status = ToolStatus.STARTING
+        # _run_start() lets a concurrent stop() (e.g. from a conflicting
+        # tool) abort the connect instead of letting it finish afterwards.
+        return await self._run_start(lambda: self._connect(config))
 
+    async def _connect(self, config: ToolConfig) -> None:
+        """Set the WARP mode and connect.
+
+        Raises:
+            StartError: If ``warp-cli connect`` fails.
+        """
         # Set mode if specified (non-fatal if it fails)
         mode = str(config.options.get("mode", "warp"))
         if mode:
             await ProcessManager.run_command(["warp-cli", "mode", mode], timeout=10.0)
 
-        # Connect
         result = await ProcessManager.run_command(["warp-cli", "connect"], timeout=30.0)
-
-        if result.success:
-            self._status = ToolStatus.RUNNING
-            self._emit_output("Connected to Cloudflare WARP")
-            return True
-        self._status = ToolStatus.ERROR
-        self._error_message = result.stderr or result.stdout or "Failed to connect"
-        self._emit_output(f"Error: {self._error_message}")
-        return False
+        if not result.success:
+            raise StartError(result.stderr or result.stdout or "Failed to connect")
+        self._emit_output("Connected to Cloudflare WARP")
 
     @override
     async def stop(self) -> bool:
@@ -75,6 +76,9 @@ class WarpTool(BaseTool):
         Returns:
             True if disconnected successfully.
         """
+        # The aborted connect may already have reached the daemon, so
+        # disconnect regardless.
+        await self._abort_pending_start()
         self._status = ToolStatus.STOPPING
 
         result = await ProcessManager.run_command(

@@ -94,6 +94,9 @@ class ProcessManager:
     ) -> ProcessResult:
         """Run a command and wait for completion.
 
+        The command is killed before a timeout (``TimeoutError``) or a
+        cancellation propagates, so neither leaves it running.
+
         Args:
             args: Command and arguments as a list.
             timeout: Maximum time to wait in seconds.
@@ -103,7 +106,6 @@ class ProcessManager:
             ProcessResult with output and return code.
 
         Raises:
-            TimeoutError: If timeout exceeded.
             RuntimeError: If check=True and command fails.
         """
         proc = await asyncio.create_subprocess_exec(
@@ -112,9 +114,10 @@ class ProcessManager:
 
         try:
             stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
-        except TimeoutError:
-            proc.kill()
-            await proc.wait()
+        # A timeout or a cancelled caller (e.g. an aborted start) must not leave
+        # the command running; one re-raising handler covers both.
+        except BaseException:
+            await ProcessManager._kill_and_reap(proc)
             raise
 
         result = ProcessResult(

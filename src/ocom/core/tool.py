@@ -314,11 +314,7 @@ class BaseTool(ABC):
         Returns:
             True if the process was stopped (or there was none).
         """
-        if (
-            self._start_task is not None
-            and self._start_task is not asyncio.current_task()
-        ):
-            await self._abort_start(self._start_task)
+        if await self._abort_pending_start():
             if stopped_message:
                 self._emit_output(stopped_message)
             return True
@@ -337,6 +333,21 @@ class BaseTool(ABC):
         if stopped_message:
             self._emit_output(stopped_message)
         return success
+
+    async def _abort_pending_start(self) -> bool:
+        """Abort a ``_run_start()`` in flight on another task, if any.
+
+        Every ``stop()`` of a tool built on ``_run_start()`` must call this
+        first, so stopping a STARTING tool cannot leave its start to finish.
+
+        Returns:
+            True if a start was aborted (the tool is now STOPPED).
+        """
+        task = self._start_task
+        if task is None or task is asyncio.current_task():
+            return False
+        await self._abort_start(task)
+        return True
 
     async def _abort_start(self, task: asyncio.Task[object]) -> None:
         """Cancel an in-flight ``_run_start()`` and wait for it to settle.
