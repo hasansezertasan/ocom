@@ -239,187 +239,208 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="94">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessResult</span><span class="p">:</span>
 </span><span data-line="95"><span class="w">        </span><span class="sd">"""Run a command and wait for completion.</span>
 </span><span data-line="96">
-</span><span data-line="97"><span class="sd">        Args:</span>
-</span><span data-line="98"><span class="sd">            args: Command and arguments as a list.</span>
-</span><span data-line="99"><span class="sd">            timeout: Maximum time to wait in seconds.</span>
-</span><span data-line="100"><span class="sd">            check: Raise exception if command fails.</span>
-</span><span data-line="101">
-</span><span data-line="102"><span class="sd">        Returns:</span>
-</span><span data-line="103"><span class="sd">            ProcessResult with output and return code.</span>
+</span><span data-line="97"><span class="sd">        The command is killed before a timeout (``TimeoutError``) or a</span>
+</span><span data-line="98"><span class="sd">        cancellation propagates, so neither leaves it running.</span>
+</span><span data-line="99">
+</span><span data-line="100"><span class="sd">        Args:</span>
+</span><span data-line="101"><span class="sd">            args: Command and arguments as a list.</span>
+</span><span data-line="102"><span class="sd">            timeout: Maximum time to wait in seconds.</span>
+</span><span data-line="103"><span class="sd">            check: Raise exception if command fails.</span>
 </span><span data-line="104">
-</span><span data-line="105"><span class="sd">        Raises:</span>
-</span><span data-line="106"><span class="sd">            TimeoutError: If timeout exceeded.</span>
-</span><span data-line="107"><span class="sd">            RuntimeError: If check=True and command fails.</span>
-</span><span data-line="108"><span class="sd">        """</span>
-</span><span data-line="109">        <span class="n">proc</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_subprocess_exec</span><span class="p">(</span>
-</span><span data-line="110">            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
-</span><span data-line="111">        <span class="p">)</span>
-</span><span data-line="112">
-</span><span data-line="113">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="114">            <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-</span><span data-line="115">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
-</span><span data-line="116">            <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-</span><span data-line="117">            <span class="k">await</span> <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-</span><span data-line="118">            <span class="k">raise</span>
-</span><span data-line="119">
-</span><span data-line="120">        <span class="n">result</span> <span class="o">=</span> <span class="n">ProcessResult</span><span class="p">(</span>
-</span><span data-line="121">            <span class="n">returncode</span><span class="o">=</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
-</span><span data-line="122">            <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">),</span>
-</span><span data-line="123">            <span class="n">stderr</span><span class="o">=</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">),</span>
-</span><span data-line="124">        <span class="p">)</span>
-</span><span data-line="125">
-</span><span data-line="126">        <span class="k">if</span> <span class="n">check</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
-</span><span data-line="127">            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Command failed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="si">}</span><span class="s2">"</span>
-</span><span data-line="128">            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="129">
-</span><span data-line="130">        <span class="k">return</span> <span class="n">result</span></div>
+</span><span data-line="105"><span class="sd">        Returns:</span>
+</span><span data-line="106"><span class="sd">            ProcessResult with output and return code.</span>
+</span><span data-line="107">
+</span><span data-line="108"><span class="sd">        Raises:</span>
+</span><span data-line="109"><span class="sd">            RuntimeError: If check=True and command fails.</span>
+</span><span data-line="110"><span class="sd">        """</span>
+</span><span data-line="111">        <span class="n">proc</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_subprocess_exec</span><span class="p">(</span>
+</span><span data-line="112">            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+</span><span data-line="113">        <span class="p">)</span>
+</span><span data-line="114">
+</span><span data-line="115">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="116">            <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+</span><span data-line="117">        <span class="c1"># A timeout or a cancelled caller (e.g. an aborted start) must not leave</span>
+</span><span data-line="118">        <span class="c1"># the command running; one re-raising handler covers both.</span>
+</span><span data-line="119">        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+</span><span data-line="120">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="121">            <span class="k">raise</span>
+</span><span data-line="122">
+</span><span data-line="123">        <span class="n">result</span> <span class="o">=</span> <span class="n">ProcessResult</span><span class="p">(</span>
+</span><span data-line="124">            <span class="n">returncode</span><span class="o">=</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="125">            <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">),</span>
+</span><span data-line="126">            <span class="n">stderr</span><span class="o">=</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">),</span>
+</span><span data-line="127">        <span class="p">)</span>
+</span><span data-line="128">
+</span><span data-line="129">        <span class="k">if</span> <span class="n">check</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+</span><span data-line="130">            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Command failed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="131">            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="132">
+</span><span data-line="133">        <span class="k">return</span> <span class="n">result</span></div>
 
-</span><span data-line="131">
+</span><span data-line="134">
 <div class="viewcode-block" id="ProcessManager.start_process">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.process.ProcessManager.start_process">[docs]</a>
-</span><span data-line="132">    <span class="nd">@staticmethod</span>
-</span><span data-line="133">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_process</span><span class="p">(</span>
-</span><span data-line="134">        <span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-</span><span data-line="135">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="136">        <span class="n">on_output</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="137">        <span class="n">env</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="138">        <span class="n">stdin_data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="139">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">:</span>
-</span><span data-line="140"><span class="w">        </span><span class="sd">"""Start a long-running process.</span>
-</span><span data-line="141">
-</span><span data-line="142"><span class="sd">        Args:</span>
-</span><span data-line="143"><span class="sd">            args: Command and arguments as a list.</span>
-</span><span data-line="144"><span class="sd">            on_output: Callback for stdout lines (optional).</span>
-</span><span data-line="145"><span class="sd">            env: Environment variables (merged with current env).</span>
-</span><span data-line="146"><span class="sd">            stdin_data: Data to write to stdin (e.g., password for sudo -S).</span>
-</span><span data-line="147">
-</span><span data-line="148"><span class="sd">        Returns:</span>
-</span><span data-line="149"><span class="sd">            The started Process object.</span>
-</span><span data-line="150"><span class="sd">        """</span>
-</span><span data-line="151">        <span class="n">process_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span data-line="152">        <span class="k">if</span> <span class="n">env</span><span class="p">:</span>
-</span><span data-line="153">            <span class="n">process_env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-</span><span data-line="154">
-</span><span data-line="155">        <span class="n">proc</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_subprocess_exec</span><span class="p">(</span>
-</span><span data-line="156">            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-</span><span data-line="157">            <span class="n">stdin</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span> <span class="k">if</span> <span class="n">stdin_data</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="158">            <span class="n">stdout</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
-</span><span data-line="159">            <span class="n">stderr</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
-</span><span data-line="160">            <span class="n">env</span><span class="o">=</span><span class="n">process_env</span><span class="p">,</span>
-</span><span data-line="161">        <span class="p">)</span>
-</span><span data-line="162">
-</span><span data-line="163">        <span class="c1"># Write stdin data if provided (e.g., sudo password)</span>
-</span><span data-line="164">        <span class="k">if</span> <span class="n">stdin_data</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
-</span><span data-line="165">            <span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">stdin_data</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-</span><span data-line="166">            <span class="k">await</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
-</span><span data-line="167">            <span class="c1"># Don't close stdin - process may need it open</span>
-</span><span data-line="168">
-</span><span data-line="169">        <span class="k">if</span> <span class="n">on_output</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
-</span><span data-line="170">            <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">_read_output</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">on_output</span><span class="p">))</span>
-</span><span data-line="171">            <span class="n">_background_tasks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-</span><span data-line="172">            <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">_background_tasks</span><span class="o">.</span><span class="n">discard</span><span class="p">)</span>
-</span><span data-line="173">
-</span><span data-line="174">        <span class="k">return</span> <span class="n">proc</span></div>
+</span><span data-line="135">    <span class="nd">@staticmethod</span>
+</span><span data-line="136">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_process</span><span class="p">(</span>
+</span><span data-line="137">        <span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="138">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="139">        <span class="n">on_output</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="140">        <span class="n">env</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="141">        <span class="n">stdin_data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="142">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">:</span>
+</span><span data-line="143"><span class="w">        </span><span class="sd">"""Start a long-running process.</span>
+</span><span data-line="144">
+</span><span data-line="145"><span class="sd">        Args:</span>
+</span><span data-line="146"><span class="sd">            args: Command and arguments as a list.</span>
+</span><span data-line="147"><span class="sd">            on_output: Callback for stdout lines (optional).</span>
+</span><span data-line="148"><span class="sd">            env: Environment variables (merged with current env).</span>
+</span><span data-line="149"><span class="sd">            stdin_data: Data to write to stdin (e.g., password for sudo -S).</span>
+</span><span data-line="150">
+</span><span data-line="151"><span class="sd">        Returns:</span>
+</span><span data-line="152"><span class="sd">            The started Process object.</span>
+</span><span data-line="153"><span class="sd">        """</span>
+</span><span data-line="154">        <span class="n">process_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="155">        <span class="k">if</span> <span class="n">env</span><span class="p">:</span>
+</span><span data-line="156">            <span class="n">process_env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span data-line="157">
+</span><span data-line="158">        <span class="n">proc</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_subprocess_exec</span><span class="p">(</span>
+</span><span data-line="159">            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+</span><span data-line="160">            <span class="n">stdin</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span> <span class="k">if</span> <span class="n">stdin_data</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="161">            <span class="n">stdout</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+</span><span data-line="162">            <span class="n">stderr</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
+</span><span data-line="163">            <span class="n">env</span><span class="o">=</span><span class="n">process_env</span><span class="p">,</span>
+</span><span data-line="164">        <span class="p">)</span>
+</span><span data-line="165">
+</span><span data-line="166">        <span class="c1"># Write stdin data if provided (e.g., sudo password)</span>
+</span><span data-line="167">        <span class="k">if</span> <span class="n">stdin_data</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+</span><span data-line="168">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_write_stdin</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">stdin_data</span><span class="p">)</span>
+</span><span data-line="169">
+</span><span data-line="170">        <span class="k">if</span> <span class="n">on_output</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+</span><span data-line="171">            <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">_read_output</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">on_output</span><span class="p">))</span>
+</span><span data-line="172">            <span class="n">_background_tasks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</span><span data-line="173">            <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">_background_tasks</span><span class="o">.</span><span class="n">discard</span><span class="p">)</span>
+</span><span data-line="174">
+</span><span data-line="175">        <span class="k">return</span> <span class="n">proc</span></div>
 
-</span><span data-line="175">
+</span><span data-line="176">
 <div class="viewcode-block" id="ProcessManager.stop_process">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.process.ProcessManager.stop_process">[docs]</a>
-</span><span data-line="176">    <span class="nd">@staticmethod</span>
-</span><span data-line="177">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop_process</span><span class="p">(</span>
-</span><span data-line="178">        <span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span>
-</span><span data-line="179">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="180">        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># ruff: ignore[async-function-with-timeout]  # explicit timeout is part of the public API</span>
-</span><span data-line="181">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="182"><span class="w">        </span><span class="sd">"""Gracefully stop a process.</span>
-</span><span data-line="183">
-</span><span data-line="184"><span class="sd">        Uses terminate() first (cross-platform), then kill() if needed.</span>
-</span><span data-line="185">
-</span><span data-line="186"><span class="sd">        Args:</span>
-</span><span data-line="187"><span class="sd">            proc: Process to stop.</span>
-</span><span data-line="188"><span class="sd">            timeout: Time to wait for graceful shutdown.</span>
-</span><span data-line="189">
-</span><span data-line="190"><span class="sd">        Returns:</span>
-</span><span data-line="191"><span class="sd">            True if process was stopped.</span>
-</span><span data-line="192">
-</span><span data-line="193"><span class="sd">        Raises:</span>
-</span><span data-line="194"><span class="sd">            CancelledError: Re-raised after killing the process if cancelled.</span>
-</span><span data-line="195"><span class="sd">        """</span>
-</span><span data-line="196">        <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="197">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="198">
-</span><span data-line="199">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="200">            <span class="c1"># Cross-platform: SIGTERM on Unix, TerminateProcess on Windows.</span>
-</span><span data-line="201">            <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-</span><span data-line="202">            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-</span><span data-line="203">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
-</span><span data-line="204">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
-</span><span data-line="205">        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
-</span><span data-line="206">            <span class="c1"># Callers treat a cancelled stop as done, so don't leave a child that</span>
-</span><span data-line="207">            <span class="c1"># ignored terminate() running untracked.</span>
-</span><span data-line="208">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
-</span><span data-line="209">            <span class="k">raise</span>
-</span><span data-line="210">        <span class="k">except</span> <span class="ne">ProcessLookupError</span><span class="p">:</span>
-</span><span data-line="211">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="212">        <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="177">    <span class="nd">@staticmethod</span>
+</span><span data-line="178">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop_process</span><span class="p">(</span>
+</span><span data-line="179">        <span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span>
+</span><span data-line="180">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="181">        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># ruff: ignore[async-function-with-timeout]  # explicit timeout is part of the public API</span>
+</span><span data-line="182">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="183"><span class="w">        </span><span class="sd">"""Gracefully stop a process.</span>
+</span><span data-line="184">
+</span><span data-line="185"><span class="sd">        Uses terminate() first (cross-platform), then kill() if needed.</span>
+</span><span data-line="186">
+</span><span data-line="187"><span class="sd">        Args:</span>
+</span><span data-line="188"><span class="sd">            proc: Process to stop.</span>
+</span><span data-line="189"><span class="sd">            timeout: Time to wait for graceful shutdown.</span>
+</span><span data-line="190">
+</span><span data-line="191"><span class="sd">        Returns:</span>
+</span><span data-line="192"><span class="sd">            True if process was stopped.</span>
+</span><span data-line="193">
+</span><span data-line="194"><span class="sd">        Raises:</span>
+</span><span data-line="195"><span class="sd">            CancelledError: Re-raised after killing the process if cancelled.</span>
+</span><span data-line="196"><span class="sd">        """</span>
+</span><span data-line="197">        <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="198">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="199">
+</span><span data-line="200">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="201">            <span class="c1"># Cross-platform: SIGTERM on Unix, TerminateProcess on Windows.</span>
+</span><span data-line="202">            <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span data-line="203">            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+</span><span data-line="204">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+</span><span data-line="205">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="206">        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+</span><span data-line="207">            <span class="c1"># Callers treat a cancelled stop as done, so don't leave a child that</span>
+</span><span data-line="208">            <span class="c1"># ignored terminate() running untracked.</span>
+</span><span data-line="209">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="210">            <span class="k">raise</span>
+</span><span data-line="211">        <span class="k">except</span> <span class="ne">ProcessLookupError</span><span class="p">:</span>
+</span><span data-line="212">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="213">        <span class="k">return</span> <span class="kc">True</span></div>
 
-</span><span data-line="213">
-</span><span data-line="214">    <span class="nd">@staticmethod</span>
-</span><span data-line="215">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="216"><span class="w">        </span><span class="sd">"""Force-kill ``proc`` and wait for it, even if the caller is cancelled."""</span>
-</span><span data-line="217">        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">ProcessLookupError</span><span class="p">):</span>
-</span><span data-line="218">            <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-</span><span data-line="219">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">shield</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">())</span>
+</span><span data-line="214">
+</span><span data-line="215">    <span class="nd">@staticmethod</span>
+</span><span data-line="216">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_write_stdin</span><span class="p">(</span>
+</span><span data-line="217">        <span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span> <span class="n">stdin</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="218">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="219"><span class="w">        </span><span class="sd">"""Write ``data`` and a newline to ``proc``'s stdin, leaving it open.</span>
 </span><span data-line="220">
+</span><span data-line="221"><span class="sd">        The caller has no handle on ``proc`` until start_process() returns, so a</span>
+</span><span data-line="222"><span class="sd">        failed or cancelled write reaps it here rather than orphaning it, then</span>
+</span><span data-line="223"><span class="sd">        re-raises whatever interrupted the write.</span>
+</span><span data-line="224"><span class="sd">        """</span>
+</span><span data-line="225">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="226">            <span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">data</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+</span><span data-line="227">            <span class="k">await</span> <span class="n">stdin</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+</span><span data-line="228">        <span class="c1"># One re-raising BaseException handler rather than an exception tuple:</span>
+</span><span data-line="229">        <span class="c1"># the tuple's paren-free 3.14 form breaks the py3.10 prek hooks.</span>
+</span><span data-line="230">        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+</span><span data-line="231">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="232">            <span class="k">raise</span>
+</span><span data-line="233">        <span class="c1"># Don't close stdin - process may need it open</span>
+</span><span data-line="234">
+</span><span data-line="235">    <span class="nd">@staticmethod</span>
+</span><span data-line="236">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="237"><span class="w">        </span><span class="sd">"""Force-kill ``proc`` and wait for it, even if the caller is cancelled."""</span>
+</span><span data-line="238">        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">ProcessLookupError</span><span class="p">):</span>
+</span><span data-line="239">            <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+</span><span data-line="240">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">shield</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">())</span>
+</span><span data-line="241">
 <div class="viewcode-block" id="ProcessManager.is_process_running">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.process.ProcessManager.is_process_running">[docs]</a>
-</span><span data-line="221">    <span class="nd">@staticmethod</span>
-</span><span data-line="222">    <span class="k">def</span><span class="w"> </span><span class="nf">is_process_running</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="223"><span class="w">        </span><span class="sd">"""Check if a process is still running.</span>
-</span><span data-line="224">
-</span><span data-line="225"><span class="sd">        Returns:</span>
-</span><span data-line="226"><span class="sd">            True if the process exists and has not exited.</span>
-</span><span data-line="227"><span class="sd">        """</span>
-</span><span data-line="228">        <span class="k">return</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="kc">None</span></div>
+</span><span data-line="242">    <span class="nd">@staticmethod</span>
+</span><span data-line="243">    <span class="k">def</span><span class="w"> </span><span class="nf">is_process_running</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="244"><span class="w">        </span><span class="sd">"""Check if a process is still running.</span>
+</span><span data-line="245">
+</span><span data-line="246"><span class="sd">        Returns:</span>
+</span><span data-line="247"><span class="sd">            True if the process exists and has not exited.</span>
+</span><span data-line="248"><span class="sd">        """</span>
+</span><span data-line="249">        <span class="k">return</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
-</span><span data-line="229">
+</span><span data-line="250">
 <div class="viewcode-block" id="ProcessManager.check_port_in_use">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.process.ProcessManager.check_port_in_use">[docs]</a>
-</span><span data-line="230">    <span class="nd">@staticmethod</span>
-</span><span data-line="231">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_port_in_use</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="232"><span class="w">        </span><span class="sd">"""Check if a port is in use (for proxy tools).</span>
-</span><span data-line="233">
-</span><span data-line="234"><span class="sd">        Args:</span>
-</span><span data-line="235"><span class="sd">            port: Port number to check.</span>
-</span><span data-line="236"><span class="sd">            host: Host to check on.</span>
-</span><span data-line="237">
-</span><span data-line="238"><span class="sd">        Returns:</span>
-</span><span data-line="239"><span class="sd">            True if port is in use.</span>
-</span><span data-line="240"><span class="sd">        """</span>
-</span><span data-line="241">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="242">            <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
-</span><span data-line="243">                <span class="n">asyncio</span><span class="o">.</span><span class="n">open_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
-</span><span data-line="244">            <span class="p">)</span>
-</span><span data-line="245">            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="246">            <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
-</span><span data-line="247">        <span class="c1"># TimeoutError is a subclass of OSError, so this catches both a</span>
-</span><span data-line="248">        <span class="c1"># connection failure and the wait_for timeout with a single (paren-free,</span>
-</span><span data-line="249">        <span class="c1"># format-stable) exception type.</span>
-</span><span data-line="250">        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="251">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="252">        <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="251">    <span class="nd">@staticmethod</span>
+</span><span data-line="252">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_port_in_use</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="253"><span class="w">        </span><span class="sd">"""Check if a port is in use (for proxy tools).</span>
+</span><span data-line="254">
+</span><span data-line="255"><span class="sd">        Args:</span>
+</span><span data-line="256"><span class="sd">            port: Port number to check.</span>
+</span><span data-line="257"><span class="sd">            host: Host to check on.</span>
+</span><span data-line="258">
+</span><span data-line="259"><span class="sd">        Returns:</span>
+</span><span data-line="260"><span class="sd">            True if port is in use.</span>
+</span><span data-line="261"><span class="sd">        """</span>
+</span><span data-line="262">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="263">            <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+</span><span data-line="264">                <span class="n">asyncio</span><span class="o">.</span><span class="n">open_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+</span><span data-line="265">            <span class="p">)</span>
+</span><span data-line="266">            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="267">            <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
+</span><span data-line="268">        <span class="c1"># TimeoutError is a subclass of OSError, so this catches both a</span>
+</span><span data-line="269">        <span class="c1"># connection failure and the wait_for timeout with a single (paren-free,</span>
+</span><span data-line="270">        <span class="c1"># format-stable) exception type.</span>
+</span><span data-line="271">        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="272">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="273">        <span class="k">return</span> <span class="kc">True</span></div>
 </div>
 
-</span><span data-line="253">
-</span><span data-line="254">
-</span><span data-line="255"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_output</span><span class="p">(</span>
-</span><span data-line="256">    <span class="n">stream</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
-</span><span data-line="257"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="258"><span class="w">    </span><span class="sd">"""Read lines from a stream and call callback for each."""</span>
-</span><span data-line="259">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="260">        <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span data-line="261">        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
-</span><span data-line="262">            <span class="k">break</span>
-</span><span data-line="263">        <span class="n">callback</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span data-line="274">
+</span><span data-line="275">
+</span><span data-line="276"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_output</span><span class="p">(</span>
+</span><span data-line="277">    <span class="n">stream</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+</span><span data-line="278"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="279"><span class="w">    </span><span class="sd">"""Read lines from a stream and call callback for each."""</span>
+</span><span data-line="280">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="281">        <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="282">        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+</span><span data-line="283">            <span class="k">break</span>
+</span><span data-line="284">        <span class="n">callback</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

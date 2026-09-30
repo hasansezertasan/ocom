@@ -537,156 +537,163 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="358">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No install URL configured for </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </span><span data-line="359">
 </span><span data-line="360">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_running_conflicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseTool</span><span class="p">]:</span>
-</span><span data-line="361"><span class="w">        </span><span class="sd">"""Find running tools that conflict with the given tool.</span>
+</span><span data-line="361"><span class="w">        </span><span class="sd">"""Find running or starting tools that conflict with the given tool.</span>
 </span><span data-line="362">
-</span><span data-line="363"><span class="sd">        Returns:</span>
-</span><span data-line="364"><span class="sd">            The running tools whose names appear in ``tool.conflicts_with``.</span>
-</span><span data-line="365"><span class="sd">        """</span>
-</span><span data-line="366">        <span class="k">return</span> <span class="p">[</span>
-</span><span data-line="367">            <span class="n">other</span>
-</span><span data-line="368">            <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span>
-</span><span data-line="369">            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">conflicts_with</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
-</span><span data-line="370">        <span class="p">]</span>
-</span><span data-line="371">
-</span><span data-line="372">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_start_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="373"><span class="w">        </span><span class="sd">"""Start a tool with the given config."""</span>
-</span><span data-line="374">        <span class="c1"># Stop conflicting tools first</span>
-</span><span data-line="375">        <span class="n">conflicts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_running_conflicts</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
-</span><span data-line="376">        <span class="k">for</span> <span class="n">conflicting_tool</span> <span class="ow">in</span> <span class="n">conflicts</span><span class="p">:</span>
-</span><span data-line="377">            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Stopping </span><span class="si">{</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (conflicts with </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)..."</span>
-</span><span data-line="378">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="379">            <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">)</span>
-</span><span data-line="380">            <span class="n">stop_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conflicting_tool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-</span><span data-line="381">            <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
-</span><span data-line="382">            <span class="n">log_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#log-panel"</span><span class="p">,</span> <span class="n">LogPanel</span><span class="p">)</span>
-</span><span data-line="383">
-</span><span data-line="384">            <span class="k">if</span> <span class="ow">not</span> <span class="n">stop_success</span><span class="p">:</span>
-</span><span data-line="385">                <span class="n">name</span> <span class="o">=</span> <span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="386">                <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span>
-</span><span data-line="387">                    <span class="sa">f</span><span class="s2">"Warning: failed to stop </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, proceeding anyway"</span>
-</span><span data-line="388">                <span class="p">)</span>
-</span><span data-line="389">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="363"><span class="sd">        A starting tool counts too: left alone, it would come up alongside</span>
+</span><span data-line="364"><span class="sd">        ``tool``. Stopping it aborts its start.</span>
+</span><span data-line="365">
+</span><span data-line="366"><span class="sd">        Returns:</span>
+</span><span data-line="367"><span class="sd">            The running or starting tools named in ``tool.conflicts_with``.</span>
+</span><span data-line="368"><span class="sd">        """</span>
+</span><span data-line="369">        <span class="n">active</span> <span class="o">=</span> <span class="p">{</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span><span class="p">}</span>
+</span><span data-line="370">        <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="371">            <span class="n">other</span>
+</span><span data-line="372">            <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span>
+</span><span data-line="373">            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">conflicts_with</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="n">active</span>
+</span><span data-line="374">        <span class="p">]</span>
+</span><span data-line="375">
+</span><span data-line="376">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_start_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="377"><span class="w">        </span><span class="sd">"""Start a tool with the given config."""</span>
+</span><span data-line="378">        <span class="c1"># Stop conflicting tools first</span>
+</span><span data-line="379">        <span class="n">conflicts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_running_conflicts</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+</span><span data-line="380">        <span class="k">for</span> <span class="n">conflicting_tool</span> <span class="ow">in</span> <span class="n">conflicts</span><span class="p">:</span>
+</span><span data-line="381">            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Stopping </span><span class="si">{</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (conflicts with </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)..."</span>
+</span><span data-line="382">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="383">            <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">)</span>
+</span><span data-line="384">            <span class="n">stop_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conflicting_tool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span data-line="385">            <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+</span><span data-line="386">            <span class="n">log_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#log-panel"</span><span class="p">,</span> <span class="n">LogPanel</span><span class="p">)</span>
+</span><span data-line="387">
+</span><span data-line="388">            <span class="k">if</span> <span class="ow">not</span> <span class="n">stop_success</span><span class="p">:</span>
+</span><span data-line="389">                <span class="n">name</span> <span class="o">=</span> <span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span>
 </span><span data-line="390">                <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span>
-</span><span data-line="391">                    <span class="sa">f</span><span class="s2">"Stopped </span><span class="si">{</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (conflicts with </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)"</span>
+</span><span data-line="391">                    <span class="sa">f</span><span class="s2">"Warning: failed to stop </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, proceeding anyway"</span>
 </span><span data-line="392">                <span class="p">)</span>
-</span><span data-line="393">
-</span><span data-line="394">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Starting </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
-</span><span data-line="395">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span><span class="p">)</span>
-</span><span data-line="396">
-</span><span data-line="397">        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</span><span data-line="398">
-</span><span data-line="399">        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-</span><span data-line="400">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> started"</span><span class="p">)</span>
-</span><span data-line="401">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="402">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span>
-</span><span data-line="403">                <span class="sa">f</span><span class="s2">"Failed to start </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">error_message</span><span class="si">}</span><span class="s2">"</span>
-</span><span data-line="404">            <span class="p">)</span>
-</span><span data-line="405">
-</span><span data-line="406">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
-</span><span data-line="407">
-</span><span data-line="408">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_stop_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="409"><span class="w">        </span><span class="sd">"""Stop a tool."""</span>
-</span><span data-line="410">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Stopping </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
-</span><span data-line="411">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">)</span>
+</span><span data-line="393">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="394">                <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span>
+</span><span data-line="395">                    <span class="sa">f</span><span class="s2">"Stopped </span><span class="si">{</span><span class="n">conflicting_tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (conflicts with </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)"</span>
+</span><span data-line="396">                <span class="p">)</span>
+</span><span data-line="397">
+</span><span data-line="398">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Starting </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
+</span><span data-line="399">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">STARTING</span><span class="p">)</span>
+</span><span data-line="400">
+</span><span data-line="401">        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="402">
+</span><span data-line="403">        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+</span><span data-line="404">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> started"</span><span class="p">)</span>
+</span><span data-line="405">        <span class="k">elif</span> <span class="n">tool</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">:</span>
+</span><span data-line="406">            <span class="c1"># A concurrent stop() (e.g. a conflicting tool) aborted the start.</span>
+</span><span data-line="407">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> start cancelled"</span><span class="p">)</span>
+</span><span data-line="408">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="409">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span>
+</span><span data-line="410">                <span class="sa">f</span><span class="s2">"Failed to start </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">error_message</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="411">            <span class="p">)</span>
 </span><span data-line="412">
-</span><span data-line="413">        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</span><span data-line="413">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 </span><span data-line="414">
-</span><span data-line="415">        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-</span><span data-line="416">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stopped"</span><span class="p">)</span>
-</span><span data-line="417">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="418">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to stop </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="415">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_stop_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="416"><span class="w">        </span><span class="sd">"""Stop a tool."""</span>
+</span><span data-line="417">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Stopping </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
+</span><span data-line="418">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span><span class="p">)</span>
 </span><span data-line="419">
-</span><span data-line="420">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+</span><span data-line="420">        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 </span><span data-line="421">
-</span><span data-line="422">    <span class="k">def</span><span class="w"> </span><span class="nf">_report_no_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="423"><span class="w">        </span><span class="sd">"""Report that no config files were found for a tool."""</span>
-</span><span data-line="424">        <span class="k">if</span> <span class="n">tool_config</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">:</span>
-</span><span data-line="425">            <span class="n">dirs</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tool_config</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">)</span>
-</span><span data-line="426">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="427">            <span class="n">dirs</span> <span class="o">=</span> <span class="s2">"none configured"</span>
-</span><span data-line="428">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No config files found. Check dirs: </span><span class="si">{</span><span class="n">dirs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span data-line="429">
-</span><span data-line="430">    <span class="k">def</span><span class="w"> </span><span class="nf">_make_config_selected_callback</span><span class="p">(</span>
-</span><span data-line="431">        <span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span>
-</span><span data-line="432">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="433"><span class="w">        </span><span class="sd">"""Build the callback invoked when a config file is selected.</span>
-</span><span data-line="434">
-</span><span data-line="435"><span class="sd">        Returns:</span>
-</span><span data-line="436"><span class="sd">            A callback that starts ``tool`` with the chosen config, prompting</span>
-</span><span data-line="437"><span class="sd">            for a password first when the tool requires sudo.</span>
-</span><span data-line="438"><span class="sd">        """</span>
-</span><span data-line="439">
-</span><span data-line="440">        <span class="k">def</span><span class="w"> </span><span class="nf">on_config_selected</span><span class="p">(</span><span class="n">config_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="441">            <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="442">                <span class="k">return</span>  <span class="c1"># User cancelled</span>
-</span><span data-line="443">
-</span><span data-line="444">            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
-</span><span data-line="445">            <span class="n">config</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">config_path</span>
+</span><span data-line="422">        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+</span><span data-line="423">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stopped"</span><span class="p">)</span>
+</span><span data-line="424">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="425">            <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Failed to stop </span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="426">
+</span><span data-line="427">        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_status</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+</span><span data-line="428">
+</span><span data-line="429">    <span class="k">def</span><span class="w"> </span><span class="nf">_report_no_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="430"><span class="w">        </span><span class="sd">"""Report that no config files were found for a tool."""</span>
+</span><span data-line="431">        <span class="k">if</span> <span class="n">tool_config</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">:</span>
+</span><span data-line="432">            <span class="n">dirs</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tool_config</span><span class="o">.</span><span class="n">config_dirs</span><span class="p">)</span>
+</span><span data-line="433">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="434">            <span class="n">dirs</span> <span class="o">=</span> <span class="s2">"none configured"</span>
+</span><span data-line="435">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No config files found. Check dirs: </span><span class="si">{</span><span class="n">dirs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="436">
+</span><span data-line="437">    <span class="k">def</span><span class="w"> </span><span class="nf">_make_config_selected_callback</span><span class="p">(</span>
+</span><span data-line="438">        <span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span>
+</span><span data-line="439">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="440"><span class="w">        </span><span class="sd">"""Build the callback invoked when a config file is selected.</span>
+</span><span data-line="441">
+</span><span data-line="442"><span class="sd">        Returns:</span>
+</span><span data-line="443"><span class="sd">            A callback that starts ``tool`` with the chosen config, prompting</span>
+</span><span data-line="444"><span class="sd">            for a password first when the tool requires sudo.</span>
+</span><span data-line="445"><span class="sd">        """</span>
 </span><span data-line="446">
-</span><span data-line="447">            <span class="c1"># If tool requires sudo, prompt for password</span>
-</span><span data-line="448">            <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">requires_sudo</span><span class="p">:</span>
-</span><span data-line="449">                <span class="bp">self</span><span class="o">.</span><span class="n">_show_password_prompt</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-</span><span data-line="450">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="451">                <span class="bp">self</span><span class="o">.</span><span class="n">run_worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_tool</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-</span><span data-line="452">
-</span><span data-line="453">        <span class="k">return</span> <span class="n">on_config_selected</span>
-</span><span data-line="454">
-</span><span data-line="455">    <span class="k">def</span><span class="w"> </span><span class="nf">_show_config_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="456"><span class="w">        </span><span class="sd">"""Show config file selector for a tool."""</span>
-</span><span data-line="457">        <span class="n">tool_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
-</span><span data-line="458">        <span class="n">configs</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">get_config_files</span><span class="p">(</span><span class="n">tool_config</span><span class="p">)</span>
+</span><span data-line="447">        <span class="k">def</span><span class="w"> </span><span class="nf">on_config_selected</span><span class="p">(</span><span class="n">config_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="448">            <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="449">                <span class="k">return</span>  <span class="c1"># User cancelled</span>
+</span><span data-line="450">
+</span><span data-line="451">            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+</span><span data-line="452">            <span class="n">config</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">config_path</span>
+</span><span data-line="453">
+</span><span data-line="454">            <span class="c1"># If tool requires sudo, prompt for password</span>
+</span><span data-line="455">            <span class="k">if</span> <span class="n">tool</span><span class="o">.</span><span class="n">requires_sudo</span><span class="p">:</span>
+</span><span data-line="456">                <span class="bp">self</span><span class="o">.</span><span class="n">_show_password_prompt</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</span><span data-line="457">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="458">                <span class="bp">self</span><span class="o">.</span><span class="n">run_worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_tool</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
 </span><span data-line="459">
-</span><span data-line="460">        <span class="k">if</span> <span class="ow">not</span> <span class="n">configs</span><span class="p">:</span>
-</span><span data-line="461">            <span class="bp">self</span><span class="o">.</span><span class="n">_report_no_configs</span><span class="p">(</span><span class="n">tool_config</span><span class="p">)</span>
-</span><span data-line="462">            <span class="k">return</span>
-</span><span data-line="463">
-</span><span data-line="464">        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_config_selected_callback</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
-</span><span data-line="465">        <span class="n">app</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"App[None]"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="466">        <span class="n">app</span><span class="o">.</span><span class="n">push_screen</span><span class="p">(</span><span class="n">ConfigSelectorScreen</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">configs</span><span class="p">),</span> <span class="n">callback</span><span class="p">)</span>
-</span><span data-line="467">
-</span><span data-line="468">    <span class="k">def</span><span class="w"> </span><span class="nf">_show_password_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="469"><span class="w">        </span><span class="sd">"""Show password prompt for sudo-requiring tools."""</span>
+</span><span data-line="460">        <span class="k">return</span> <span class="n">on_config_selected</span>
+</span><span data-line="461">
+</span><span data-line="462">    <span class="k">def</span><span class="w"> </span><span class="nf">_show_config_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="463"><span class="w">        </span><span class="sd">"""Show config file selector for a tool."""</span>
+</span><span data-line="464">        <span class="n">tool_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tool_config</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+</span><span data-line="465">        <span class="n">configs</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">get_config_files</span><span class="p">(</span><span class="n">tool_config</span><span class="p">)</span>
+</span><span data-line="466">
+</span><span data-line="467">        <span class="k">if</span> <span class="ow">not</span> <span class="n">configs</span><span class="p">:</span>
+</span><span data-line="468">            <span class="bp">self</span><span class="o">.</span><span class="n">_report_no_configs</span><span class="p">(</span><span class="n">tool_config</span><span class="p">)</span>
+</span><span data-line="469">            <span class="k">return</span>
 </span><span data-line="470">
-</span><span data-line="471">        <span class="k">def</span><span class="w"> </span><span class="nf">on_password_submitted</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="472">            <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="473">                <span class="n">log_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#log-panel"</span><span class="p">,</span> <span class="n">LogPanel</span><span class="p">)</span>
-</span><span data-line="474">                <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: connection cancelled"</span><span class="p">)</span>
-</span><span data-line="475">                <span class="k">return</span>
-</span><span data-line="476">
-</span><span data-line="477">            <span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">"sudo_password"</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
-</span><span data-line="478">            <span class="bp">self</span><span class="o">.</span><span class="n">run_worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_tool</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-</span><span data-line="479">
-</span><span data-line="480">        <span class="n">app</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"App[None]"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="481">        <span class="n">app</span><span class="o">.</span><span class="n">push_screen</span><span class="p">(</span><span class="n">PasswordPromptScreen</span><span class="p">(</span><span class="n">tool</span><span class="p">),</span> <span class="n">on_password_submitted</span><span class="p">)</span>
-</span><span data-line="482">
-</span><span data-line="483">    <span class="k">def</span><span class="w"> </span><span class="nf">_update_status_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="484"><span class="w">        </span><span class="sd">"""Update the status bar message."""</span>
-</span><span data-line="485">        <span class="n">status_bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#status-bar"</span><span class="p">,</span> <span class="n">Static</span><span class="p">)</span>
-</span><span data-line="486">        <span class="n">status_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="487">
+</span><span data-line="471">        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_config_selected_callback</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+</span><span data-line="472">        <span class="n">app</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"App[None]"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="473">        <span class="n">app</span><span class="o">.</span><span class="n">push_screen</span><span class="p">(</span><span class="n">ConfigSelectorScreen</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">configs</span><span class="p">),</span> <span class="n">callback</span><span class="p">)</span>
+</span><span data-line="474">
+</span><span data-line="475">    <span class="k">def</span><span class="w"> </span><span class="nf">_show_password_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="476"><span class="w">        </span><span class="sd">"""Show password prompt for sudo-requiring tools."""</span>
+</span><span data-line="477">
+</span><span data-line="478">        <span class="k">def</span><span class="w"> </span><span class="nf">on_password_submitted</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="479">            <span class="k">if</span> <span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="480">                <span class="n">log_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#log-panel"</span><span class="p">,</span> <span class="n">LogPanel</span><span class="p">)</span>
+</span><span data-line="481">                <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: connection cancelled"</span><span class="p">)</span>
+</span><span data-line="482">                <span class="k">return</span>
+</span><span data-line="483">
+</span><span data-line="484">            <span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">"sudo_password"</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+</span><span data-line="485">            <span class="bp">self</span><span class="o">.</span><span class="n">run_worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_tool</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+</span><span data-line="486">
+</span><span data-line="487">        <span class="n">app</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"App[None]"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="488">        <span class="n">app</span><span class="o">.</span><span class="n">push_screen</span><span class="p">(</span><span class="n">PasswordPromptScreen</span><span class="p">(</span><span class="n">tool</span><span class="p">),</span> <span class="n">on_password_submitted</span><span class="p">)</span>
+</span><span data-line="489">
+</span><span data-line="490">    <span class="k">def</span><span class="w"> </span><span class="nf">_update_status_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="491"><span class="w">        </span><span class="sd">"""Update the status bar message."""</span>
+</span><span data-line="492">        <span class="n">status_bar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#status-bar"</span><span class="p">,</span> <span class="n">Static</span><span class="p">)</span>
+</span><span data-line="493">        <span class="n">status_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="494">
 <div class="viewcode-block" id="MainScreen.action_refresh">
 <a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.MainScreen.action_refresh">[docs]</a>
-</span><span data-line="488">    <span class="k">def</span><span class="w"> </span><span class="nf">action_refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="489"><span class="w">        </span><span class="sd">"""Manually refresh all tool statuses."""</span>
-</span><span data-line="490">        <span class="bp">self</span><span class="o">.</span><span class="n">run_worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refresh_all_statuses</span><span class="p">())</span>
-</span><span data-line="491">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="s2">"Refreshed"</span><span class="p">)</span></div>
+</span><span data-line="495">    <span class="k">def</span><span class="w"> </span><span class="nf">action_refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="496"><span class="w">        </span><span class="sd">"""Manually refresh all tool statuses."""</span>
+</span><span data-line="497">        <span class="bp">self</span><span class="o">.</span><span class="n">run_worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refresh_all_statuses</span><span class="p">())</span>
+</span><span data-line="498">        <span class="bp">self</span><span class="o">.</span><span class="n">_update_status_bar</span><span class="p">(</span><span class="s2">"Refreshed"</span><span class="p">)</span></div>
 
-</span><span data-line="492">
+</span><span data-line="499">
 <div class="viewcode-block" id="MainScreen.action_clear_logs">
 <a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.MainScreen.action_clear_logs">[docs]</a>
-</span><span data-line="493">    <span class="k">def</span><span class="w"> </span><span class="nf">action_clear_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="494"><span class="w">        </span><span class="sd">"""Clear the log panel."""</span>
-</span><span data-line="495">        <span class="n">log_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#log-panel"</span><span class="p">,</span> <span class="n">LogPanel</span><span class="p">)</span>
-</span><span data-line="496">        <span class="n">log_panel</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span data-line="497">        <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span><span class="s2">"Logs cleared"</span><span class="p">)</span></div>
+</span><span data-line="500">    <span class="k">def</span><span class="w"> </span><span class="nf">action_clear_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="501"><span class="w">        </span><span class="sd">"""Clear the log panel."""</span>
+</span><span data-line="502">        <span class="n">log_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#log-panel"</span><span class="p">,</span> <span class="n">LogPanel</span><span class="p">)</span>
+</span><span data-line="503">        <span class="n">log_panel</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span data-line="504">        <span class="n">log_panel</span><span class="o">.</span><span class="n">log_system</span><span class="p">(</span><span class="s2">"Logs cleared"</span><span class="p">)</span></div>
 
-</span><span data-line="498">
+</span><span data-line="505">
 <div class="viewcode-block" id="MainScreen.action_quit">
 <a class="viewcode-back" href="../../../../modules.html#ocom.tui.screens.main.MainScreen.action_quit">[docs]</a>
-</span><span data-line="499">    <span class="k">def</span><span class="w"> </span><span class="nf">action_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="500"><span class="w">        </span><span class="sd">"""Quit the application."""</span>
-</span><span data-line="501">        <span class="n">app</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"App[None]"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="502">        <span class="n">app</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
+</span><span data-line="506">    <span class="k">def</span><span class="w"> </span><span class="nf">action_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="507"><span class="w">        </span><span class="sd">"""Quit the application."""</span>
+</span><span data-line="508">        <span class="n">app</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"App[None]"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="509">        <span class="n">app</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
 </div>
 
 </span></pre></div>

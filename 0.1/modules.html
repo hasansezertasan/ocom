@@ -163,6 +163,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#ocom.core.tool.BaseTool.get_status_text"><code class="docutils literal notranslate"><span class="pre">BaseTool.get_status_text()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#ocom.core.tool.StartError"><code class="docutils literal notranslate"><span class="pre">StartError</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.tool.ToolConfig"><code class="docutils literal notranslate"><span class="pre">ToolConfig</span></code></a></li>
 <li><a class="reference internal" href="#ocom.core.tool.ToolStatus"><code class="docutils literal notranslate"><span class="pre">ToolStatus</span></code></a><ul>
 <li><a class="reference internal" href="#ocom.core.tool.ToolStatus.is_transitioning"><code class="docutils literal notranslate"><span class="pre">ToolStatus.is_transitioning</span></code></a></li>
@@ -924,6 +925,13 @@ a new tool into the ocom TUI.</p>
 
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="ocom.core.tool.StartError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">StartError</span></span><a class="reference internal" href="_modules/ocom/core/tool.html#StartError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.StartError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>A tool failed to start; the message is shown to the user.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="ocom.core.tool.ToolConfig">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ocom.core.tool.</span></span><span class="sig-name descname"><span class="pre">ToolConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_dirs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tool.html#ToolConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tool.ToolConfig" title="Link to this definition">#</a></dt>
@@ -1002,6 +1010,8 @@ a new tool into the ocom TUI.</p>
 <dt class="sig sig-object py" id="ocom.core.process.ProcessManager.run_command">
 <span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">run_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/process.html#ProcessManager.run_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.process.ProcessManager.run_command" title="Link to this definition">#</a></dt>
 <dd><p>Run a command and wait for completion.</p>
+<p>The command is killed before a timeout (<code class="docutils literal notranslate"><span class="pre">TimeoutError</span></code>) or a
+cancellation propagates, so neither leaves it running.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1017,10 +1027,7 @@ a new tool into the ocom TUI.</p>
 <dd class="field-even"><p>ProcessResult with output and return code.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TimeoutError" title="(in Python v3.14)"><strong>TimeoutError</strong></a> – If timeout exceeded.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If check=True and command fails.</p></li>
-</ul>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If check=True and command fails.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#ocom.core.process.ProcessResult" title="ocom.core.process.ProcessResult"><em>ProcessResult</em></a></p>
@@ -1179,6 +1186,10 @@ Requires Administrator privileges on Windows.</p>
 <dt class="sig sig-object py" id="ocom.core.tools.GoodbyeDPITool.start">
 <span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tools/goodbyedpi.html#GoodbyeDPITool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tools.GoodbyeDPITool.start" title="Link to this definition">#</a></dt>
 <dd><p>Start GoodbyeDPI.</p>
+<p>The tool stays STARTING until the process has stayed up for
+<code class="docutils literal notranslate"><span class="pre">READY_WINDOW</span></code> seconds: GoodbyeDPI has no port or output marker to
+probe, and a failed launch (no Administrator rights, WinDivert driver
+errors) exits almost immediately.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1246,13 +1257,15 @@ Requires Administrator privileges on Windows.</p>
 <p>OpenVPN connection manager.</p>
 <p>Manages OpenVPN connections using .ovpn configuration files.
 Requires sudo on Unix, Administrator on Windows.</p>
-<p>Initialize the OpenVPN tool with an empty output buffer.</p>
+<p>Initialize the OpenVPN tool with no connection progress seen.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="ocom.core.tools.OpenVPNTool.start">
 <span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tools/openvpn.html#OpenVPNTool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tools.OpenVPNTool.start" title="Link to this definition">#</a></dt>
 <dd><p>Start OpenVPN with the specified config file.</p>
+<p>The tool stays STARTING until OpenVPN logs
+<code class="docutils literal notranslate"><span class="pre">Initialization</span> <span class="pre">Sequence</span> <span class="pre">Completed</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1261,7 +1274,7 @@ Requires sudo on Unix, Administrator on Windows.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if connection initiated successfully.</p>
+<dd class="field-even"><p>True once the tunnel is up.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
@@ -1333,9 +1346,7 @@ It modifies packets to evade Deep Packet Inspection.</p>
 <dt class="sig sig-object py" id="ocom.core.tools.SpoofDPITool.start">
 <span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tools/spoofdpi.html#SpoofDPITool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tools.SpoofDPITool.start" title="Link to this definition">#</a></dt>
 <dd><p>Start SpoofDPI proxy.</p>
-<p>The tool stays STARTING until the proxy accepts connections. Every exit
-path leaves a terminal status and no stray process behind, because
-<code class="docutils literal notranslate"><span class="pre">refresh_status()</span></code> does not correct a transitional status.</p>
+<p>The tool stays STARTING until the proxy accepts connections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1346,11 +1357,8 @@ path leaves a terminal status and no stray process behind, because
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the proxy started successfully.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>CancelledError</strong> – Re-raised after cleanup if the start is cancelled.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
