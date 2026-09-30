@@ -196,6 +196,19 @@ class TestStop:
 class TestRefreshStatus:
     """Test WarpTool.refresh_status() and status parsing."""
 
+    @pytest.mark.parametrize("status", [ToolStatus.STARTING, ToolStatus.STOPPING])
+    async def test_transitioning_left_alone(
+        self, tool: WarpTool, mocker: MockerFixture, status: ToolStatus
+    ) -> None:
+        """A refresh mid-transition must not override start()/stop()'s status."""
+        tool._status = status
+        run = mocker.patch(
+            "ocom.core.tools.warp.ProcessManager.run_command",
+            new=AsyncMock(return_value=_result(stdout="Status update: Disconnected")),
+        )
+        assert await tool.refresh_status() == status
+        run.assert_not_awaited()
+
     async def test_unavailable_and_missing_command(
         self, tool: WarpTool, mocker: MockerFixture
     ) -> None:

@@ -106,6 +106,11 @@ class WarpTool(BaseTool):
         ):
             return self._status
 
+        # start()/stop() own the status while a transition is in flight; the
+        # daemon's view would mask a pending connect from conflict handling.
+        if self._status.is_transitioning:
+            return self._status
+
         try:
             result = await ProcessManager.run_command(
                 ["warp-cli", "status"], timeout=5.0
