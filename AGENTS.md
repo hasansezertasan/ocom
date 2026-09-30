@@ -113,6 +113,14 @@ in `ocom.core.tools`).
 1. Create `src/ocom/core/tools/newtool.py` implementing `BaseTool` (set `name`,
    `command`, `requires_sudo`, `supports_configs`, `install_url`,
    `conflicts_with`, and the async `start`/`stop`/`refresh_status`).
+   For a tool that runs a long-lived process, build `start()` on
+   `_run_start()` + `_wait_until_ready()` with a tool-specific readiness probe,
+   `stop()` on `_stop_tracked_process()`, and have `refresh_status()` return
+   early while `status.is_transitioning` — so RUNNING is reported only once the
+   tool is ready and every exit path settles on a terminal status. A tool that
+   drives a CLI instead (like WARP) still builds `start()` on `_run_start()`
+   and calls `_abort_pending_start()` first in `stop()`, so stopping a STARTING
+   tool (e.g. as a conflict) aborts its start instead of letting it finish.
 2. Register it in `src/ocom/core/tools/__init__.py` `get_all_tools()`.
 3. Add a config section to `config.py` if needed.
 4. Optionally add a color to `LogPanel.SOURCE_COLORS`.

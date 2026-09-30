@@ -271,6 +271,27 @@ class TestStartStopFlows:
             bar = screen.query_one("#status-bar", Static)
             assert "Failed to start" in str(bar.render())
 
+    async def test_aborted_start_reports_cancelled(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A start aborted by a concurrent stop says so, not "Failed ... None"."""
+
+        class AbortedTool(FakeTool):
+            async def start(self, config: ToolConfig) -> bool:
+                _ = config
+                self._status = ToolStatus.STOPPED
+                return False
+
+        tool = AbortedTool("OpenVPN")
+        app = _make_app(monkeypatch, [tool])
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            screen = app.screen
+            assert isinstance(screen, MainScreen)
+            await screen._start_tool(tool, ToolConfig())
+            bar = screen.query_one("#status-bar", Static)
+            assert "OpenVPN start cancelled" in str(bar.render())
+
     async def test_stop_failure_reports_error(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -303,6 +324,22 @@ class TestConflictResolution:
             assert isinstance(screen, MainScreen)
             openvpn._status = ToolStatus.RUNNING
             screen._cards["OpenVPN"].refresh_status(ToolStatus.RUNNING)
+            await screen._start_tool(warp, ToolConfig())
+            assert openvpn.status == ToolStatus.STOPPED
+            assert warp.status == ToolStatus.RUNNING
+
+    async def test_starting_conflict_is_stopped(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A conflict that is still starting is stopped too, not left to come up."""
+        warp = FakeTool("WARP", conflicts_with=["OpenVPN"])
+        openvpn = FakeTool("OpenVPN")
+        app = _make_app(monkeypatch, [warp, openvpn])
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            screen = app.screen
+            assert isinstance(screen, MainScreen)
+            openvpn._status = ToolStatus.STARTING
             await screen._start_tool(warp, ToolConfig())
             assert openvpn.status == ToolStatus.STOPPED
             assert warp.status == ToolStatus.RUNNING

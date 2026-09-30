@@ -94,6 +94,9 @@ class ProcessManager:
     ) -> ProcessResult:
         """Run a command and wait for completion.
 
+        The command is killed before a timeout (``TimeoutError``) or a
+        cancellation propagates, so neither leaves it running.
+
         Args:
             args: Command and arguments as a list.
             timeout: Maximum time to wait in seconds.
@@ -103,7 +106,6 @@ class ProcessManager:
             ProcessResult with output and return code.
 
         Raises:
-            TimeoutError: If timeout exceeded.
             RuntimeError: If check=True and command fails.
         """
         proc = await asyncio.create_subprocess_exec(
@@ -112,9 +114,10 @@ class ProcessManager:
 
         try:
             stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
-        except TimeoutError:
-            proc.kill()
-            await proc.wait()
+        # A timeout or a cancelled caller (e.g. an aborted start) must not leave
+        # the command running; one re-raising handler covers both.
+        except BaseException:
+            await ProcessManager._kill_and_reap(proc)
             raise
 
         result = ProcessResult(
@@ -162,9 +165,7 @@ class ProcessManager:
 
         # Write stdin data if provided (e.g., sudo password)
         if stdin_data and proc.stdin:
-            proc.stdin.write((stdin_data + "\n").encode())
-            await proc.stdin.drain()
-            # Don't close stdin - process may need it open
+            await ProcessManager._write_stdin(proc, proc.stdin, stdin_data)
 
         if on_output and proc.stdout:
             task = asyncio.create_task(_read_output(proc.stdout, on_output))
@@ -210,6 +211,26 @@ class ProcessManager:
         except ProcessLookupError:
             return True
         return True
+
+    @staticmethod
+    async def _write_stdin(
+        proc: asyncio.subprocess.Process, stdin: asyncio.StreamWriter, data: str
+    ) -> None:
+        """Write ``data`` and a newline to ``proc``'s stdin, leaving it open.
+
+        The caller has no handle on ``proc`` until start_process() returns, so a
+        failed or cancelled write reaps it here rather than orphaning it, then
+        re-raises whatever interrupted the write.
+        """
+        try:
+            stdin.write((data + "\n").encode())
+            await stdin.drain()
+        # One re-raising BaseException handler rather than an exception tuple:
+        # the tuple's paren-free 3.14 form breaks the py3.10 prek hooks.
+        except BaseException:
+            await ProcessManager._kill_and_reap(proc)
+            raise
+        # Don't close stdin - process may need it open
 
     @staticmethod
     async def _kill_and_reap(proc: asyncio.subprocess.Process) -> None:

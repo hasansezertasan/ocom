@@ -1,12 +1,14 @@
 """GoodbyeDPI tool implementation (Windows only)."""
 
-import asyncio
 from typing import ClassVar, final, override
 
 from ocom.core.process import ProcessManager, is_admin
-from ocom.core.tool import BaseTool, ToolConfig, ToolStatus
+from ocom.core.tool import BaseTool, StartError, ToolConfig, ToolStatus
 
 __all__ = ["GoodbyeDPITool"]
+
+# How long the process must stay up before start() reports RUNNING.
+READY_WINDOW = 1.0
 
 
 @final
@@ -35,6 +37,11 @@ class GoodbyeDPITool(BaseTool):
     async def start(self, config: ToolConfig) -> bool:
         """Start GoodbyeDPI.
 
+        The tool stays STARTING until the process has stayed up for
+        ``READY_WINDOW`` seconds: GoodbyeDPI has no port or output marker to
+        probe, and a failed launch (no Administrator rights, WinDivert driver
+        errors) exits almost immediately.
+
         Args:
             config: Can contain options for mode (1-9), block_quic (bool).
 
@@ -43,16 +50,23 @@ class GoodbyeDPITool(BaseTool):
         """
         # Check for Administrator privileges upfront
         if not is_admin():
-            self._status = ToolStatus.ERROR
-            self._error_message = "Administrator privileges required"
-            self._emit_output("Error: GoodbyeDPI requires Administrator privileges")
+            self._fail("Administrator privileges required")
             self._emit_output(
                 "Run ocom as Administrator (right-click → Run as administrator)"
             )
             return False
 
-        self._status = ToolStatus.STARTING
+        if not await self._run_start(lambda: self._launch(config)):
+            return False
+        self._emit_output(f"DPI bypass started (mode {self._mode})")
+        return True
 
+    async def _launch(self, config: ToolConfig) -> None:
+        """Spawn GoodbyeDPI and wait for it to stay up.
+
+        Raises:
+            StartError: If the process exits during the readiness window.
+        """
         # Build command with options
         args = ["goodbyedpi"]
 
@@ -67,28 +81,14 @@ class GoodbyeDPITool(BaseTool):
 
         args.extend(config.extra_args)
 
+        self._process = await ProcessManager.start_process(
+            args, on_output=self._handle_output
+        )
         try:
-            self._process = await ProcessManager.start_process(
-                args, on_output=self._handle_output
-            )
-        except Exception as e:  # ruff: ignore[blind-except]  # external CLI can fail many ways
-            self._status = ToolStatus.ERROR
-            self._error_message = str(e)
-            self._emit_output(f"Error: {e}")
-            return False
-
-        # Check if it started successfully
-        await asyncio.sleep(1)
-
-        if not ProcessManager.is_process_running(self._process):
-            self._status = ToolStatus.ERROR
-            self._error_message = "Process exited unexpectedly (run as Administrator?)"
-            self._emit_output(f"Error: {self._error_message}")
-            return False
-
-        self._status = ToolStatus.RUNNING
-        self._emit_output(f"DPI bypass started (mode {self._mode})")
-        return True
+            await self._wait_until_ready(None, within=READY_WINDOW)
+        except StartError as e:
+            msg = f"{e} (run as Administrator?)"
+            raise StartError(msg) from e
 
     @override
     async def stop(self) -> bool:
@@ -97,17 +97,7 @@ class GoodbyeDPITool(BaseTool):
         Returns:
             True if the process was stopped.
         """
-        if self._process is None:
-            self._status = ToolStatus.STOPPED
-            return True
-
-        self._status = ToolStatus.STOPPING
-
-        success = await ProcessManager.stop_process(self._process)
-        self._process = None
-        self._status = ToolStatus.STOPPED
-        self._emit_output("DPI bypass stopped")
-        return success
+        return await self._stop_tracked_process("DPI bypass stopped")
 
     @override
     async def refresh_status(self) -> ToolStatus:
@@ -118,6 +108,11 @@ class GoodbyeDPITool(BaseTool):
         """
         if self._status == ToolStatus.UNAVAILABLE:
             await self.check_available()
+            return self._status
+
+        # start()/stop() own the status while a transition is in flight, so a
+        # periodic refresh must not report RUNNING before the process is ready.
+        if self._status.is_transitioning:
             return self._status
 
         if self._process is not None:

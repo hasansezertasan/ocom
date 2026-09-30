@@ -1,5 +1,6 @@
 """Tests for WarpTool."""
 
+import asyncio
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock
 
@@ -118,9 +119,45 @@ class TestStart:
         assert result is False
         assert tool.error_message == "Failed to connect"
 
+    async def test_start_failure_is_logged(
+        self, tool: WarpTool, mocker: MockerFixture
+    ) -> None:
+        """A failed connect is logged like other start failures."""
+        mocker.patch(
+            "ocom.core.tools.warp.ProcessManager.run_command",
+            new=AsyncMock(return_value=_result(returncode=1, stderr="nope")),
+        )
+        messages: list[str] = []
+        tool.set_output_callback(lambda _name, msg: messages.append(msg))
+        assert await tool.start(ToolConfig()) is False
+        assert messages == ["Error: nope"]
+
 
 class TestStop:
     """Test WarpTool.stop()."""
+
+    async def test_stop_aborts_in_flight_connect(
+        self, tool: WarpTool, mocker: MockerFixture
+    ) -> None:
+        """stop() while connecting aborts the connect, then still disconnects."""
+        connecting = asyncio.Event()
+        calls: list[list[str]] = []
+
+        async def run(args: list[str], **_kwargs: object) -> ProcessResult:
+            calls.append(args)
+            if args[1] == "connect":
+                connecting.set()
+                _ = await asyncio.Event().wait()  # hangs until the abort cancels it
+            return _result(stdout="ok")
+
+        mocker.patch("ocom.core.tools.warp.ProcessManager.run_command", new=run)
+        start = asyncio.create_task(tool.start(ToolConfig(options={"mode": ""})))
+        _ = await connecting.wait()
+        assert tool.status == ToolStatus.STARTING
+        assert await tool.stop() is True
+        assert await start is False
+        assert tool.status == ToolStatus.STOPPED
+        assert calls == [["warp-cli", "connect"], ["warp-cli", "disconnect"]]
 
     async def test_stop_success(self, tool: WarpTool, mocker: MockerFixture) -> None:
         """A successful disconnect sets STOPPED."""
@@ -158,6 +195,19 @@ class TestStop:
 
 class TestRefreshStatus:
     """Test WarpTool.refresh_status() and status parsing."""
+
+    @pytest.mark.parametrize("status", [ToolStatus.STARTING, ToolStatus.STOPPING])
+    async def test_transitioning_left_alone(
+        self, tool: WarpTool, mocker: MockerFixture, status: ToolStatus
+    ) -> None:
+        """A refresh mid-transition must not override start()/stop()'s status."""
+        tool._status = status
+        run = mocker.patch(
+            "ocom.core.tools.warp.ProcessManager.run_command",
+            new=AsyncMock(return_value=_result(stdout="Status update: Disconnected")),
+        )
+        assert await tool.refresh_status() == status
+        run.assert_not_awaited()
 
     async def test_unavailable_and_missing_command(
         self, tool: WarpTool, mocker: MockerFixture
