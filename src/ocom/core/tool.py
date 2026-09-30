@@ -195,6 +195,9 @@ class BaseTool(ABC):
             return False
         finally:
             self._start_task = None
+            # Scope the abort request to this attempt, even if an outside
+            # cancel interrupted cleanup before _absorb_abort() consumed it.
+            self._start_aborted = False
 
     async def _attempt_start(self, launch: Callable[[], Awaitable[None]]) -> bool:
         """Run ``launch``, settling on RUNNING or, after a failure, ERROR.
@@ -245,19 +248,31 @@ class BaseTool(ABC):
         deadline = asyncio.timeout(within)
         try:
             async with deadline:
-                while True:
-                    # Probe before the liveness check, so a tool that logs why
-                    # it failed and then exits reports that reason.
-                    if is_ready is not None and await is_ready():
-                        return True
-                    self._raise_if_exited()
-                    await asyncio.sleep(READY_POLL_INTERVAL)
+                return await self._poll_until_ready(is_ready)
         except TimeoutError:
             # Only the deadline means "not ready in time"; a probe's own
             # TimeoutError is a failure like any other.
             if not deadline.expired():
                 raise
         return False
+
+    async def _poll_until_ready(
+        self, is_ready: Callable[[], Awaitable[bool]] | None
+    ) -> bool:
+        """Poll until the probe passes; the caller bounds this with a deadline.
+
+        Returns:
+            True once ``is_ready`` passes on a still-running process.
+        """
+        while True:
+            # Probe before the liveness check, so a tool that logs why it
+            # failed and then exits reports that reason; but only accept
+            # "ready" from a process that is still alive.
+            ready = is_ready is not None and await is_ready()
+            self._raise_if_exited()
+            if ready:
+                return True
+            await asyncio.sleep(READY_POLL_INTERVAL)
 
     def _raise_if_exited(self) -> None:
         """Raise ``StartError`` if the tracked process is not running.

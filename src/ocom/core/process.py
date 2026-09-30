@@ -216,16 +216,15 @@ class ProcessManager:
         """Write ``data`` and a newline to ``proc``'s stdin, leaving it open.
 
         The caller has no handle on ``proc`` until start_process() returns, so a
-        failed or cancelled write reaps it here rather than orphaning it.
-
-        Raises:
-            CancelledError: Re-raised after killing the process if cancelled.
-            OSError: Re-raised after killing the process if the write fails.
+        failed or cancelled write reaps it here rather than orphaning it, then
+        re-raises whatever interrupted the write.
         """
         try:
             stdin.write((data + "\n").encode())
             await stdin.drain()
-        except asyncio.CancelledError, OSError:
+        # One re-raising BaseException handler rather than an exception tuple:
+        # the tuple's paren-free 3.14 form breaks the py3.10 prek hooks.
+        except BaseException:
             await ProcessManager._kill_and_reap(proc)
             raise
         # Don't close stdin - process may need it open

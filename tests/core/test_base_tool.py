@@ -17,8 +17,7 @@ if TYPE_CHECKING:
 
 async def _never_resolves() -> None:
     """Block forever: the test cancels while this is pending."""
-    never: asyncio.Future[None] = asyncio.get_running_loop().create_future()
-    await never
+    _ = await asyncio.Event().wait()
 
 
 class TestBaseToolClassAttributes:
@@ -432,8 +431,32 @@ class TestAbortStart:
         start = asyncio.create_task(mock_tool._run_start(self._launch(mock_tool, proc)))
         await asyncio.sleep(0)
         await mock_tool._stop_tracked_process("stopped")
-        await start
+        assert await start is False
         assert messages == ["stopped"]
+
+    async def test_outside_cancel_during_cleanup_clears_abort(
+        self, mock_tool: MockTool, mocker: MockerFixture
+    ) -> None:
+        """An outside cancel interrupting abort cleanup leaves no stale abort flag."""
+        release = asyncio.Event()
+
+        async def slow_stop(_proc: MagicMock) -> bool:
+            await release.wait()
+            return True
+
+        mocker.patch("ocom.core.tool.ProcessManager.stop_process", new=slow_stop)
+        proc = MagicMock(returncode=None)
+        start = asyncio.create_task(mock_tool._run_start(self._launch(mock_tool, proc)))
+        await asyncio.sleep(0)
+        stopper = asyncio.create_task(mock_tool._stop_tracked_process())
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)  # start is now awaiting the slow cleanup
+        start.cancel()
+        await asyncio.wait([start])
+        assert start.cancelled()
+        assert mock_tool._start_aborted is False
+        release.set()
+        await stopper
 
     @pytest.mark.usefixtures("stop")
     async def test_outside_cancel_still_propagates(self, mock_tool: MockTool) -> None:
@@ -456,7 +479,7 @@ class TestAbortStart:
         )
         await asyncio.sleep(0)
         await mock_tool._stop_tracked_process()
-        await start
+        assert await start is False
 
         async def launch() -> None:
             pass
@@ -499,6 +522,16 @@ class TestWaitUntilReady:
             raise StartError(msg)
 
         with pytest.raises(StartError, match="Authentication failed"):
+            await mock_tool._wait_until_ready(is_ready, within=1.0)
+
+    async def test_ready_but_exited(self, mock_tool: MockTool) -> None:
+        """A passing probe from a process that already exited is not readiness."""
+        mock_tool._process = MagicMock(returncode=1)
+
+        async def is_ready() -> bool:
+            return True
+
+        with pytest.raises(StartError, match="Process exited with code 1"):
             await mock_tool._wait_until_ready(is_ready, within=1.0)
 
     async def test_probe_timeout_propagates(self, mock_tool: MockTool) -> None:
