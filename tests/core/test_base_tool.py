@@ -456,7 +456,7 @@ class TestAbortStart:
         assert start.cancelled()
         assert mock_tool._start_aborted is False
         release.set()
-        await stopper
+        assert await stopper is True
 
     @pytest.mark.usefixtures("stop")
     async def test_outside_cancel_still_propagates(self, mock_tool: MockTool) -> None:
@@ -533,6 +533,23 @@ class TestWaitUntilReady:
 
         with pytest.raises(StartError, match="Process exited with code 1"):
             await mock_tool._wait_until_ready(is_ready, within=1.0)
+
+    async def test_exit_at_deadline(
+        self, mock_tool: MockTool, mocker: MockerFixture
+    ) -> None:
+        """A process that dies after the last poll is not treated as surviving."""
+        proc = MagicMock(returncode=None)
+        mock_tool._process = proc
+        mocker.patch("ocom.core.tool.READY_POLL_INTERVAL", 60.0)
+
+        async def die_later() -> None:
+            await asyncio.sleep(0.01)
+            proc.returncode = 1
+
+        killer = asyncio.create_task(die_later())
+        with pytest.raises(StartError, match="Process exited with code 1"):
+            await mock_tool._wait_until_ready(None, within=0.05)
+        await asyncio.wait([killer])
 
     async def test_probe_timeout_propagates(self, mock_tool: MockTool) -> None:
         """A probe's own TimeoutError is not mistaken for the deadline."""

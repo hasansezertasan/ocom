@@ -254,6 +254,8 @@ class BaseTool(ABC):
             # TimeoutError is a failure like any other.
             if not deadline.expired():
                 raise
+        # The process may have died after the last poll but before the deadline.
+        self._raise_if_exited()
         return False
 
     async def _poll_until_ready(
