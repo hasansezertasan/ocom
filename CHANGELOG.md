@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/hasansezertasan/ocom/compare/v0.1.2...v0.1.3) (2026-09-30)
+
+
+### 🐛 Bug Fixes
+
+* **tools:** report RUNNING only after GoodbyeDPI and OpenVPN are ready ([#216](https://github.com/hasansezertasan/ocom/issues/216)) ([a4dd4d1](https://github.com/hasansezertasan/ocom/commit/a4dd4d114a9a804593945efe1930fa0b99bd0e60))
+
 ## [0.1.2](https://github.com/hasansezertasan/ocom/compare/v0.1.1...v0.1.2) (2026-09-30)
 
 
