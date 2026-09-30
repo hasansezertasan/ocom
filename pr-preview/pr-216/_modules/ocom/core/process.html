@@ -361,77 +361,76 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="216"><span class="w">        </span><span class="sd">"""Write ``data`` and a newline to ``proc``'s stdin, leaving it open.</span>
 </span><span data-line="217">
 </span><span data-line="218"><span class="sd">        The caller has no handle on ``proc`` until start_process() returns, so a</span>
-</span><span data-line="219"><span class="sd">        failed or cancelled write reaps it here rather than orphaning it.</span>
-</span><span data-line="220">
-</span><span data-line="221"><span class="sd">        Raises:</span>
-</span><span data-line="222"><span class="sd">            CancelledError: Re-raised after killing the process if cancelled.</span>
-</span><span data-line="223"><span class="sd">            OSError: Re-raised after killing the process if the write fails.</span>
-</span><span data-line="224"><span class="sd">        """</span>
-</span><span data-line="225">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="226">            <span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">data</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-</span><span data-line="227">            <span class="k">await</span> <span class="n">stdin</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
-</span><span data-line="228">        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="229">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
-</span><span data-line="230">            <span class="k">raise</span>
-</span><span data-line="231">        <span class="c1"># Don't close stdin - process may need it open</span>
-</span><span data-line="232">
-</span><span data-line="233">    <span class="nd">@staticmethod</span>
-</span><span data-line="234">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="235"><span class="w">        </span><span class="sd">"""Force-kill ``proc`` and wait for it, even if the caller is cancelled."""</span>
-</span><span data-line="236">        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">ProcessLookupError</span><span class="p">):</span>
-</span><span data-line="237">            <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-</span><span data-line="238">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">shield</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">())</span>
-</span><span data-line="239">
+</span><span data-line="219"><span class="sd">        failed or cancelled write reaps it here rather than orphaning it, then</span>
+</span><span data-line="220"><span class="sd">        re-raises whatever interrupted the write.</span>
+</span><span data-line="221"><span class="sd">        """</span>
+</span><span data-line="222">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="223">            <span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">data</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+</span><span data-line="224">            <span class="k">await</span> <span class="n">stdin</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+</span><span data-line="225">        <span class="c1"># One re-raising BaseException handler rather than an exception tuple:</span>
+</span><span data-line="226">        <span class="c1"># the tuple's paren-free 3.14 form breaks the py3.10 prek hooks.</span>
+</span><span data-line="227">        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+</span><span data-line="228">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="229">            <span class="k">raise</span>
+</span><span data-line="230">        <span class="c1"># Don't close stdin - process may need it open</span>
+</span><span data-line="231">
+</span><span data-line="232">    <span class="nd">@staticmethod</span>
+</span><span data-line="233">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_kill_and_reap</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="234"><span class="w">        </span><span class="sd">"""Force-kill ``proc`` and wait for it, even if the caller is cancelled."""</span>
+</span><span data-line="235">        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">ProcessLookupError</span><span class="p">):</span>
+</span><span data-line="236">            <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+</span><span data-line="237">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">shield</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">())</span>
+</span><span data-line="238">
 <div class="viewcode-block" id="ProcessManager.is_process_running">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.process.ProcessManager.is_process_running">[docs]</a>
-</span><span data-line="240">    <span class="nd">@staticmethod</span>
-</span><span data-line="241">    <span class="k">def</span><span class="w"> </span><span class="nf">is_process_running</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="242"><span class="w">        </span><span class="sd">"""Check if a process is still running.</span>
-</span><span data-line="243">
-</span><span data-line="244"><span class="sd">        Returns:</span>
-</span><span data-line="245"><span class="sd">            True if the process exists and has not exited.</span>
-</span><span data-line="246"><span class="sd">        """</span>
-</span><span data-line="247">        <span class="k">return</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="kc">None</span></div>
+</span><span data-line="239">    <span class="nd">@staticmethod</span>
+</span><span data-line="240">    <span class="k">def</span><span class="w"> </span><span class="nf">is_process_running</span><span class="p">(</span><span class="n">proc</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Process</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="241"><span class="w">        </span><span class="sd">"""Check if a process is still running.</span>
+</span><span data-line="242">
+</span><span data-line="243"><span class="sd">        Returns:</span>
+</span><span data-line="244"><span class="sd">            True if the process exists and has not exited.</span>
+</span><span data-line="245"><span class="sd">        """</span>
+</span><span data-line="246">        <span class="k">return</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
-</span><span data-line="248">
+</span><span data-line="247">
 <div class="viewcode-block" id="ProcessManager.check_port_in_use">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.process.ProcessManager.check_port_in_use">[docs]</a>
-</span><span data-line="249">    <span class="nd">@staticmethod</span>
-</span><span data-line="250">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_port_in_use</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="251"><span class="w">        </span><span class="sd">"""Check if a port is in use (for proxy tools).</span>
-</span><span data-line="252">
-</span><span data-line="253"><span class="sd">        Args:</span>
-</span><span data-line="254"><span class="sd">            port: Port number to check.</span>
-</span><span data-line="255"><span class="sd">            host: Host to check on.</span>
-</span><span data-line="256">
-</span><span data-line="257"><span class="sd">        Returns:</span>
-</span><span data-line="258"><span class="sd">            True if port is in use.</span>
-</span><span data-line="259"><span class="sd">        """</span>
-</span><span data-line="260">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="261">            <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
-</span><span data-line="262">                <span class="n">asyncio</span><span class="o">.</span><span class="n">open_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
-</span><span data-line="263">            <span class="p">)</span>
-</span><span data-line="264">            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="265">            <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
-</span><span data-line="266">        <span class="c1"># TimeoutError is a subclass of OSError, so this catches both a</span>
-</span><span data-line="267">        <span class="c1"># connection failure and the wait_for timeout with a single (paren-free,</span>
-</span><span data-line="268">        <span class="c1"># format-stable) exception type.</span>
-</span><span data-line="269">        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-</span><span data-line="270">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="271">        <span class="k">return</span> <span class="kc">True</span></div>
+</span><span data-line="248">    <span class="nd">@staticmethod</span>
+</span><span data-line="249">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_port_in_use</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="250"><span class="w">        </span><span class="sd">"""Check if a port is in use (for proxy tools).</span>
+</span><span data-line="251">
+</span><span data-line="252"><span class="sd">        Args:</span>
+</span><span data-line="253"><span class="sd">            port: Port number to check.</span>
+</span><span data-line="254"><span class="sd">            host: Host to check on.</span>
+</span><span data-line="255">
+</span><span data-line="256"><span class="sd">        Returns:</span>
+</span><span data-line="257"><span class="sd">            True if port is in use.</span>
+</span><span data-line="258"><span class="sd">        """</span>
+</span><span data-line="259">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="260">            <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+</span><span data-line="261">                <span class="n">asyncio</span><span class="o">.</span><span class="n">open_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+</span><span data-line="262">            <span class="p">)</span>
+</span><span data-line="263">            <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="264">            <span class="k">await</span> <span class="n">writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
+</span><span data-line="265">        <span class="c1"># TimeoutError is a subclass of OSError, so this catches both a</span>
+</span><span data-line="266">        <span class="c1"># connection failure and the wait_for timeout with a single (paren-free,</span>
+</span><span data-line="267">        <span class="c1"># format-stable) exception type.</span>
+</span><span data-line="268">        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+</span><span data-line="269">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="270">        <span class="k">return</span> <span class="kc">True</span></div>
 </div>
 
+</span><span data-line="271">
 </span><span data-line="272">
-</span><span data-line="273">
-</span><span data-line="274"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_output</span><span class="p">(</span>
-</span><span data-line="275">    <span class="n">stream</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
-</span><span data-line="276"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="277"><span class="w">    </span><span class="sd">"""Read lines from a stream and call callback for each."""</span>
-</span><span data-line="278">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="279">        <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span data-line="280">        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
-</span><span data-line="281">            <span class="k">break</span>
-</span><span data-line="282">        <span class="n">callback</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span data-line="273"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_output</span><span class="p">(</span>
+</span><span data-line="274">    <span class="n">stream</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+</span><span data-line="275"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="276"><span class="w">    </span><span class="sd">"""Read lines from a stream and call callback for each."""</span>
+</span><span data-line="277">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="278">        <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stream</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="279">        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+</span><span data-line="280">            <span class="k">break</span>
+</span><span data-line="281">        <span class="n">callback</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

@@ -346,179 +346,194 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="195">            <span class="k">return</span> <span class="kc">False</span>
 </span><span data-line="196">        <span class="k">finally</span><span class="p">:</span>
 </span><span data-line="197">            <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="198">
-</span><span data-line="199">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_attempt_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="200"><span class="w">        </span><span class="sd">"""Run ``launch``, settling on RUNNING or, after a failure, ERROR.</span>
+</span><span data-line="198">            <span class="c1"># Scope the abort request to this attempt, even if an outside</span>
+</span><span data-line="199">            <span class="c1"># cancel interrupted cleanup before _absorb_abort() consumed it.</span>
+</span><span data-line="200">            <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span data-line="201">
-</span><span data-line="202"><span class="sd">        Returns:</span>
-</span><span data-line="203"><span class="sd">            True if the tool is RUNNING; False after a recorded failure.</span>
-</span><span data-line="204"><span class="sd">        """</span>
-</span><span data-line="205">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="206">            <span class="k">await</span> <span class="n">launch</span><span class="p">()</span>
-</span><span data-line="207">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># ruff: ignore[blind-except]  # external CLI can fail many ways</span>
-</span><span data-line="208">            <span class="bp">self</span><span class="o">.</span><span class="n">_fail</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-</span><span data-line="209">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abandon</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-</span><span data-line="210">            <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="211">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
-</span><span data-line="212">        <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="213">
-</span><span data-line="214">    <span class="k">def</span><span class="w"> </span><span class="nf">_absorb_abort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="215"><span class="w">        </span><span class="sd">"""Swallow a cancellation that came only from ``stop()``.</span>
+</span><span data-line="202">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_attempt_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">launch</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="203"><span class="w">        </span><span class="sd">"""Run ``launch``, settling on RUNNING or, after a failure, ERROR.</span>
+</span><span data-line="204">
+</span><span data-line="205"><span class="sd">        Returns:</span>
+</span><span data-line="206"><span class="sd">            True if the tool is RUNNING; False after a recorded failure.</span>
+</span><span data-line="207"><span class="sd">        """</span>
+</span><span data-line="208">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="209">            <span class="k">await</span> <span class="n">launch</span><span class="p">()</span>
+</span><span data-line="210">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># ruff: ignore[blind-except]  # external CLI can fail many ways</span>
+</span><span data-line="211">            <span class="bp">self</span><span class="o">.</span><span class="n">_fail</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="212">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abandon</span><span class="p">(</span><span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+</span><span data-line="213">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="214">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span>
+</span><span data-line="215">        <span class="k">return</span> <span class="kc">True</span>
 </span><span data-line="216">
-</span><span data-line="217"><span class="sd">        Returns:</span>
-</span><span data-line="218"><span class="sd">            True if ``stop()`` requested the cancellation and nothing else</span>
-</span><span data-line="219"><span class="sd">            also cancelled the task; False if it must propagate.</span>
-</span><span data-line="220"><span class="sd">        """</span>
-</span><span data-line="221">        <span class="n">aborted</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span><span class="p">,</span> <span class="kc">False</span>
-</span><span data-line="222">        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">()</span>
-</span><span data-line="223">        <span class="k">return</span> <span class="n">aborted</span> <span class="ow">and</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">uncancel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
-</span><span data-line="224">
-</span><span data-line="225">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_wait_until_ready</span><span class="p">(</span>
-</span><span data-line="226">        <span class="bp">self</span><span class="p">,</span> <span class="n">is_ready</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="nb">float</span>
-</span><span data-line="227">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="228"><span class="w">        </span><span class="sd">"""Poll the tracked process until it is ready, exits, or time runs out.</span>
-</span><span data-line="229">
-</span><span data-line="230"><span class="sd">        A process that exits before it is ready raises ``StartError``.</span>
-</span><span data-line="231">
-</span><span data-line="232"><span class="sd">        Args:</span>
-</span><span data-line="233"><span class="sd">            is_ready: Tool-specific readiness probe; may raise ``StartError``</span>
-</span><span data-line="234"><span class="sd">                for a definite failure. None watches liveness for the whole</span>
-</span><span data-line="235"><span class="sd">                window, for tools whose only readiness signal is staying up.</span>
-</span><span data-line="236"><span class="sd">            within: Seconds to wait.</span>
-</span><span data-line="237">
-</span><span data-line="238"><span class="sd">        Returns:</span>
-</span><span data-line="239"><span class="sd">            True once ``is_ready`` passes; False if the window ends with the</span>
-</span><span data-line="240"><span class="sd">            process still alive.</span>
-</span><span data-line="241">
-</span><span data-line="242"><span class="sd">        Raises:</span>
-</span><span data-line="243"><span class="sd">            TimeoutError: If ``is_ready`` itself times out.</span>
-</span><span data-line="244"><span class="sd">        """</span>
-</span><span data-line="245">        <span class="n">deadline</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">within</span><span class="p">)</span>
-</span><span data-line="246">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="247">            <span class="k">async</span> <span class="k">with</span> <span class="n">deadline</span><span class="p">:</span>
-</span><span data-line="248">                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="249">                    <span class="c1"># Probe before the liveness check, so a tool that logs why</span>
-</span><span data-line="250">                    <span class="c1"># it failed and then exits reports that reason.</span>
-</span><span data-line="251">                    <span class="k">if</span> <span class="n">is_ready</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">is_ready</span><span class="p">():</span>
-</span><span data-line="252">                        <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="253">                    <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_exited</span><span class="p">()</span>
-</span><span data-line="254">                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">READY_POLL_INTERVAL</span><span class="p">)</span>
-</span><span data-line="255">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
-</span><span data-line="256">            <span class="c1"># Only the deadline means "not ready in time"; a probe's own</span>
-</span><span data-line="257">            <span class="c1"># TimeoutError is a failure like any other.</span>
-</span><span data-line="258">            <span class="k">if</span> <span class="ow">not</span> <span class="n">deadline</span><span class="o">.</span><span class="n">expired</span><span class="p">():</span>
-</span><span data-line="259">                <span class="k">raise</span>
-</span><span data-line="260">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="261">
-</span><span data-line="262">    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_if_exited</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="263"><span class="w">        </span><span class="sd">"""Raise ``StartError`` if the tracked process is not running.</span>
-</span><span data-line="264">
-</span><span data-line="265"><span class="sd">        Raises:</span>
-</span><span data-line="266"><span class="sd">            StartError: If the process has exited (or was never spawned).</span>
-</span><span data-line="267"><span class="sd">        """</span>
-</span><span data-line="268">        <span class="n">proc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span>
-</span><span data-line="269">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">is_process_running</span><span class="p">(</span><span class="n">proc</span><span class="p">):</span>
-</span><span data-line="270">            <span class="n">code</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="k">if</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="271">            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Process exited with code </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">"</span>
-</span><span data-line="272">            <span class="k">raise</span> <span class="n">StartError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-</span><span data-line="273">
-</span><span data-line="274">    <span class="k">def</span><span class="w"> </span><span class="nf">_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="275"><span class="w">        </span><span class="sd">"""Record a failure as ERROR and log it."""</span>
-</span><span data-line="276">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
-</span><span data-line="277">        <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="n">message</span>
-</span><span data-line="278">        <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="217">    <span class="k">def</span><span class="w"> </span><span class="nf">_absorb_abort</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="218"><span class="w">        </span><span class="sd">"""Swallow a cancellation that came only from ``stop()``.</span>
+</span><span data-line="219">
+</span><span data-line="220"><span class="sd">        Returns:</span>
+</span><span data-line="221"><span class="sd">            True if ``stop()`` requested the cancellation and nothing else</span>
+</span><span data-line="222"><span class="sd">            also cancelled the task; False if it must propagate.</span>
+</span><span data-line="223"><span class="sd">        """</span>
+</span><span data-line="224">        <span class="n">aborted</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span><span class="p">,</span> <span class="kc">False</span>
+</span><span data-line="225">        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">()</span>
+</span><span data-line="226">        <span class="k">return</span> <span class="n">aborted</span> <span class="ow">and</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">uncancel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span data-line="227">
+</span><span data-line="228">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_wait_until_ready</span><span class="p">(</span>
+</span><span data-line="229">        <span class="bp">self</span><span class="p">,</span> <span class="n">is_ready</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">within</span><span class="p">:</span> <span class="nb">float</span>
+</span><span data-line="230">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="231"><span class="w">        </span><span class="sd">"""Poll the tracked process until it is ready, exits, or time runs out.</span>
+</span><span data-line="232">
+</span><span data-line="233"><span class="sd">        A process that exits before it is ready raises ``StartError``.</span>
+</span><span data-line="234">
+</span><span data-line="235"><span class="sd">        Args:</span>
+</span><span data-line="236"><span class="sd">            is_ready: Tool-specific readiness probe; may raise ``StartError``</span>
+</span><span data-line="237"><span class="sd">                for a definite failure. None watches liveness for the whole</span>
+</span><span data-line="238"><span class="sd">                window, for tools whose only readiness signal is staying up.</span>
+</span><span data-line="239"><span class="sd">            within: Seconds to wait.</span>
+</span><span data-line="240">
+</span><span data-line="241"><span class="sd">        Returns:</span>
+</span><span data-line="242"><span class="sd">            True once ``is_ready`` passes; False if the window ends with the</span>
+</span><span data-line="243"><span class="sd">            process still alive.</span>
+</span><span data-line="244">
+</span><span data-line="245"><span class="sd">        Raises:</span>
+</span><span data-line="246"><span class="sd">            TimeoutError: If ``is_ready`` itself times out.</span>
+</span><span data-line="247"><span class="sd">        """</span>
+</span><span data-line="248">        <span class="n">deadline</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">within</span><span class="p">)</span>
+</span><span data-line="249">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="250">            <span class="k">async</span> <span class="k">with</span> <span class="n">deadline</span><span class="p">:</span>
+</span><span data-line="251">                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_poll_until_ready</span><span class="p">(</span><span class="n">is_ready</span><span class="p">)</span>
+</span><span data-line="252">        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+</span><span data-line="253">            <span class="c1"># Only the deadline means "not ready in time"; a probe's own</span>
+</span><span data-line="254">            <span class="c1"># TimeoutError is a failure like any other.</span>
+</span><span data-line="255">            <span class="k">if</span> <span class="ow">not</span> <span class="n">deadline</span><span class="o">.</span><span class="n">expired</span><span class="p">():</span>
+</span><span data-line="256">                <span class="k">raise</span>
+</span><span data-line="257">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="258">
+</span><span data-line="259">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_poll_until_ready</span><span class="p">(</span>
+</span><span data-line="260">        <span class="bp">self</span><span class="p">,</span> <span class="n">is_ready</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="261">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="262"><span class="w">        </span><span class="sd">"""Poll until the probe passes; the caller bounds this with a deadline.</span>
+</span><span data-line="263">
+</span><span data-line="264"><span class="sd">        Returns:</span>
+</span><span data-line="265"><span class="sd">            True once ``is_ready`` passes on a still-running process.</span>
+</span><span data-line="266"><span class="sd">        """</span>
+</span><span data-line="267">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="268">            <span class="c1"># Probe before the liveness check, so a tool that logs why it</span>
+</span><span data-line="269">            <span class="c1"># failed and then exits reports that reason; but only accept</span>
+</span><span data-line="270">            <span class="c1"># "ready" from a process that is still alive.</span>
+</span><span data-line="271">            <span class="n">ready</span> <span class="o">=</span> <span class="n">is_ready</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">is_ready</span><span class="p">()</span>
+</span><span data-line="272">            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_if_exited</span><span class="p">()</span>
+</span><span data-line="273">            <span class="k">if</span> <span class="n">ready</span><span class="p">:</span>
+</span><span data-line="274">                <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="275">            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">READY_POLL_INTERVAL</span><span class="p">)</span>
+</span><span data-line="276">
+</span><span data-line="277">    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_if_exited</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="278"><span class="w">        </span><span class="sd">"""Raise ``StartError`` if the tracked process is not running.</span>
 </span><span data-line="279">
-</span><span data-line="280">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_abandon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">ToolStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="281"><span class="w">        </span><span class="sd">"""Settle on ``status`` and stop the tracked process, if any.</span>
-</span><span data-line="282">
-</span><span data-line="283"><span class="sd">        The status is set and the process detached before awaiting its</span>
-</span><span data-line="284"><span class="sd">        shutdown, so a refresh meanwhile cannot overwrite the outcome.</span>
-</span><span data-line="285"><span class="sd">        """</span>
-</span><span data-line="286">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">status</span>
-</span><span data-line="287">        <span class="n">proc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="288">        <span class="k">if</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="289">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
-</span><span data-line="290">
-</span><span data-line="291">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_stop_tracked_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stopped_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="292"><span class="w">        </span><span class="sd">"""Stop the tracked process and settle on STOPPED, even if cancelled.</span>
-</span><span data-line="293">
-</span><span data-line="294"><span class="sd">        Args:</span>
-</span><span data-line="295"><span class="sd">            stopped_message: Logged once a tracked process has been stopped.</span>
-</span><span data-line="296">
-</span><span data-line="297"><span class="sd">        Returns:</span>
-</span><span data-line="298"><span class="sd">            True if the process was stopped (or there was none).</span>
-</span><span data-line="299"><span class="sd">        """</span>
-</span><span data-line="300">        <span class="k">if</span> <span class="p">(</span>
-</span><span data-line="301">            <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="302">            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">()</span>
-</span><span data-line="303">        <span class="p">):</span>
-</span><span data-line="304">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abort_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">)</span>
-</span><span data-line="305">            <span class="k">if</span> <span class="n">stopped_message</span><span class="p">:</span>
-</span><span data-line="306">                <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="n">stopped_message</span><span class="p">)</span>
-</span><span data-line="307">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="280"><span class="sd">        Raises:</span>
+</span><span data-line="281"><span class="sd">            StartError: If the process has exited (or was never spawned).</span>
+</span><span data-line="282"><span class="sd">        """</span>
+</span><span data-line="283">        <span class="n">proc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span>
+</span><span data-line="284">        <span class="k">if</span> <span class="ow">not</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">is_process_running</span><span class="p">(</span><span class="n">proc</span><span class="p">):</span>
+</span><span data-line="285">            <span class="n">code</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="k">if</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="286">            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Process exited with code </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="287">            <span class="k">raise</span> <span class="n">StartError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span><span data-line="288">
+</span><span data-line="289">    <span class="k">def</span><span class="w"> </span><span class="nf">_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="290"><span class="w">        </span><span class="sd">"""Record a failure as ERROR and log it."""</span>
+</span><span data-line="291">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span>
+</span><span data-line="292">        <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="n">message</span>
+</span><span data-line="293">        <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="294">
+</span><span data-line="295">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_abandon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="n">ToolStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="296"><span class="w">        </span><span class="sd">"""Settle on ``status`` and stop the tracked process, if any.</span>
+</span><span data-line="297">
+</span><span data-line="298"><span class="sd">        The status is set and the process detached before awaiting its</span>
+</span><span data-line="299"><span class="sd">        shutdown, so a refresh meanwhile cannot overwrite the outcome.</span>
+</span><span data-line="300"><span class="sd">        """</span>
+</span><span data-line="301">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">status</span>
+</span><span data-line="302">        <span class="n">proc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="303">        <span class="k">if</span> <span class="n">proc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="304">            <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="305">
+</span><span data-line="306">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_stop_tracked_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stopped_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="307"><span class="w">        </span><span class="sd">"""Stop the tracked process and settle on STOPPED, even if cancelled.</span>
 </span><span data-line="308">
-</span><span data-line="309">        <span class="n">proc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">,</span> <span class="kc">None</span>
-</span><span data-line="310">        <span class="k">if</span> <span class="n">proc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="311">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
-</span><span data-line="312">            <span class="k">return</span> <span class="kc">True</span>
-</span><span data-line="313">
-</span><span data-line="314">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span>
-</span><span data-line="315">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="316">            <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
-</span><span data-line="317">        <span class="k">finally</span><span class="p">:</span>
-</span><span data-line="318">            <span class="c1"># Settle even if cancelled: refresh_status() won't leave STOPPING.</span>
-</span><span data-line="319">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
-</span><span data-line="320">        <span class="k">if</span> <span class="n">stopped_message</span><span class="p">:</span>
-</span><span data-line="321">            <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="n">stopped_message</span><span class="p">)</span>
-</span><span data-line="322">        <span class="k">return</span> <span class="n">success</span>
+</span><span data-line="309"><span class="sd">        Args:</span>
+</span><span data-line="310"><span class="sd">            stopped_message: Logged once a tracked process has been stopped.</span>
+</span><span data-line="311">
+</span><span data-line="312"><span class="sd">        Returns:</span>
+</span><span data-line="313"><span class="sd">            True if the process was stopped (or there was none).</span>
+</span><span data-line="314"><span class="sd">        """</span>
+</span><span data-line="315">        <span class="k">if</span> <span class="p">(</span>
+</span><span data-line="316">            <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="317">            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">()</span>
+</span><span data-line="318">        <span class="p">):</span>
+</span><span data-line="319">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abort_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">)</span>
+</span><span data-line="320">            <span class="k">if</span> <span class="n">stopped_message</span><span class="p">:</span>
+</span><span data-line="321">                <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="n">stopped_message</span><span class="p">)</span>
+</span><span data-line="322">            <span class="k">return</span> <span class="kc">True</span>
 </span><span data-line="323">
-</span><span data-line="324">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_abort_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="325"><span class="w">        </span><span class="sd">"""Cancel an in-flight ``_run_start()`` and wait for it to settle.</span>
-</span><span data-line="326">
-</span><span data-line="327"><span class="sd">        The start's own cleanup stops the process and settles on STOPPED. A</span>
-</span><span data-line="328"><span class="sd">        second stop() while that cleanup runs only waits for it: cancelling</span>
-</span><span data-line="329"><span class="sd">        again would interrupt the cleanup and leave the tool STOPPING.</span>
-</span><span data-line="330"><span class="sd">        """</span>
-</span><span data-line="331">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span><span class="p">:</span>
-</span><span data-line="332">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span>
-</span><span data-line="333">            <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="334">            <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-</span><span data-line="335">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">task</span><span class="p">])</span>
-</span><span data-line="336">
+</span><span data-line="324">        <span class="n">proc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="325">        <span class="k">if</span> <span class="n">proc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="326">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+</span><span data-line="327">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="328">
+</span><span data-line="329">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span>
+</span><span data-line="330">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="331">            <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ProcessManager</span><span class="o">.</span><span class="n">stop_process</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+</span><span data-line="332">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="333">            <span class="c1"># Settle even if cancelled: refresh_status() won't leave STOPPING.</span>
+</span><span data-line="334">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPED</span>
+</span><span data-line="335">        <span class="k">if</span> <span class="n">stopped_message</span><span class="p">:</span>
+</span><span data-line="336">            <span class="bp">self</span><span class="o">.</span><span class="n">_emit_output</span><span class="p">(</span><span class="n">stopped_message</span><span class="p">)</span>
+</span><span data-line="337">        <span class="k">return</span> <span class="n">success</span>
+</span><span data-line="338">
+</span><span data-line="339">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_abort_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="340"><span class="w">        </span><span class="sd">"""Cancel an in-flight ``_run_start()`` and wait for it to settle.</span>
+</span><span data-line="341">
+</span><span data-line="342"><span class="sd">        The start's own cleanup stops the process and settles on STOPPED. A</span>
+</span><span data-line="343"><span class="sd">        second stop() while that cleanup runs only waits for it: cancelling</span>
+</span><span data-line="344"><span class="sd">        again would interrupt the cleanup and leave the tool STOPPING.</span>
+</span><span data-line="345"><span class="sd">        """</span>
+</span><span data-line="346">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span><span class="p">:</span>
+</span><span data-line="347">            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">STOPPING</span>
+</span><span data-line="348">            <span class="bp">self</span><span class="o">.</span><span class="n">_start_aborted</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="349">            <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+</span><span data-line="350">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">task</span><span class="p">])</span>
+</span><span data-line="351">
 <div class="viewcode-block" id="BaseTool.get_config_files">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.tool.BaseTool.get_config_files">[docs]</a>
-</span><span data-line="337">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># ruff: ignore[no-self-use]</span>
-</span><span data-line="338"><span class="w">        </span><span class="sd">"""Get list of available config files.</span>
-</span><span data-line="339">
-</span><span data-line="340"><span class="sd">        Override this for tools that use config files.</span>
-</span><span data-line="341">
-</span><span data-line="342"><span class="sd">        Args:</span>
-</span><span data-line="343"><span class="sd">            config: Tool configuration with directories to scan.</span>
-</span><span data-line="344">
-</span><span data-line="345"><span class="sd">        Returns:</span>
-</span><span data-line="346"><span class="sd">            List of config file paths.</span>
-</span><span data-line="347"><span class="sd">        """</span>
-</span><span data-line="348">        <span class="c1"># Base hook: the default implementation ignores config; subclasses that</span>
-</span><span data-line="349">        <span class="c1"># support config files override this and read it.</span>
-</span><span data-line="350">        <span class="n">_</span> <span class="o">=</span> <span class="n">config</span>
-</span><span data-line="351">        <span class="k">return</span> <span class="p">[]</span></div>
+</span><span data-line="352">    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ToolConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># ruff: ignore[no-self-use]</span>
+</span><span data-line="353"><span class="w">        </span><span class="sd">"""Get list of available config files.</span>
+</span><span data-line="354">
+</span><span data-line="355"><span class="sd">        Override this for tools that use config files.</span>
+</span><span data-line="356">
+</span><span data-line="357"><span class="sd">        Args:</span>
+</span><span data-line="358"><span class="sd">            config: Tool configuration with directories to scan.</span>
+</span><span data-line="359">
+</span><span data-line="360"><span class="sd">        Returns:</span>
+</span><span data-line="361"><span class="sd">            List of config file paths.</span>
+</span><span data-line="362"><span class="sd">        """</span>
+</span><span data-line="363">        <span class="c1"># Base hook: the default implementation ignores config; subclasses that</span>
+</span><span data-line="364">        <span class="c1"># support config files override this and read it.</span>
+</span><span data-line="365">        <span class="n">_</span> <span class="o">=</span> <span class="n">config</span>
+</span><span data-line="366">        <span class="k">return</span> <span class="p">[]</span></div>
 
-</span><span data-line="352">
+</span><span data-line="367">
 <div class="viewcode-block" id="BaseTool.get_status_text">
 <a class="viewcode-back" href="../../../modules.html#ocom.core.tool.BaseTool.get_status_text">[docs]</a>
-</span><span data-line="353">    <span class="k">def</span><span class="w"> </span><span class="nf">get_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="354"><span class="w">        </span><span class="sd">"""Get human-readable status text for display.</span>
-</span><span data-line="355">
-</span><span data-line="356"><span class="sd">        Can be overridden for tool-specific status details.</span>
-</span><span data-line="357">
-</span><span data-line="358"><span class="sd">        Returns:</span>
-</span><span data-line="359"><span class="sd">            A human-readable string describing the current status.</span>
-</span><span data-line="360"><span class="sd">        """</span>
-</span><span data-line="361">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="p">:</span>
-</span><span data-line="362">            <span class="k">return</span> <span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="si">}</span><span class="s2">"</span>
-</span><span data-line="363">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span><span class="p">:</span>
-</span><span data-line="364">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span>
-</span><span data-line="365">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span></div>
+</span><span data-line="368">    <span class="k">def</span><span class="w"> </span><span class="nf">get_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="369"><span class="w">        </span><span class="sd">"""Get human-readable status text for display.</span>
+</span><span data-line="370">
+</span><span data-line="371"><span class="sd">        Can be overridden for tool-specific status details.</span>
+</span><span data-line="372">
+</span><span data-line="373"><span class="sd">        Returns:</span>
+</span><span data-line="374"><span class="sd">            A human-readable string describing the current status.</span>
+</span><span data-line="375"><span class="sd">        """</span>
+</span><span data-line="376">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">ERROR</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="p">:</span>
+</span><span data-line="377">            <span class="k">return</span> <span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="378">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">==</span> <span class="n">ToolStatus</span><span class="o">.</span><span class="n">RUNNING</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span><span class="p">:</span>
+</span><span data-line="379">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_config</span>
+</span><span data-line="380">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span></div>
 </div>
 
 </span></pre></div>
