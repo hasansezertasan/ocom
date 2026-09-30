@@ -1064,8 +1064,11 @@ a new tool into the ocom TUI.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if process was stopped.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CancelledError</strong> – Re-raised after killing the process if cancelled.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1323,6 +1326,9 @@ It modifies packets to evade Deep Packet Inspection.</p>
 <dt class="sig sig-object py" id="ocom.core.tools.SpoofDPITool.start">
 <span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ocom/core/tools/spoofdpi.html#SpoofDPITool.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ocom.core.tools.SpoofDPITool.start" title="Link to this definition">#</a></dt>
 <dd><p>Start SpoofDPI proxy.</p>
+<p>The tool stays STARTING until the proxy accepts connections. Every exit
+path leaves a terminal status and no stray process behind, because
+<code class="docutils literal notranslate"><span class="pre">refresh_status()</span></code> does not correct a transitional status.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1333,8 +1339,11 @@ It modifies packets to evade Deep Packet Inspection.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the proxy started successfully.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CancelledError</strong> – Re-raised after cleanup if the start is cancelled.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
