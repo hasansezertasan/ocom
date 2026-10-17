@@ -1,10 +1,18 @@
 """CLI application for ocom.
 
+<<<<<<< before updating
 The ``ocom`` command is the single Typer root: ``ocom --help`` lists the
 commands, ``version`` and ``info`` report on the install, and every other
 component is hung off it as a lazily-imported subcommand -- ``ocom interactive``
 launches the Textual TUI -- rather than a separate ``ocom-<name>`` console script
 (see ADR-019).
+=======
+The ``ocom`` command is the single Typer root. Every enabled
+component other than the primary (CLI > GUI > TUI > web > MCP > worker) is hung
+off it as a lazily-imported subcommand — ``ocom interactive``
+(TUI), ``ocom web``, ``ocom mcp``, ... — rather
+than a separate ``ocom-<name>`` console script (see https://hasansezertasan.github.io/copier-pyproject/context/components/#secondary-components-are-subcommands-of-one-console-root-not-separate-scripts).
+>>>>>>> after updating
 """
 # mypy: disable-error-code="misc"
 
