@@ -4,7 +4,7 @@ The ``ocom`` command is the single Typer root: ``ocom --help`` lists the
 commands, ``version`` and ``info`` report on the install, and every other
 component is hung off it as a lazily-imported subcommand -- ``ocom interactive``
 launches the Textual TUI -- rather than a separate ``ocom-<name>`` console script
-(see ADR-019).
+(see https://hasansezertasan.github.io/copier-pyproject/context/components/#secondary-components-are-subcommands-of-one-console-root-not-separate-scripts).
 """
 # mypy: disable-error-code="misc"
 
