@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/hasansezertasan/ocom/compare/v0.1.3...v0.1.4) (2026-10-23)
+
+
+### 🐛 Bug Fixes
+
+* **hooks:** run prek hook environments on python 3.14 ([#250](https://github.com/hasansezertasan/ocom/issues/250)) ([fce7d83](https://github.com/hasansezertasan/ocom/commit/fce7d839170760e248bb841222dd33900740fee7))
+
 ## [0.1.3](https://github.com/hasansezertasan/ocom/compare/v0.1.2...v0.1.3) (2026-09-30)
 
 
