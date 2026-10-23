@@ -64,14 +64,6 @@ _PRESERVE_FAILED_MSG = (
     "a site that would delete it from gh-pages"
 )
 
-# Raised on an interpreter too old for tarfile's safe extraction filter. The
-# filter landed in 3.12 and was backported to the 3.10.12 / 3.11.4 security
-# releases, so only a long-unpatched 3.10.x or 3.11.x reaches this.
-_NO_TAR_FILTER_MSG = (
-    "this interpreter predates tarfile's `data` extraction filter; upgrade to "
-    "Python 3.10.12+ / 3.11.4+ (or 3.12+) to build the versioned docs site"
-)
-
 _REDIRECT_HTML = """<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -225,8 +217,7 @@ def preserve_from_gh_pages(
             optional.
 
     Raises:
-        RuntimeError: If a required subtree cannot be read from ``ref``, or if
-            the interpreter predates ``tarfile``'s ``data`` extraction filter.
+        RuntimeError: If a required subtree cannot be read from ``ref``.
     """
     archive = subprocess.run(  # noqa: S603
         ["git", "archive", ref, name],  # noqa: S607
@@ -242,11 +233,8 @@ def preserve_from_gh_pages(
     # extract through the ``data`` filter regardless — it rejects absolute paths,
     # ``..`` traversals, links escaping the destination, and device nodes. An
     # unfiltered fallback branch is what CodeQL flags as ``py/tarslip`` (high) on
-    # the first pull request of every generated project, so there is none: on an
-    # interpreter without the filter this fails loudly instead.
+    # the first pull request of every generated project, so there is none.
     with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
-        if not hasattr(tarfile, "data_filter"):
-            raise RuntimeError(_NO_TAR_FILTER_MSG)
         tar.extractall(out, filter="data")
 
 

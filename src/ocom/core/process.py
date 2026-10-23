@@ -225,8 +225,6 @@ class ProcessManager:
         try:
             stdin.write((data + "\n").encode())
             await stdin.drain()
-        # One re-raising BaseException handler rather than an exception tuple:
-        # the tuple's paren-free 3.14 form breaks the py3.10 prek hooks.
         except BaseException:
             await ProcessManager._kill_and_reap(proc)
             raise
