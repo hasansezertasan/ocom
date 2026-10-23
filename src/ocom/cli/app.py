@@ -30,7 +30,7 @@ logger = get_logger()
 # Every component's runtime dependency is a core ``dependency`` of this package
 # (there are no per-component extras), so a missing one never means "install the
 # extra" -- it means this environment is out of sync with the installed metadata.
-# That happens after a ``copier update`` enables a component, or in a stale venv.
+# That happens after a component is enabled without a re-sync, or in a stale venv.
 _MISSING_DEPENDENCY = "Error: The {component} component requires '{missing}', which is not available in this environment. {hint}"  # noqa: E501
 _SYNC_HINT = f"Component dependencies ship with '{PROJECT_NAME}', so this usually means your environment is out of sync -- run `uv sync` (or reinstall the package) and try again."  # noqa: E501
 _TUI_DEPENDENCIES = ("textual",)
