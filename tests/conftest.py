@@ -10,7 +10,6 @@ Also keeps the Markdown doctest surface to the single root ``README.md``: see
 
 Also hosts the ``missing_metadata`` fixture: every component degrades or fails
 differently when the package metadata is unreadable, but they all read it
-<<<<<<< before updating
 through ``core.app``, so one fixture covers every component's error path
 (https://hasansezertasan.github.io/copier-pyproject/context/components/#one-application-payload-in-coreapppy-components-are-adapters-over-it).
 
@@ -19,9 +18,6 @@ with a module-level ``pytestmark`` so no test reads the developer's real config.
 
 Also hosts the ``MockTool`` double and the tool fixtures built on it, shared by
 the ``core`` tool and TUI tests.
-=======
-through ``core.app``, so one fixture covers every component's error path.
->>>>>>> after updating
 """
 
 from __future__ import annotations

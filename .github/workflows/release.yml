@@ -392,11 +392,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           # Passed via env (not interpolated into run:) — read by the Python
-<<<<<<< before updating
           # process, so no template-injection surface. See https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages / AGENTS.md.
-=======
-          # process, so no template-injection surface.
->>>>>>> after updating
           DOCS_BUILD_VERSION: ${{ needs.release-please.outputs.version }}
         # Builds only this release's docs, then assembles ./site with every prior
         # version copied from gh-pages, a `latest` alias, and a root redirect.

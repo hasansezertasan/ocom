@@ -51,21 +51,10 @@ requires-python = ">=3.14"
 # fails at launch. Same for pydantic-settings, which ``core.config`` imports
 # unconditionally when enabled.
 dependencies = [
-<<<<<<< before updating
   "typer==0.27.2",
   "textual==8.2.8",
   "pydantic==2.14.1",
   "pydantic-settings[toml]==2.15.0",
-=======
-  "typer>=0.20.0",
-  # >=6.0.0 for `Static.content`, which the headless pilot test asserts on
-  # Earlier releases expose only `Static.renderable`, and 6.0.0
-  # onward returns None for it — there is no spelling that spans both.
-  "textual>=6.0.0",
-  "typing-extensions>=4.4.0",
-  "pydantic>=2.0.0",
-  "pydantic-settings>=2.0.0",
->>>>>>> after updating
 ]
 
 
@@ -144,14 +133,9 @@ docs = [
   "sphinx-togglebutton==0.4.5",
   "sphinx-paramlinks==0.6.0",
   "auto-pytabs[sphinx]==0.5.0",
-<<<<<<< before updating
   "myst-parser==5.1.0",
   "sphinx-click==6.2.0",
   # Per-page "last updated" footer sourced from git commit dates (https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#per-page-last-updated-comes-from-git-history);
-=======
-  "myst-parser==4.0.1",
-  # Per-page "last updated" footer sourced from git commit dates;
->>>>>>> after updating
   # offline, no network. Works from full history (docs CI checks out depth 0).
   "sphinx-last-updated-by-git==0.3.8",
   # PEP 440 version parsing/sorting used by tools/build_docs.py to order
@@ -612,7 +596,6 @@ disable = [
   "missing-class-docstring", # C0115
   "missing-function-docstring", # C0116
   "too-few-public-methods", # R0903 — trips dataclasses / config / Protocol classes
-<<<<<<< before updating
   "import-outside-toplevel", # C0415 — components (cli->tui/gui/web, and each
   # component's own optional-dependency probe) are
   # deliberately lazy-imported so import-linter's
@@ -644,25 +627,6 @@ disable = [
   "redefined-builtin", # W0622 — the `id=` keyword mirrors Textual's widget
   # API; ruff's A002 already governs builtin shadowing
   # (suppressed inline where the API demands `id`).
-=======
-  # C0415 — the cli->tui/gui/web dispatch, and each component's own heavy or
-  # platform-conditional import (tkinter, uvicorn, the worker's uvloop probe),
-  # are deliberately lazy so import-linter's layering contract holds and a
-  # framework is only imported when the code path that needs it actually runs.
-  # Textual is the exception: the TUI imports it at module scope so `InfoApp`
-  # can be defined there and driven by the headless pilot.
-  "import-outside-toplevel",
-  # W0706 — the generated TUI entry point explicitly re-raises
-  # KeyboardInterrupt/SystemExit ahead of a broad `except Exception` to make the
-  # "let these propagate" intent obvious to readers, even though BaseException
-  # subclasses wouldn't be caught by the Exception clause anyway.
-  "try-except-raise",
-  # R0801 — the component skeletons (gui/tui/mcp/worker) are deliberately
-  # parallel: each fetches package metadata and formats the same info block the
-  # same way. That structural symmetry is a feature of the layout, not
-  # copy-paste debt, and R0801 cannot be suppressed inline at the call site.
-  "duplicate-code",
->>>>>>> after updating
 ]
 
 [tool.pylint.design]
