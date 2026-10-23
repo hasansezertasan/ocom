@@ -1,10 +1,18 @@
 """CLI application for ocom.
 
+<<<<<<< before updating
 The ``ocom`` command is the single Typer root: ``ocom --help`` lists the
 commands, ``version`` and ``info`` report on the install, and every other
 component is hung off it as a lazily-imported subcommand -- ``ocom interactive``
 launches the Textual TUI -- rather than a separate ``ocom-<name>`` console script
 (see https://hasansezertasan.github.io/copier-pyproject/context/components/#secondary-components-are-subcommands-of-one-console-root-not-separate-scripts).
+=======
+The ``ocom`` command is the single Typer root. Every enabled
+component other than the primary (CLI > GUI > TUI > web > MCP > worker) is hung
+off it as a lazily-imported subcommand — ``ocom interactive``
+(TUI), ``ocom web``, ``ocom mcp``, ... — rather
+than a separate ``ocom-<name>`` console script.
+>>>>>>> after updating
 """
 # mypy: disable-error-code="misc"
 
@@ -30,7 +38,7 @@ logger = get_logger()
 # Every component's runtime dependency is a core ``dependency`` of this package
 # (there are no per-component extras), so a missing one never means "install the
 # extra" -- it means this environment is out of sync with the installed metadata.
-# That happens after a ``copier update`` enables a component, or in a stale venv.
+# That happens after a component is enabled without a re-sync, or in a stale venv.
 _MISSING_DEPENDENCY = "Error: The {component} component requires '{missing}', which is not available in this environment. {hint}"  # noqa: E501
 _SYNC_HINT = f"Component dependencies ship with '{PROJECT_NAME}', so this usually means your environment is out of sync -- run `uv sync` (or reinstall the package) and try again."  # noqa: E501
 _TUI_DEPENDENCIES = ("textual",)

@@ -184,6 +184,7 @@ operator once: `sudo tailscale set --operator=$USER`.
 | `mode`       | int  | `9`     | Preset mode (1–9), higher = more aggressive |
 | `block_quic` | bool | `true`  | Block QUIC/HTTP/3                           |
 
+<<<<<<< before updating
 GoodbyeDPI must be run with Administrator privileges; ocom checks for them and
 reports a clear error if they are missing.
 
@@ -193,6 +194,19 @@ When `auto_connect = true`, ocom attempts to connect to OpenVPN on startup using
 `openvpn.default_config` (which must point to a valid `.ovpn` file). On Unix a sudo
 password prompt appears immediately; on Windows the connection starts automatically
 (run as Administrator).
+=======
+Versioning and releases are automated with [release-please](https://github.com/googleapis/release-please), driven by [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) PR titles squash-merged into `main`. release-please maintains a release PR that bumps the version and `CHANGELOG.md`; merging it tags the release and publishes to PyPI. See the [Contributing Guidelines](./.github/CONTRIBUTING.md#releasing) for the commit conventions, and the [Repository setup](./REPOSITORY_SETUP.rst) guide for one-time configuration and optional post-launch integrations such as a social preview, downstream packaging, and Repology.
+
+Pause merges that change `.github/workflows/`, including Renovate action-pin updates, from merging a release PR until the entire Release run finishes. Workflow differences between the release commit and current `main` can block tag or release creation with a 403 when using `GITHUB_TOKEN`. See [Release recovery](./REPOSITORY_SETUP.rst#keep-workflow-changes-out-of-an-active-release) for prevention and recovery steps.
+
+For adopting this project's tooling into an existing package, or reconciling a
+template update with existing project behavior, see the **Template updates** and
+**Adopting into an existing project** sections of
+[REPOSITORY_SETUP.rst](./REPOSITORY_SETUP.rst). They cover the baseline,
+workflow and required-check overlap, custom tooling and documentation, and ask
+for a decision before consequential cleanup. Work through the repository
+settings and release steps in the same file.
+>>>>>>> after updating
 
 ```toml
 [general]
