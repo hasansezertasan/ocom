@@ -71,14 +71,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
 </ul>
-<p class="caption" role="heading" aria-level="3"><span class="caption-text">Maintainer guide</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../maintaining/setup.html">Repository setup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../packaging/homebrew-tap/README.html">Homebrew tap setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../packaging/scoop-bucket/README.html">Scoop bucket setup</a></li>
-</ul>
-</li>
-</ul>
 
         </div>
       </div>
@@ -155,7 +147,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="30"><span class="c1"># Every component's runtime dependency is a core ``dependency`` of this package</span>
 </span><span data-line="31"><span class="c1"># (there are no per-component extras), so a missing one never means "install the</span>
 </span><span data-line="32"><span class="c1"># extra" -- it means this environment is out of sync with the installed metadata.</span>
-</span><span data-line="33"><span class="c1"># That happens after a ``copier update`` enables a component, or in a stale venv.</span>
+</span><span data-line="33"><span class="c1"># That happens after a component is enabled without a re-sync, or in a stale venv.</span>
 </span><span data-line="34"><span class="n">_MISSING_DEPENDENCY</span> <span class="o">=</span> <span class="s2">"Error: The </span><span class="si">{component}</span><span class="s2"> component requires '</span><span class="si">{missing}</span><span class="s2">', which is not available in this environment. </span><span class="si">{hint}</span><span class="s2">"</span>  <span class="c1"># noqa: E501</span>
 </span><span data-line="35"><span class="n">_SYNC_HINT</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Component dependencies ship with '</span><span class="si">{</span><span class="n">PROJECT_NAME</span><span class="si">}</span><span class="s2">', so this usually means your environment is out of sync -- run `uv sync` (or reinstall the package) and try again."</span>  <span class="c1"># noqa: E501</span>
 </span><span data-line="36"><span class="n">_TUI_DEPENDENCIES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"textual"</span><span class="p">,)</span>
